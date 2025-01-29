@@ -5,7 +5,6 @@ const Home = () => {
     <div>
       <h2>Latest Job Listings</h2>
       <JobList />
-    
     </div>
   );
 };
