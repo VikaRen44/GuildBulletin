@@ -1,11 +1,17 @@
 import { Link } from "react-router-dom";
+import "./Navbar.css"; // Import Navbar styling
+
 
 const Navbar = () => {
   return (
-    <nav style={{ padding: "1rem", backgroundColor: "#333", color: "white" }}>
-      <h1>Job Bulletin</h1>
-      <Link to="/" style={{ color: "white", marginRight: "1rem" }}>Home</Link>
-      <Link to="/post-job" style={{ color: "white" }}>Post a Job</Link>
+    <nav className="navbar">
+      <div className="navbar-container">
+        <h1 className="navbar-title">Job Bulletin</h1>
+        <div className="nav-links">
+          <Link to="/" className="nav-link">Home</Link>
+          <Link to="/post-job" className="nav-link">Post a Job</Link>
+        </div>
+      </div>
     </nav>
   );
 };

@@ -1,0 +1,168 @@
+/* Ensure everything is properly centered */
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* 🔍 Search Bar Section */
+.search-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+/* 🔎 Search Bar */
+.search-bar {
+  display: flex;
+  align-items: center;
+  background-color: #e0e0e0;
+  padding: 10px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.search-button {
+  background: #ffdc9c;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.search-input {
+  flex-grow: 1;
+  padding: 12px;
+  border: none;
+  font-size: 16px;
+  background: transparent;
+  color: #6a6a6a;
+}
+
+/* 🎯 Buttons Section */
+.button-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+/* 📝 Upload CV & Post a Job Buttons */
+.upload-button,
+.post-button {
+  padding: 12px 20px;
+  border: 2px solid #ffcc80;
+  border-radius: 8px;
+  background: white;
+  font-weight: bold;
+  color: #ff9900;
+  cursor: pointer;
+}
+
+.upload-button:hover,
+.post-button:hover {
+  background: #ffcc80;
+  color: white;
+}
+
+/* ✉️ Mail Icon */
+.mail-icon {
+  background: #eeeeee;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #ff9900;
+  cursor: pointer;
+}
+
+/* 🏆 Profile Section */
+.profile-section {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.profile-image {
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-name {
+  color: #ff9900;
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.profile-info {
+  color: #333;
+}
+
+/* Profile Badge */
+.badge {
+  background: #ddd;
+  padding: 5px 10px;
+  font-weight: bold;
+  display: inline-block;
+  margin-top: 10px;
+}
+
+/* Recommended Jobs Section */
+.recommended-section {
+  margin-top: 40px;
+}
+
+.recommended-title {
+  color: #ff9900;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+/* Job List */
+.job-list {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+/* Job Card */
+.job-card {
+  position: relative; /* Needed for absolute positioning */
+  width: 680px;
+  height: 220px;
+  border-radius: 10px;
+  overflow: hidden; /* Keeps the text inside the card */
+  background: #f8f8f8;
+}
+
+/* Job Image */
+.job-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/* Job Title Overlay */
+.job-title {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.6); /* Semi-transparent black background */
+  border-radius: 0 0 10px 10px;
+}
