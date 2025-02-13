@@ -59,12 +59,12 @@ function LoginRegister() {
       // Sign in user with Firebase Auth
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-
+  
       // Retrieve user role from Firestore
       const userDoc = await getDoc(doc(db, "Users", user.uid));
       if (userDoc.exists()) {
         const userRole = userDoc.data().role;
-        localStorage.setItem("userRole", userRole);
+        localStorage.setItem("userRole", userRole);  // ✅ Store role in local storage
         alert("Login successful!");
         navigate("/home"); // Redirect after login
       } else {
@@ -75,6 +75,7 @@ function LoginRegister() {
       alert("Invalid credentials! Please try again.");
     }
   };
+  
 
   return (
     <div style={{ padding: "20px", textAlign: "center" }}>

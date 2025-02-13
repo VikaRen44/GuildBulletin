@@ -1,0 +1,102 @@
+/* Job Detail Page Container */
+.job-detail-container {
+    display: flex;
+    background-color: #FAFAFA;
+    padding-top: 80px; /* ✅ Push content below the navbar */
+    min-height: 100vh; /* ✅ Ensures full-page height */
+    padding: 20px;
+  }
+  
+  /* Sidebar Styling */
+  .sidebar {
+    width: 30%;
+    height: calc(100vh - 100px); /* ✅ Prevents overlapping with navbar */
+    overflow-y: auto;
+    background-color: #FFF;
+    padding: 15px;
+    border-right: 1px solid #ddd;
+    scrollbar-width: thin; /* Works in Firefox */
+    -ms-overflow-style: none; /* Works in Internet Explorer */
+  }
+  
+  /* Sidebar Job Item */
+  .job-item {
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+    border: 1px solid #ddd;
+  }
+  
+  /* Highlight the selected job */
+  .job-item.selected {
+    background-color: #FFE0B2;
+  }
+  
+  .text-dark {
+    color: #444;
+  }
+  
+  .salary {
+    font-weight: bold;
+    color: #E67E22;
+  }
+  
+  /* Job Details Section */
+  .detail-container {
+    width: 70%;
+    padding: 40px; /* ✅ Increased padding for better spacing */
+    background-color: #FFF3E0;
+    border-radius: 8px;
+  }
+  
+  /* Job Header */
+  .detail-header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+  }
+  
+  .time-tag {
+    background-color: #FFA726;
+    color: #FFF;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+  }
+  
+  /* Salary Box */
+  .salary-box {
+    background-color: #FFF;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #E67E22;
+    margin-bottom: 20px;
+  }
+  
+  .button-container {
+    margin-top: 10px;
+  }
+  
+  .location {
+    color: #777;
+  }
+  
+  /* Apply Button */
+  .apply-button {
+    background-color: #E67E22;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .apply-button:hover {
+    transform: scale(1.05);
+  }
+  

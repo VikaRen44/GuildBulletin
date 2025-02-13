@@ -1,14 +1,29 @@
-import React, { useRef } from "react";
-import Navbar from "../components/Navbar"; // Import Navbar
-import "../Styles/stylehome.css"; // Import styles
+import React, { useRef, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import Navbar from "../components/Navbar";
+import "../Styles/stylehome.css";
 import gothie from "../assets/gothie.jpg";
 import blondie from "../assets/blondie.jpg";
 import brunette from "../assets/brunette.jpg";
 import jstate from "../assets/jstate.jpg";
 
+const jobData = [
+  { id: 1, title: "Averardo Bank Teller", image: gothie },
+  { id: 2, title: "Software Engineer", image: blondie },
+  { id: 3, title: "Graphic Designer", image: brunette },
+];
 
 const Home = () => {
   const fileInputRef = useRef(null);
+  const [userRole, setUserRole] = useState("");
+
+  useEffect(() => {
+    // Retrieve user role from local storage
+    const role = localStorage.getItem("userRole");
+    if (role) {
+      setUserRole(role);
+    }
+  }, []);
 
   const handleUploadClick = () => {
     fileInputRef.current.click();
@@ -16,9 +31,8 @@ const Home = () => {
 
   return (
     <>
-      <Navbar /> {/* Include Navbar */}
+      <Navbar />
       <div className="container">
-        {/* Header */}
         <header className="header">
           <h1 className="logo">
             <span className="touch">Touch</span>
@@ -27,18 +41,27 @@ const Home = () => {
           </h1>
         </header>
 
-        {/* Search Bar */}
+        {/* Search & Buttons Section */}
         <div className="search-section">
           <div className="search-bar">
             <button className="search-button">🔍 Search</button>
             <input type="text" placeholder="Enter key word, name of job or company" className="search-input" />
           </div>
 
-          {/* Buttons Section */}
+          {/* Conditionally Render Buttons Based on User Role */}
           <div className="button-container">
             <input type="file" accept="application/pdf" ref={fileInputRef} style={{ display: "none" }} />
-            <button onClick={handleUploadClick} className="upload-button">Upload your CV</button>
-            <button className="post-button">Post a Job</button>
+
+            {userRole === "applicant" && (
+              <button onClick={handleUploadClick} className="upload-button">
+                Upload your CV
+              </button>
+            )}
+
+            {userRole === "hire" && (
+              <button className="post-button">Post a Job</button>
+            )}
+
             <div className="mail-icon">M</div>
           </div>
         </div>
@@ -54,22 +77,16 @@ const Home = () => {
           <div className="badge">Single father of 2 sweet girls</div>
         </div>
 
-        {/* Recommended Jobs */}
+        {/* Recommended Jobs Section */}
         <div className="recommended-section">
           <h3 className="recommended-title">Recommended</h3>
           <div className="job-list">
-            <div className="job-card">
-            <img src={gothie} alt="Bank Teller" className="job-image" />
-              <p className="job-title">Averardo Bank Teller</p>
-            </div>
-            <div className="job-card">
-            <img src={blondie} alt="Bank Teller" className="job-image" />
-              <p className="job-title">Averardo Bank Teller</p>
-            </div>
-            <div className="job-card">
-            <img src={brunette} alt="Bank Teller" className="job-image" />
-              <p className="job-title">Averardo Bank Teller</p>
-            </div>
+            {jobData.map((job) => (
+              <Link to={`/job/${job.id}`} key={job.id} className="job-card">
+                <img src={job.image} alt={job.title} className="job-image" />
+                <p className="job-title">{job.title}</p>
+              </Link>
+            ))}
           </div>
         </div>
       </div>
@@ -78,3 +95,5 @@ const Home = () => {
 };
 
 export default Home;
+
+

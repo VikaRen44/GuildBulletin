@@ -3,7 +3,8 @@ import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import JobDetail from "./pages/JobDetail";
 import PostJob from "./pages/PostJob";
-import Login from "./pages/Login"; 
+import UploadCV from "./pages/UploadCV"; // ✅ New Upload CV page
+import Login from "./pages/Login";
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -26,7 +27,10 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/home" element={<Home />} />
           <Route path="/job/:id" element={<JobDetail />} />
-          <Route path="/post-job" element={<PostJob />} />
+          
+          {/* ✅ Conditionally accessible pages based on role */}
+          <Route path="/post-job" element={<PostJob />} /> {/* For Hirers */}
+          <Route path="/upload-cv" element={<UploadCV />} /> {/* For Applicants */}
         </Routes>
       </Layout>
     </Router>
@@ -34,6 +38,4 @@ const App = () => {
 };
 
 export default App;
-
-
 
