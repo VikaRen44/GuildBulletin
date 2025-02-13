@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import "./stylehome.css"; // Import styles
+import "../Styles/stylehome.css"; // Import styles
 
 const jobsData = [
   { id: 1, title: "Averardo Bank Teller", company: "Ragunna & Co.", location: "Ragunna City", salary: "Php500 - Php600/hr", summary: "Short job summary here", responsibilities: ["Responsibility 1", "Responsibility 2", "Responsibility 3"] },

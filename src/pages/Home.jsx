@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import Navbar from "../components/Navbar"; // Import Navbar
-import "./stylehome.css"; // Import styles
+import "../Styles/stylehome.css"; // Import styles
 import gothie from "../assets/gothie.jpg";
 import blondie from "../assets/blondie.jpg";
 import brunette from "../assets/brunette.jpg";
