@@ -31,7 +31,7 @@ const Home = () => {
         <div className="search-section">
           <div className="search-bar">
             <button className="search-button">🔍 Search</button>
-            <input type="text" placeholder="Lights on or Lights off? SEXXXXXX" className="search-input" />
+            <input type="text" placeholder="Enter key word, name of job or company" className="search-input" />
           </div>
 
           {/* Buttons Section */}
