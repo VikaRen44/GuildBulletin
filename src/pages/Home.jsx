@@ -40,32 +40,32 @@ const Home = () => {
             <span className="now">Now</span>
           </h1>
         </header>
-
+  
         {/* Search & Buttons Section */}
         <div className="search-section">
           <div className="search-bar">
             <button className="search-button">🔍 Search</button>
             <input type="text" placeholder="Enter key word, name of job or company" className="search-input" />
           </div>
-
+  
           {/* Conditionally Render Buttons Based on User Role */}
           <div className="button-container">
             <input type="file" accept="application/pdf" ref={fileInputRef} style={{ display: "none" }} />
-
+  
             {userRole === "applicant" && (
               <button onClick={handleUploadClick} className="upload-button">
                 Upload your CV
               </button>
             )}
-
+  
             {userRole === "hire" && (
               <button className="post-button">Post a Job</button>
             )}
-
+  
             <div className="mail-icon">M</div>
           </div>
         </div>
-
+  
         {/* Profile Section */}
         <div className="profile-section">
           <img src={jstate} alt="Jay Statesman" className="profile-image" />
@@ -76,22 +76,22 @@ const Home = () => {
           <p className="profile-info">Expert in hand-to-hand combat choreography</p>
           <div className="badge">Single father of 2 sweet girls</div>
         </div>
-
-        {/* Recommended Jobs Section */}
-        <div className="recommended-section">
-          <h3 className="recommended-title">Recommended</h3>
-          <div className="job-list">
-            {jobData.map((job) => (
-              <Link to={`/job/${job.id}`} key={job.id} className="job-card">
-                <img src={job.image} alt={job.title} className="job-image" />
-                <p className="job-title">{job.title}</p>
-              </Link>
-            ))}
-          </div>
+      </div> 
+  
+      {/* 🆕 Moved Recommended Jobs Section OUTSIDE of .container */}
+      <div className="recommended-section">
+        <h3 className="recommended-title">Recommended</h3>
+        <div className="job-list">
+          {jobData.map((job) => (
+            <Link to={`/job/${job.id}`} key={job.id} className="job-card">
+              <img src={job.image} alt={job.title} className="job-image" />
+              <p className="job-title">{job.title}</p>
+            </Link>
+          ))}
         </div>
       </div>
     </>
-  );
+  );  
 };
 
 export default Home;

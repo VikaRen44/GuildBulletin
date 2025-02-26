@@ -1,6 +1,6 @@
 /* Ensure everything is properly centered */
 .container {
-  max-width: 900px;
+  max-width: px;
   margin: 0 auto;
   padding: 20px;
 }
@@ -116,32 +116,74 @@
   margin-top: 10px;
 }
 
-/* Recommended Jobs Section */
+/* Recommended Jobs Section (Independent) */
 .recommended-section {
-  margin-top: 40px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 20px;
+  overflow: hidden; /* Prevents unwanted scrolling */
 }
 
+/* Recommended Title */
 .recommended-title {
   color: #ff9900;
   font-size: 18px;
   margin-bottom: 10px;
 }
 
-/* Job List */
+/* Job List (Carousel Container) */
 .job-list {
   display: flex;
   gap: 15px;
-  justify-content: center;
+  overflow-x: auto; /* Enables horizontal scrolling */
+  scroll-snap-type: x mandatory; /* Makes items snap while scrolling */
+  scrollbar-width: none; /* Hides scrollbar for Firefox */
+  -ms-overflow-style: none; /* Hides scrollbar for IE/Edge */
+  padding-bottom: 10px; /* Prevents clipping at the bottom */
 }
 
+
+/* Custom Scrollbar Styling */
+.job-list::-webkit-scrollbar {
+  height: 8px; /* Controls the scrollbar height */
+}
+
+.job-list::-webkit-scrollbar-track {
+  background: #e0e0e0; /* Background color of the track */
+  border-radius: 10px; /* Rounded edges */
+}
+
+.job-list::-webkit-scrollbar-thumb {
+  background: #ff9900; /* Color of the scrollbar */
+  border-radius: 10px;
+}
+
+.job-list::-webkit-scrollbar-thumb:hover {
+  background: #e58e00; /* Slightly darker shade on hover */
+}
+
+/* For Firefox */
+.job-list {
+  scrollbar-color: #ff9900 #e0e0e0; /* Thumb & track color */
+  scrollbar-width: thin; /* Thin scrollbar */
+}
 /* Job Card */
 .job-card {
-  position: relative; /* Needed for absolute positioning */
-  width: 680px;
-  height: 220px;
-  border-radius: 10px;
-  overflow: hidden; /* Keeps the text inside the card */
+  flex: 0 0 250px; /* Set width for cards */
+  height: 280px; /* Slightly taller for visual balance */
+  overflow: hidden;
   background: #f8f8f8;
+  display: flex;
+  align-items: center;
+  
+  position: relative;
+  scroll-snap-align: start; /* Snaps each card into place */
+  
+}
+
+.job-card:hover {
+  border-radius: 20px;
 }
 
 /* Job Image */
@@ -149,7 +191,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 10px;
+  border-radius: 0px;
 }
 
 /* Job Title Overlay */
@@ -158,11 +200,15 @@
   bottom: 0;
   left: 0;
   width: 100%;
-  padding: 10px;
-  font-size: 14px;
+  height: 60px; /* Set a fixed height for the overlay */
+  display: flex;
+  align-items: center; /* Vertically centers text */
+  justify-content: center; /* Horizontally centers text */
+  padding: 0 10px; /* Adjust padding for spacing */
+  font-size: 16px;
   font-weight: bold;
-  color: white;
+  color: #333; /* Darker text like in the second image */
   text-align: center;
-  background: rgba(0, 0, 0, 0.6); /* Semi-transparent black background */
-  border-radius: 0 0 10px 10px;
+  background: rgba(255, 255, 255, 0.7); /* Lighter overlay */
 }
+

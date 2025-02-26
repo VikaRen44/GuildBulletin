@@ -1,102 +1,192 @@
+body {
+  margin-top: 60px; /* Adjust this value based on the navbar height */
+}
+
 /* Job Detail Page Container */
 .job-detail-container {
-    display: flex;
-    background-color: #FAFAFA;
-    padding-top: 80px; /* ✅ Push content below the navbar */
-    min-height: 100vh; /* ✅ Ensures full-page height */
-    padding: 20px;
-  }
-  
-  /* Sidebar Styling */
-  .sidebar {
-    width: 30%;
-    height: calc(100vh - 100px); /* ✅ Prevents overlapping with navbar */
-    overflow-y: auto;
-    background-color: #FFF;
-    padding: 15px;
-    border-right: 1px solid #ddd;
-    scrollbar-width: thin; /* Works in Firefox */
-    -ms-overflow-style: none; /* Works in Internet Explorer */
-  }
-  
-  /* Sidebar Job Item */
-  .job-item {
-    padding: 15px;
-    margin-bottom: 10px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.3s;
-    border: 1px solid #ddd;
-  }
-  
-  /* Highlight the selected job */
-  .job-item.selected {
-    background-color: #FFE0B2;
-  }
-  
-  .text-dark {
-    color: #444;
-  }
-  
-  .salary {
-    font-weight: bold;
-    color: #E67E22;
-  }
-  
-  /* Job Details Section */
-  .detail-container {
-    width: 70%;
-    padding: 40px; /* ✅ Increased padding for better spacing */
-    background-color: #FFF3E0;
-    border-radius: 8px;
-  }
-  
-  /* Job Header */
-  .detail-header {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 10px;
-  }
-  
-  .time-tag {
-    background-color: #FFA726;
-    color: #FFF;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 12px;
-  }
-  
-  /* Salary Box */
-  .salary-box {
-    background-color: #FFF;
-    padding: 15px;
-    border-radius: 8px;
-    border: 1px solid #E67E22;
-    margin-bottom: 20px;
-  }
-  
-  .button-container {
-    margin-top: 10px;
-  }
-  
-  .location {
-    color: #777;
-  }
-  
-  /* Apply Button */
-  .apply-button {
-    background-color: #E67E22;
-    color: white;
-    padding: 12px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-    transition: transform 0.2s ease-in-out;
-  }
-  
-  .apply-button:hover {
-    transform: scale(1.05);
-  }
-  
+  display: flex;
+  flex-wrap: wrap; /* Ensures content wraps on smaller screens */
+  background-color: #1e1e1e;
+  padding: 140px 5vw 40px;
+  min-height: 100vh;
+  width: 90vw;
+  justify-content: center;
+  align-items: flex-start;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  gap: 20px;
+  max-width: 1500px; /* Limit max width */
+  margin: 0 auto;
+}
+
+/* Sidebar Styling */
+.sidebar {
+  width: 29%;
+  min-width: 250px; /* Prevents it from becoming too small */
+  max-height: 80vh;
+  overflow-y: auto;
+  background-color: #292727;
+  padding: 15px;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+/* Search Bar */
+.search-bar {
+  width: 90%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  border: 1px solid #888;
+  background-color: #f5f5f5;
+  color: #333;
+  font-size: 16px;
+}
+
+/* Job Item Card */
+.job-item {
+  background-color: #BDC7A9;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: 1px solid #888;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.job-item:hover {
+  border-radius: 0px;
+}
+
+.job-item.selected {
+  background-color: #88935c;
+}
+
+/* Job Title */
+.job-item h4 {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+/* Company & Location */
+.company-location {
+  font-size: 14px;
+  color: #F2FFD6;
+  margin-bottom: 5px;
+}
+
+/* Salary Text */
+.salary {
+  font-weight: bold;
+  color: #517800;
+  font-size: 16px;
+  margin-top: 5px;
+}
+
+/* Job Details Section */
+.detail-container {
+  flex-grow: 1;
+  width: 60%;
+  padding: 30px;
+  background-color: #646F58;
+  color: #e0e6d2;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  min-height: 500px;
+  border-radius: 10px;
+}
+
+/* Job Header */
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* Job Title */
+.detail-container h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #fff;
+}
+
+/* Job Info (Company, Location) */
+.detail-container .company-location {
+  font-size: 16px;
+  margin-bottom: 12px;
+  color: #ddd;
+}
+
+/* Salary Box */
+.detail-container .salary {
+  font-size: 16px;
+  font-weight: bold;
+  color: #517800;
+  margin-top: 5px;
+}
+
+/* Job Summary and Responsibilities */
+.detail-container h3 {
+  font-size: 18px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  color: #fff;
+}
+
+.detail-container ul {
+  list-style-type: disc;
+  padding-left: 20px;
+}
+
+/* Salary Box */
+.salary-box {
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 5px;
+  border: 1px solid #88935c;
+  margin-bottom: 20px;
+  color: #333;
+  width: auto;
+  max-width: 400px;
+}
+
+
+/* Apply Button */
+.apply-button {
+  background-color: #AFBE8F;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: transform 0.2s ease-in-out;
+  width: 150px;
+  text-align: center;
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+}
+
+.apply-button:hover {
+  transform: scale(1.05);
+}
+
+/* Fix white space issues */
+html, body {
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}

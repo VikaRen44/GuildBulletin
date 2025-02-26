@@ -1,30 +1,43 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import "../Styles/stylehome.css"; // Keep existing styles if needed
-import "../Styles/jobDetail.css"; // Import the new CSS file
+import "../Styles/jobdetail.css";
 
 const jobsData = [
-  { id: 1, title: "Averardo Bank Teller", company: "Ragunna & Co.", location: "Ragunna City", salary: "Php500 - Php600/hr", summary: "Short job summary here", responsibilities: ["Responsibility 1", "Responsibility 2", "Responsibility 3"] },
+  { id: 1, title: "Averardo Bank Teller", company: "Ragunna & Co.", location: "Ragunna City", salary: "Php500 - Php600/hr", summary: "Short job summary here", responsibilities: ["Task 1", "Task 2", "Task 3"] },
   { id: 2, title: "Software Engineer", company: "Google", location: "Remote", salary: "Php1000 - Php1200/hr", summary: "Another job summary", responsibilities: ["Coding", "Testing", "Debugging"] },
   { id: 3, title: "Graphic Designer", company: "Canva", location: "Manila", salary: "Php800 - Php1000/hr", summary: "Design things", responsibilities: ["Illustration", "Branding", "Creativity"] },
 ];
 
 const JobDetail = () => {
   const { id } = useParams();
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedJob, setSelectedJob] = useState(jobsData.find(job => job.id === parseInt(id)) || jobsData[0]);
+
+  const filteredJobs = jobsData.filter(job =>
+    job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    job.location.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="job-detail-container">
-      {/* Job List Sidebar */}
+      {/* Sidebar with Search and Job List */}
       <div className="sidebar">
-        {jobsData.map((job) => (
+        <input
+          type="text"
+          placeholder="Search jobs..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="search-bar"
+        />
+        {filteredJobs.map((job) => (
           <div
             key={job.id}
             onClick={() => setSelectedJob(job)}
             className={`job-item ${selectedJob.id === job.id ? "selected" : ""}`}
           >
-            <h4 className="text-dark">{job.title}</h4>
-            <p className="text-dark">{job.company} | {job.location}</p>
+            <h4>{job.title}</h4>
+            <p>{job.company} | {job.location}</p>
             <p className="salary">{job.salary}</p>
           </div>
         ))}
@@ -35,20 +48,21 @@ const JobDetail = () => {
         <div className="detail-header">
           <span className="time-tag">1 Day Ago</span>
         </div>
-        <h2 className="text-dark">{selectedJob.title}</h2>
-        <p className="text-dark"><strong>Company:</strong> {selectedJob.company}</p>
-        <p className="text-dark"><strong>Location:</strong> {selectedJob.location}</p>
-        <h3 className="text-dark">Job Summary</h3>
-        <p className="text-dark">{selectedJob.summary}</p>
-        
-        <h3 className="text-dark">Responsibilities</h3>
+        <h2>{selectedJob.title}</h2>
+        <p><strong>Company:</strong> {selectedJob.company}</p>
+        <p><strong>Location:</strong> {selectedJob.location}</p>
+
+        <h3>Job Summary</h3>
+        <p>{selectedJob.summary}</p>
+
+        <h3>Responsibilities</h3>
         <ul>
           {selectedJob.responsibilities.map((resp, index) => (
-            <li key={index} className="text-dark">{resp}</li>
+            <li key={index}>{resp}</li>
           ))}
         </ul>
 
-        <h3 className="text-dark">Base Pay Range</h3>
+        <h3>Base Pay Range</h3>
         <div className="salary-box">
           <p className="salary">{selectedJob.salary}</p>
           <p className="location">{selectedJob.location}</p>
