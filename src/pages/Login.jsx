@@ -1,12 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { initializeApp } from "firebase/app";
-import { 
-  getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword 
-} from "firebase/auth";
-import { 
-  getFirestore, doc, setDoc, getDoc, serverTimestamp 
-} from "firebase/firestore";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
 import "../Styles/login.css"; // Import CSS file
 
 // 🔹 Firebase Configuration
@@ -25,58 +21,37 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-function LoginRegister() {
+function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("applicant"); // Default role is "applicant"
   const navigate = useNavigate();
 
-  // 🔹 Register New User
-  const handleRegister = async () => {
-    try {
-      // Ensure only 'applicant' and 'hirer' are valid roles
-      if (role !== "applicant" && role !== "hirer") {
-        alert("Invalid role selected!");
-        return;
-      }
-
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      // Define user data
-      const userData = {
-        email: user.email,
-        role: role, // Assign role
-        createdAt: serverTimestamp(),
-      };
-
-      await setDoc(doc(db, "Users", user.uid), userData);
-
-      alert("Registration successful!");
-      navigate("/home");
-    } catch (error) {
-      console.error("Registration Error:", error);
-      alert(error.message);
-    }
-  };
-
-  // 🔹 Login User with Role Verification
+  // 🔹 Handle Login
   const handleLogin = async () => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
+      // 🔹 Fetch User Role from Firestore
       const userDoc = await getDoc(doc(db, "Users", user.uid));
 
       if (userDoc.exists()) {
+        const userData = userDoc.data();
+
+        // 🔹 Redirect Based on Role
+        if (userData.role === "hirer") {
+          navigate("/hirer-dashboard");
+        } else {
+          navigate("/applicant-dashboard");
+        }
+
         alert("Login successful!");
-        navigate("/home");
       } else {
-        alert("User data not found.");
+        alert("User data not found in database.");
       }
     } catch (error) {
       console.error("Login Error:", error);
-      alert("Invalid credentials! Please try again.");
+      alert(error.message || "Invalid credentials! Please try again.");
     }
   };
 
@@ -93,6 +68,7 @@ function LoginRegister() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            required
           />
 
           <label>Password</label>
@@ -100,23 +76,20 @@ function LoginRegister() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
           />
-
-          <label>Register as:</label>
-          <select onChange={(e) => setRole(e.target.value)} value={role}>
-            <option value="applicant">Applicant</option>
-            <option value="hirer">Hirer</option>
-          </select>
         </div>
 
         {/* 🔹 Buttons Section */}
         <div className="button-container">
-          <button className="register-btn" onClick={handleRegister}>Register</button>
           <button className="login-btn" onClick={handleLogin}>Login</button>
         </div>
+
+        {/* 🔹 Redirect to Register */}
+        <p>Don't have an account? <a href="/register">Create one</a></p>
       </div>
     </div>
   );
 }
 
-export default LoginRegister;
+export default Login;
