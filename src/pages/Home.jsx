@@ -57,9 +57,9 @@ const Home = () => {
             <span className="now">Now</span>
           </h1>
         </header>
-
-        {/* 🔹 Search & Buttons Section */}
-        <div className="search-section">
+      </div>
+       {/* 🔹 Search & Buttons Section */}
+       <div className="search-section">
           <div className="search-bar">
             <button className="search-button">🔍 Search</button>
             <input type="text" placeholder="Enter key word, name of job or company" className="search-input" />
@@ -115,7 +115,6 @@ const Home = () => {
             </div>
           </div>
         </div>
-      </div>
     </>
   );
 };
