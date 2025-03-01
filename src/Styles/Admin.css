@@ -1,0 +1,68 @@
+.admin-container {
+    background-color: #5d624d; /* Match the background color */
+    padding: 20px;
+    min-height: 100vh;
+    text-align: center;
+  }
+  
+  .admin-title {
+    color: white;
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .user-card {
+    display: flex;
+    align-items: center;
+    background-color: #c1c5a5;
+    padding: 15px;
+    margin: 10px auto;
+    border-radius: 8px;
+    border: 3px solid;
+    max-width: 600px;
+    position: relative;
+  }
+  
+  .user-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 15px;
+  }
+  
+  .user-info {
+    flex: 1;
+    text-align: left;
+    font-size: 14px;
+  }
+  
+  .input-box {
+    width: 200px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .action-buttons {
+    display: flex;
+    gap: 5px;
+  }
+  
+  .green-btn,
+  .red-btn {
+    width: 30px;
+    height: 20px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .green-btn {
+    background-color: green;
+  }
+  
+  .red-btn {
+    background-color: red;
+  }
+  
