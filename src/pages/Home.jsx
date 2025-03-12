@@ -1,36 +1,45 @@
-import React, { useRef, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 import Navbar from "../components/Navbar";
 import "../Styles/stylehome.css";
-import gothie from "../assets/gothie.jpg";
-import blondie from "../assets/blondie.jpg";
-import brunette from "../assets/brunette.jpg";
-import jstate from "../assets/jstate.jpg";
+import { FaFacebook, FaTwitter, FaInstagram, FaEnvelope } from "react-icons/fa";
+import JobList from "../components/JobList";
+import { useNavigate } from "react-router-dom"; // 🔹 Import useNavigate
 
 const Home = () => {
-  const fileInputRef = useRef(null);
+  const navigate = useNavigate(); // 🔹 Hook for redirection
   const [user, setUser] = useState(null);
   const [profileData, setProfileData] = useState(null);
   const [userRole, setUserRole] = useState("");
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    about: "",
+    facebook: "",
+    gmail: "",
+    xLink: "",
+    instagram: "",
+    role: "applicant",
+    profileImage: ""
+  });
+
   const auth = getAuth();
   const db = getFirestore();
 
-  // 🔹 Fetch User & Profile Data (Only for Profile Section)
+  // 🔹 Fetch user data from Firestore
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
-
-        // Fetch profile data from Firestore
         const userRef = doc(db, "Users", currentUser.uid);
         const userSnap = await getDoc(userRef);
 
         if (userSnap.exists()) {
           const data = userSnap.data();
           setProfileData(data);
-          setUserRole(data.role); // Get role from Firestore instead of local storage
+          setUserRole(data.role);
+          setFormData(data); // Load user data for editing
         }
       } else {
         setUser(null);
@@ -42,13 +51,27 @@ const Home = () => {
     return () => unsubscribe();
   }, []);
 
-  const handleUploadClick = () => {
-    fileInputRef.current.click();
+  // 🔹 Handle Profile Update
+  const handleSubmit = async () => {
+    if (!user) return;
+    try {
+      await setDoc(
+        doc(db, "Users", user.uid),
+        { ...formData, updatedAt: new Date() },
+        { merge: true }
+      );
+      alert("Profile updated successfully!");
+      setProfileData(formData); // Update local state
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert("Failed to update profile. Try again.");
+    }
   };
 
   return (
     <>
       <Navbar />
+
       <div className="container">
         <header className="header">
           <h1 className="logo">
@@ -58,63 +81,67 @@ const Home = () => {
           </h1>
         </header>
       </div>
-       {/* 🔹 Search & Buttons Section */}
-       <div className="search-section">
-          <div className="search-bar">
-            <button className="search-button">🔍 Search</button>
-            <input type="text" placeholder="Enter key word, name of job or company" className="search-input" />
-          </div>
 
-          {/* 🔹 Conditionally Render Buttons Based on User Role */}
-          <div className="button-container">
-            <input type="file" accept="application/pdf" ref={fileInputRef} style={{ display: "none" }} />
-
-            {userRole === "applicant" && (
-              <button onClick={handleUploadClick} className="upload-button">
-                Upload your CV
-              </button>
-            )}
-
-            {userRole === "hirer" && (
-              <button className="post-button">Post a Job</button>
-            )}
-
-            <div className="mail-icon">M</div>
+      <div className="search-section">
+        <div className="search-bar-container">
+          <button className="search-button">Search</button>
+          <div className="search-container">
+            <input type="text" placeholder="Enter job title, company, or keyword" className="search-input" />
           </div>
         </div>
 
-        {/* 🔹 Profile Section (Dynamic) */}
-        <div className="profile-section">
-          {profileData ? (
-            <>
-              <img src={profileData.profileImage || defaultProfilePic} alt="Profile" className="profile-image" />
-              <h2 className="profile-name">{profileData.firstName} {profileData.lastName}</h2>
-              <p className="profile-info">{profileData.about}</p>
-              <div className="badge">{profileData.role === "hirer" ? "Hirer" : "Applicant"}</div>
-            </>
-          ) : (
-            <p>Loading profile...</p>
-          )}
-        </div>
+        {/* 🔹 Redirect to UploadCV page */}
+        {userRole === "applicant" && (
+          <div className="button-wrapper">
+            <button onClick={() => navigate("/upload-cv")} className="upload-button">
+              Upload CV
+            </button>
+          </div>
+        )}
 
-        {/* 🔹 Static Job Section (Will Update Later) */}
-        <div className="recommended-section">
-          <h3 className="recommended-title">Recommended Jobs</h3>
-          <div className="job-list">
-            <div className="job-card">
-              <img src={gothie} alt="Averardo Bank Teller" className="job-image" />
-              <p className="job-title">Averardo Bank Teller</p>
-            </div>
-            <div className="job-card">
-              <img src={blondie} alt="Software Engineer" className="job-image" />
-              <p className="job-title">Software Engineer</p>
-            </div>
-            <div className="job-card">
-              <img src={brunette} alt="Graphic Designer" className="job-image" />
-              <p className="job-title">Graphic Designer</p>
-            </div>
+        {/* 🔹 Redirect to PostJob page */}
+        {userRole === "hirer" && (
+          <div className="button-wrapper">
+            <button onClick={() => navigate("/post-job")} className="post-button">
+              Post a Job
+            </button>
+          </div>
+        )}
+      </div>
+
+      {profileData && (
+        <div className="profile-card">
+          <div className="profile-image-container">
+            <img src={profileData.profileImage || "/default-profile.png"} alt="Profile" className="profile-image" />
+          </div>
+
+          <div className="profile-info-container">
+            <h2 className="profile-name">
+              {profileData.firstName} {profileData.lastName}
+            </h2>
+            <div className="badge">{profileData.role === "hirer" ? "Hirer" : "Applicant"}</div>
+            <p className="profile-info">{profileData.about}</p>
+
+            {/* 🔹 Open Edit Form in a Modal */}
+            <button onClick={() => navigate("/complete-profile", { state: { editMode: true } })} className="edit-profile">
+              Edit Profile
+            </button>
+
+          </div>
+
+          <div className="social-icons">
+            <a href={profileData.gmail || "#"} aria-label="Gmail"><FaEnvelope className="icon" /></a>
+            <a href={profileData.facebook || "#"} aria-label="Facebook"><FaFacebook className="icon" /></a>
+            <a href={profileData.instagram || "#"} aria-label="Instagram"><FaInstagram className="icon" /></a>
+            <a href={profileData.xLink || "#"} aria-label="Twitter"><FaTwitter className="icon" /></a>
           </div>
         </div>
+      )}
+
+      <div className="recommended-section">
+        <h3 className="recommended-title">Recommended Jobs</h3>
+        <JobList />
+      </div>
     </>
   );
 };

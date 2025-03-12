@@ -2,12 +2,14 @@ import { Link } from "react-router-dom";
 
 const JobCard = ({ job }) => {
   return (
-    <div style={{ border: "1px solid #ddd", padding: "1rem", marginBottom: "1rem" }}>
-      <h3>{job.title}</h3>
-      <p>{job.company} - {job.location}</p>
-      <Link to={`/job/${job.id}`}>View Details</Link>
-    </div>
+    <Link to={`/job/${job.id}`} className="job-card"> {/* 🔹 Entire card is clickable */}
+      <img src={job.imgSrc} alt={job.title} className="job-image" />
+      <div className="job-info">
+        <p className="job-title">{job.title}</p>
+      </div>
+    </Link>
   );
 };
 
 export default JobCard;
+

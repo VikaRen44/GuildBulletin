@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import "../Styles/jobdetail.css";
 
 const jobsData = [
@@ -10,9 +10,19 @@ const jobsData = [
 
 const JobDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedJob, setSelectedJob] = useState(jobsData.find(job => job.id === parseInt(id)) || jobsData[0]);
 
+  // 🔹 Ensure job details update when URL changes
+  useEffect(() => {
+    const job = jobsData.find(job => job.id === parseInt(id));
+    if (job) {
+      setSelectedJob(job);
+    }
+  }, [id]);
+
+  // 🔹 Filter jobs based on search input
   const filteredJobs = jobsData.filter(job =>
     job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -33,7 +43,7 @@ const JobDetail = () => {
         {filteredJobs.map((job) => (
           <div
             key={job.id}
-            onClick={() => setSelectedJob(job)}
+            onClick={() => navigate(`/job/${job.id}`)} // 🔹 Updates URL when clicking a job
             className={`job-item ${selectedJob.id === job.id ? "selected" : ""}`}
           >
             <h4>{job.title}</h4>

@@ -26,6 +26,7 @@
   
   .nav-links {
     display: flex;
+    align-items: center; /* Centers items vertically */
     gap: 15px;
   }
   
@@ -35,9 +36,33 @@
     font-size: 16px;
     font-weight: 500;
     transition: color 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px; /* Adds some spacing for better alignment */
   }
   
   .nav-link:hover {
     color: #ffa500; /* Orange hover effect */
   }
+
+  /* Style the button to look like a link */
+.nav-link button {
+  background-color: black;
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+}
+
+.nav-link button:hover {
+  background-color: #444;
+}
+
   

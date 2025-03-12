@@ -1,7 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+  onAuthStateChanged
+} from "firebase/auth";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 import "../Styles/login.css"; // Import CSS file
 
@@ -20,18 +26,31 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-const googleProvider = new GoogleAuthProvider(); // 🔹 Google Auth Provider
+const googleProvider = new GoogleAuthProvider();
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  // 🔹 Handle Email/Password Login
+  // 🔹 Check if user is already logged in
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        console.log("User detected:", user);
+        await handleUserRedirect(user);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // 🔹 Login with Email/Password
   const handleLogin = async () => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
+      console.log("Login successful:", user);
       await handleUserRedirect(user);
     } catch (error) {
       console.error("Login Error:", error);
@@ -39,28 +58,40 @@ function Login() {
     }
   };
 
-  // 🔹 Handle Google Login
+  // 🔹 Login with Google & Redirect to Complete Profile if Needed
   const handleGoogleLogin = async () => {
     try {
       const userCredential = await signInWithPopup(auth, googleProvider);
       const user = userCredential.user;
+      console.log("Google Login successful:", user);
 
       // 🔹 Check if user exists in Firestore
       const userRef = doc(db, "Users", user.uid);
       const userDoc = await getDoc(userRef);
 
       if (!userDoc.exists()) {
-        // 🔹 If new user, set default role (change this if needed)
+        // 🔹 New user, create Firestore document with default values
         await setDoc(userRef, {
           email: user.email,
-          firstName: user.displayName.split(" ")[0],
-          lastName: user.displayName.split(" ")[1] || "",
-          profileImage: user.photoURL,
-          role: "applicant", // Default role for Google Sign-In users
+          firstName: user.displayName ? user.displayName.split(" ")[0] : "",
+          lastName: user.displayName ? user.displayName.split(" ")[1] || "" : "",
+          profileImage: user.photoURL || "",
+          role: "applicant", // Default role
+          about: "",
+          facebook: "",
+          gmail: user.email,
+          xLink: "",
+          instagram: "",
         });
-      }
 
-      await handleUserRedirect(user);
+        // 🔹 Redirect to Complete Profile page
+        console.log("Redirecting new user to Complete Profile...");
+        navigate("/complete-profile");
+      } else {
+        // 🔹 Existing user, redirect based on role
+        console.log("User exists, redirecting...");
+        await handleUserRedirect(user);
+      }
     } catch (error) {
       console.error("Google Login Error:", error);
       alert("Google Login Failed. Try again.");
@@ -69,28 +100,37 @@ function Login() {
 
   // 🔹 Handle Redirect After Login
   const handleUserRedirect = async (user) => {
-    const userDoc = await getDoc(doc(db, "Users", user.uid));
+    try {
+      console.log("Fetching user data...");
+      const userDoc = await getDoc(doc(db, "Users", user.uid));
 
-    if (userDoc.exists()) {
-      const userData = userDoc.data();
-      const userRole = userData.role;
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        const userRole = userData.role;
 
-      // 🔹 Store role in localStorage for persistence
-      localStorage.setItem("role", userRole);
-      localStorage.setItem("userId", user.uid);
+        // ✅ Store role and user ID in localStorage
+        localStorage.setItem("role", userRole);
+        localStorage.setItem("userId", user.uid);
 
-      // 🔹 Redirect Based on Role
-      if (userRole === "admin") {
-        navigate("/admin");
-      } else if (userRole === "hirer") {
-        navigate("/post-job");
+        console.log("User Role:", userRole);
+        navigateBasedOnRole(userRole);
       } else {
-        navigate("/home");
+        alert("User data not found. Please complete your profile.");
+        navigate("/complete-profile"); // Redirect if no profile data exists
       }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      alert("Failed to fetch user data.");
+    }
+  };
 
-      alert("Login successful!");
+  // 🔹 Function to Redirect Based on Role
+  const navigateBasedOnRole = (role) => {
+    console.log("Navigating based on role:", role);
+    if (role === "admin") {
+      navigate("/admin");
     } else {
-      alert("User data not found in database.");
+      navigate("/home");
     }
   };
 

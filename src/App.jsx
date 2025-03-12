@@ -8,33 +8,25 @@ import UploadCV from "./pages/UploadCV";
 import Login from "./pages/Login";
 import CreateAccount from "./pages/CreateAccount";
 import CompleteProfile from "./pages/CompleteProfile";
-import Admin from "./pages/Admin"; 
+import Admin from "./pages/Admin";
 
 const ProtectedRoute = ({ element, allowedRoles }) => {
-  const [userRole, setUserRole] = useState(localStorage.getItem("role")); 
+  const userRole = localStorage.getItem("role");
 
-  useEffect(() => {
-    setUserRole(localStorage.getItem("role")); // Ensure the latest role is used
-  }, []);
-
-  if (!userRole) {
-    return <Navigate to="/login" replace />; // Redirect to login if role is missing
-  }
-
-  if (!allowedRoles.includes(userRole)) {
-    return <Navigate to="/home" replace />; // Redirect unauthorized users
-  }
-
-  return element;
+  return userRole 
+    ? allowedRoles.includes(userRole) 
+      ? element 
+      : <Navigate to="/home" replace />
+    : <Navigate to="/login" replace />;
 };
 
 const Layout = ({ children }) => {
   const location = useLocation();
+  const hideNavbarRoutes = ["/login", "/register"];
 
   return (
     <>
-      {/* Hide Navbar on login and register pages */}
-      {location.pathname !== "/login" && location.pathname !== "/register" && <Navbar />}
+      {!hideNavbarRoutes.includes(location.pathname) && <Navbar />}
       {children}
     </>
   );
@@ -42,27 +34,27 @@ const Layout = ({ children }) => {
 
 const App = () => {
   const [userRole, setUserRole] = useState(localStorage.getItem("role"));
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const storedRole = localStorage.getItem("role");
-    setUserRole(storedRole);
+    setIsLoading(false); // No need to fetch since localStorage is synchronous
   }, []);
+
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <Router>
       <Layout>
         <Routes>
-          <Route path="/" element={<Navigate to={userRole ? "/home" : "/login"} />} />
+          <Route path="/" element={<Navigate to={userRole ? "/home" : "/login"} replace />} />
           <Route path="/login" element={<Login setUserRole={setUserRole} />} />
           <Route path="/register" element={<CreateAccount />} />
           <Route path="/complete-profile" element={<CompleteProfile />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/job/:id" element={<JobDetail />} />
-
-          {/* Role-based Routes */}
+          <Route path="/home" element={userRole ? <Home /> : <Navigate to="/login" replace />} />
+          <Route path="/job/:id" element={userRole ? <JobDetail /> : <Navigate to="/login" replace />} />
           <Route path="/post-job" element={<ProtectedRoute element={<PostJob />} allowedRoles={["hirer"]} />} />
           <Route path="/upload-cv" element={<ProtectedRoute element={<UploadCV />} allowedRoles={["applicant"]} />} />
-          <Route path="/admin" element={<ProtectedRoute element={<Admin />} allowedRoles={["admin"]} />} /> 
+          <Route path="/admin" element={<ProtectedRoute element={<Admin />} allowedRoles={["admin"]} />} />
         </Routes>
       </Layout>
     </Router>
