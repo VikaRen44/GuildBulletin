@@ -1,25 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { initializeApp } from "firebase/app";
-import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
+import { auth, db } from "../firebase"; // ✅ Import Firebase from `firebase.js`
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import "../Styles/login.css"; // Import CSS file
 
-// 🔹 Firebase Configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyC8m_eWg8abbvi3P6YpqYpXS06wdTyFTug",
-  authDomain: "account-979a1.firebaseapp.com",
-  databaseURL: "https://account-979a1-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "account-979a1",
-  storageBucket: "account-979a1.firebasestorage.app",
-  messagingSenderId: "846315698123",
-  appId: "1:846315698123:web:d4376a0d4e28e473d8284e",
-};
-
-// 🔹 Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider(); // 🔹 Google Auth Provider
 
 function Login() {

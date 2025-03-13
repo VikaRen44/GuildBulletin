@@ -7,7 +7,6 @@ import "../Styles/stylehome.css";
 import gothie from "../assets/gothie.jpg";
 import blondie from "../assets/blondie.jpg";
 import brunette from "../assets/brunette.jpg";
-import jstate from "../assets/jstate.jpg";
 
 const Home = () => {
   const fileInputRef = useRef(null);
@@ -58,63 +57,68 @@ const Home = () => {
           </h1>
         </header>
       </div>
-       {/* 🔹 Search & Buttons Section */}
-       <div className="search-section">
-          <div className="search-bar">
-            <button className="search-button">🔍 Search</button>
-            <input type="text" placeholder="Enter key word, name of job or company" className="search-input" />
-          </div>
 
-          {/* 🔹 Conditionally Render Buttons Based on User Role */}
-          <div className="button-container">
-            <input type="file" accept="application/pdf" ref={fileInputRef} style={{ display: "none" }} />
-
-            {userRole === "applicant" && (
-              <button onClick={handleUploadClick} className="upload-button">
-                Upload your CV
-              </button>
-            )}
-
-            {userRole === "hirer" && (
-              <button className="post-button">Post a Job</button>
-            )}
-
-            <div className="mail-icon">M</div>
-          </div>
+      {/* 🔹 Search & Buttons Section */}
+      <div className="search-section">
+        <div className="search-bar">
+          <button className="search-button">🔍 Search</button>
+          <input type="text" placeholder="Enter key word, name of job or company" className="search-input" />
         </div>
 
-        {/* 🔹 Profile Section (Dynamic) */}
-        <div className="profile-section">
-          {profileData ? (
-            <>
-              <img src={profileData.profileImage || defaultProfilePic} alt="Profile" className="profile-image" />
-              <h2 className="profile-name">{profileData.firstName} {profileData.lastName}</h2>
-              <p className="profile-info">{profileData.about}</p>
-              <div className="badge">{profileData.role === "hirer" ? "Hirer" : "Applicant"}</div>
-            </>
-          ) : (
-            <p>Loading profile...</p>
+        {/* 🔹 Conditionally Render Buttons Based on User Role */}
+        <div className="button-container">
+          <input type="file" accept="application/pdf" ref={fileInputRef} style={{ display: "none" }} />
+
+          {userRole === "applicant" && (
+            <button onClick={handleUploadClick} className="upload-button">
+              Upload your CV
+            </button>
           )}
-        </div>
 
-        {/* 🔹 Static Job Section (Will Update Later) */}
-        <div className="recommended-section">
-          <h3 className="recommended-title">Recommended Jobs</h3>
-          <div className="job-list">
-            <div className="job-card">
-              <img src={gothie} alt="Averardo Bank Teller" className="job-image" />
-              <p className="job-title">Averardo Bank Teller</p>
+          {userRole === "hirer" && (
+            <Link to="/post-job">
+              <button className="post-button">Post a Job</button>
+            </Link>
+          )}
+
+          <div className="mail-icon">M</div>
+        </div>
+      </div>
+
+      {/* 🔹 Profile Section (Dynamic) */}
+      <div className="profile-section">
+        {profileData ? (
+          <>
+            <img src={profileData.profileImage || gothie} alt="Profile" className="profile-image" />
+            <h2 className="profile-name">{profileData.firstName} {profileData.lastName}</h2>
+            <p className="profile-info">{profileData.about}</p>
+            <div className={`badge ${userRole === "hirer" ? "hirer-badge" : "applicant-badge"}`}>
+              {userRole === "hirer" ? "Hirer" : "Applicant"}
             </div>
-            <div className="job-card">
-              <img src={blondie} alt="Software Engineer" className="job-image" />
-              <p className="job-title">Software Engineer</p>
-            </div>
-            <div className="job-card">
-              <img src={brunette} alt="Graphic Designer" className="job-image" />
-              <p className="job-title">Graphic Designer</p>
-            </div>
+          </>
+        ) : (
+          <p>Loading profile...</p>
+        )}
+      </div>
+
+      {/* 🔹 Recommended Jobs Section */}
+      <div className="recommended-section">
+        <h3 className="recommended-title">Recommended Jobs</h3>
+        <div className="job-list">
+          <div className="job-card">
+            <img src={gothie} alt="Averardo Bank Teller" className="job-image" />
+            <p className="job-title">Averardo Bank Teller</p>
+          </div>
+          <div className="job-card">
+            <img src={blondie} alt="Software Engineer" className="job-image" />
+            <p className="job-title">Software Engineer</p>
+          </div>
+          <div className="job-card">
+            <img src={brunette} alt="Graphic Designer" className="job-image" />
+            <p className="job-title">Graphic Designer</p>
           </div>
         </div>
+      </div>
     </>
   );
 };

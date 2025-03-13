@@ -11,22 +11,30 @@ import CompleteProfile from "./pages/CompleteProfile";
 import Admin from "./pages/Admin"; 
 
 const ProtectedRoute = ({ element, allowedRoles }) => {
-  const [userRole, setUserRole] = useState(localStorage.getItem("role")); 
+  const [userRole, setUserRole] = useState(null);
+  const [loading, setLoading] = useState(true); // Add a loading state
 
   useEffect(() => {
-    setUserRole(localStorage.getItem("role")); // Ensure the latest role is used
+    const role = localStorage.getItem("role");
+    if (role) {
+      setUserRole(role);
+    }
+    setLoading(false); // Stop loading after checking role
   }, []);
 
+  if (loading) return <p>Loading...</p>; // Prevent redirecting while role is still loading
+
   if (!userRole) {
-    return <Navigate to="/login" replace />; // Redirect to login if role is missing
+    return <Navigate to="/login" replace />;
   }
 
   if (!allowedRoles.includes(userRole)) {
-    return <Navigate to="/home" replace />; // Redirect unauthorized users
+    return <Navigate to="/home" replace />;
   }
 
   return element;
 };
+
 
 const Layout = ({ children }) => {
   const location = useLocation();

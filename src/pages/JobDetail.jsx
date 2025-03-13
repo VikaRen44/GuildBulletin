@@ -1,23 +1,44 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { db } from "../firebase";
+import { collection, getDocs } from "firebase/firestore";
 import "../Styles/jobdetail.css";
 
-const jobsData = [
-  { id: 1, title: "Averardo Bank Teller", company: "Ragunna & Co.", location: "Ragunna City", salary: "Php500 - Php600/hr", summary: "Short job summary here", responsibilities: ["Task 1", "Task 2", "Task 3"] },
-  { id: 2, title: "Software Engineer", company: "Google", location: "Remote", salary: "Php1000 - Php1200/hr", summary: "Another job summary", responsibilities: ["Coding", "Testing", "Debugging"] },
-  { id: 3, title: "Graphic Designer", company: "Canva", location: "Manila", salary: "Php800 - Php1000/hr", summary: "Design things", responsibilities: ["Illustration", "Branding", "Creativity"] },
-];
-
 const JobDetail = () => {
-  const { id } = useParams();
+  const { id } = useParams(); // Get job ID from URL
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedJob, setSelectedJob] = useState(jobsData.find(job => job.id === parseInt(id)) || jobsData[0]);
+  const [jobs, setJobs] = useState([]);
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const filteredJobs = jobsData.filter(job =>
-    job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    job.location.toLowerCase().includes(searchTerm.toLowerCase())
+  // Fetch jobs from Firestore
+  useEffect(() => {
+    const fetchJobs = async () => {
+      const querySnapshot = await getDocs(collection(db, "jobs"));
+      const jobList = querySnapshot.docs.map((doc) => ({
+        id: doc.id, // Firestore document ID
+        ...doc.data(),
+      }));
+      setJobs(jobList);
+
+      // Find the selected job based on URL id
+      const foundJob = jobList.find((job) => job.id === id) || jobList[0];
+      setSelectedJob(foundJob);
+      setLoading(false);
+    };
+
+    fetchJobs();
+  }, [id]);
+
+  // Filter jobs based on search term
+  const filteredJobs = jobs.filter(
+    (job) =>
+      job.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      job.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      job.location.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (loading) return <p>Loading job details...</p>;
 
   return (
     <div className="job-detail-container">
@@ -34,44 +55,45 @@ const JobDetail = () => {
           <div
             key={job.id}
             onClick={() => setSelectedJob(job)}
-            className={`job-item ${selectedJob.id === job.id ? "selected" : ""}`}
+            className={`job-item ${selectedJob?.id === job.id ? "selected" : ""}`}
           >
-            <h4>{job.title}</h4>
-            <p>{job.company} | {job.location}</p>
-            <p className="salary">{job.salary}</p>
+            <h4>{job.position}</h4>
+            <p>{job.companyName} | {job.location}</p>
+            <p className="salary">Php {job.salary.toLocaleString()}</p>
           </div>
         ))}
       </div>
 
       {/* Job Details Section */}
-      <div className="detail-container">
-        <div className="detail-header">
-          <span className="time-tag">1 Day Ago</span>
+      {selectedJob && (
+        <div className="detail-container">
+          <div className="detail-header">
+            <span className="time-tag">Posted recently</span>
+          </div>
+
+          {/* Job Image (if available) */}
+          {selectedJob.jobImage && (
+            <img src={selectedJob.jobImage} alt="Job Image" className="job-image" />
+          )}
+
+          <h2>{selectedJob.position}</h2>
+          <p><strong>Company:</strong> {selectedJob.companyName}</p>
+          <p><strong>Location:</strong> {selectedJob.location}</p>
+
+          <h3>Job Summary</h3>
+          <p>{selectedJob.description}</p>
+
+          <h3>Base Pay Range</h3>
+          <div className="salary-box">
+            <p className="salary">Php {selectedJob.salary.toLocaleString()}</p>
+            <p className="location">{selectedJob.location}</p>
+          </div>
+
+          <div className="button-container">
+            <button className="apply-button">Submit CV</button>
+          </div>
         </div>
-        <h2>{selectedJob.title}</h2>
-        <p><strong>Company:</strong> {selectedJob.company}</p>
-        <p><strong>Location:</strong> {selectedJob.location}</p>
-
-        <h3>Job Summary</h3>
-        <p>{selectedJob.summary}</p>
-
-        <h3>Responsibilities</h3>
-        <ul>
-          {selectedJob.responsibilities.map((resp, index) => (
-            <li key={index}>{resp}</li>
-          ))}
-        </ul>
-
-        <h3>Base Pay Range</h3>
-        <div className="salary-box">
-          <p className="salary">{selectedJob.salary}</p>
-          <p className="location">{selectedJob.location}</p>
-        </div>
-
-        <div className="button-container">
-          <button className="apply-button">Submit CV</button>
-        </div>
-      </div>
+      )}
     </div>
   );
 };
