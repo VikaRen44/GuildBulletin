@@ -29,28 +29,35 @@ function Login() {
     try {
       const userCredential = await signInWithPopup(auth, googleProvider);
       const user = userCredential.user;
-
+  
       // 🔹 Check if user exists in Firestore
       const userRef = doc(db, "Users", user.uid);
       const userDoc = await getDoc(userRef);
-
+  
       if (!userDoc.exists()) {
-        // 🔹 If new user, set default role (change this if needed)
-        await setDoc(userRef, {
-          email: user.email,
-          firstName: user.displayName.split(" ")[0],
-          lastName: user.displayName.split(" ")[1] || "",
-          profileImage: user.photoURL,
-          role: "applicant", // Default role for Google Sign-In users
-        });
+        // ❌ User is NOT registered → Redirect to CreateAccount.jsx
+        alert("No account found. Please create an account first.");
+        navigate("/register"); // Redirect to your registration page
+        return;
       }
-
+  
+      const userData = userDoc.data();
+  
+      // 🔹 Check if email is verified
+      if (!user.emailVerified) {
+        alert("Please verify your email before logging in.");
+        return;
+      }
+  
+      // ✅ User exists & email is verified → Proceed with login
       await handleUserRedirect(user);
     } catch (error) {
       console.error("Google Login Error:", error);
       alert("Google Login Failed. Try again.");
     }
   };
+  
+  
 
   // 🔹 Handle Redirect After Login
   const handleUserRedirect = async (user) => {

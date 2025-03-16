@@ -46,17 +46,22 @@ const CreateAccount = () => {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-
+  
       const userRef = doc(db, "Users", user.uid);
       const userSnap = await getDoc(userRef);
-
+  
       if (!userSnap.exists()) {
+        // 🔹 Send verification email
+        await sendEmailVerification(user);
+        alert("A verification email has been sent. Please check your inbox.");
+  
+        // 🔹 Store user in Firestore
         await setDoc(userRef, {
           email: user.email,
           verified: user.emailVerified,
           createdAt: serverTimestamp(),
         });
-
+  
         alert("Google Sign-In successful! Please complete your profile.");
         navigate("/complete-profile");
       } else {
@@ -67,6 +72,7 @@ const CreateAccount = () => {
       alert(error.message || "Google sign-in failed!");
     }
   };
+  
 
   return (
     <div className="register-page">
