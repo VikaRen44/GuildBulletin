@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { useNavigate, useLocation } from "react-router-dom";
+import { getAuth, onAuthStateChanged, updatePassword } from "firebase/auth";
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 import "../Styles/completeProfile.css";
 
@@ -8,15 +8,26 @@ const auth = getAuth();
 const db = getFirestore();
 
 const CompleteProfile = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const isEditMode = location.state?.editMode || false; // Check if edit mode
+
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
-    firstName: "", lastName: "", about: "", facebook: "", gmail: "",
-    xLink: "", instagram: "", role: "applicant", profileImage: ""
+    firstName: "",
+    lastName: "",
+    about: "",
+    facebook: "",
+    gmail: "",
+    xLink: "",
+    instagram: "",
+    role: "applicant",
+    profileImage: "",
+    password: "", // Added password field
   });
-  const navigate = useNavigate();
 
   useEffect(() => {
-    onAuthStateChanged(auth, async (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (!currentUser) {
         alert("You must be logged in to complete your profile.");
         navigate("/login");
@@ -24,10 +35,12 @@ const CompleteProfile = () => {
         setUser(currentUser);
         const userDoc = await getDoc(doc(db, "Users", currentUser.uid));
         if (userDoc.exists()) {
-          setFormData((prev) => ({ ...prev, ...userDoc.data() }));
+          setFormData((prev) => ({ ...prev, ...userDoc.data(), password: "" })); // Do not load password from Firestore
         }
       }
     });
+
+    return () => unsubscribe();
   }, [navigate]);
 
   const handleChange = (e) => {
@@ -58,6 +71,11 @@ const CompleteProfile = () => {
         updatedAt: new Date(),
       }, { merge: true });
 
+      // If password is set and not in edit mode, update Firebase Authentication password
+      if (formData.password && !isEditMode) {
+        await updatePassword(user, formData.password);
+      }
+
       alert("Profile updated successfully!");
       navigate("/home");
     } catch (error) {
@@ -69,9 +87,9 @@ const CompleteProfile = () => {
   return (
     <div className="complete-profile-page">
       <div className="container">
-        <h1>Complete Your Profile</h1>
+        <h1>{isEditMode ? "Edit Your Profile" : "Complete Your Profile"}</h1>
 
-        {/* 🔹 Profile Picture Upload */}
+        {/* ✅ Always allow profile picture upload */}
         <div className="profile-pic-container">
           {formData.profileImage ? (
             <img src={formData.profileImage} alt="Profile" className="profile-preview" />
@@ -103,16 +121,32 @@ const CompleteProfile = () => {
         <label>Instagram</label>
         <input type="text" name="instagram" value={formData.instagram} onChange={handleChange} />
 
-        <label>Register as:</label>
-        <select name="role" value={formData.role} onChange={handleChange}>
-          <option value="applicant">Applicant</option>
-          <option value="hirer">Hirer</option>
-        </select>
+        {/* 🔹 Show password field ONLY if NOT in Edit Mode */}
+        {!isEditMode && (
+          <>
+            <label>Password</label>
+            <input type="password" name="password" value={formData.password} onChange={handleChange} />
+            <small>⚠️ Choose a secure password</small>
+          </>
+        )}
 
-        <button onClick={handleSubmit}>Save Profile</button>
+        {/* 🔹 Hide role selection ONLY in Edit Mode */}
+        {!isEditMode && (
+          <>
+            <label>Register as:</label>
+            <select name="role" value={formData.role} onChange={handleChange}>
+              <option value="applicant">Applicant</option>
+              <option value="hirer">Hirer</option>
+            </select>
+          </>
+        )}
+
+        <button onClick={handleSubmit}>{isEditMode ? "Update Profile" : "Save Profile"}</button>
       </div>
     </div>
   );
 };
 
 export default CompleteProfile;
+
+
