@@ -18,10 +18,13 @@ const Navbar = () => {
         const userDoc = await getDoc(userDocRef);
 
         if (userDoc.exists()) {
-          setUserRole(userDoc.data().role);
+          const role = userDoc.data().role;
+          setUserRole(role);
+          localStorage.setItem("userRole", role); // ✅ Store in localStorage
         }
       } else {
         setUserRole("");
+        localStorage.removeItem("userRole"); // ✅ Clear localStorage on logout
       }
       setLoading(false);
     });
@@ -33,10 +36,12 @@ const Navbar = () => {
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      setUserRole(""); // Reset role on logout
-      navigate("/login"); // Redirect to Login page
+      setUserRole(""); // ✅ Reset role state
+      localStorage.removeItem("userRole"); // ✅ Remove userRole from storage
+      window.dispatchEvent(new Event("storage")); // ✅ Ensure UI updates dynamically
+      navigate("/login"); // ✅ Redirect to Login page
     } catch (error) {
-      console.error("Error logging out:", error.message);
+      console.error("❌ Error logging out:", error.message);
     }
   };
 

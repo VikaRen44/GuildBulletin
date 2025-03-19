@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth, db } from "../firebase"; // ✅ Import Firebase from `firebase.js`
+import { auth, db } from "../firebase"; // ✅ Import Firebase
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import "../Styles/login.css"; // Import CSS file
 
 const googleProvider = new GoogleAuthProvider(); // 🔹 Google Auth Provider
@@ -19,7 +19,7 @@ function Login() {
       const user = userCredential.user;
       await handleUserRedirect(user);
     } catch (error) {
-      console.error("Login Error:", error);
+      console.error("❌ Login Error:", error);
       alert(error.message || "Invalid credentials! Please try again.");
     }
   };
@@ -43,21 +43,20 @@ function Login() {
   
       const userData = userDoc.data();
   
-      // 🔹 Check if email is verified
-      if (!user.emailVerified) {
-        alert("Please verify your email before logging in.");
-        return;
-      }
-  
-      // ✅ User exists & email is verified → Proceed with login
-      await handleUserRedirect(user);
+      // 🔹 Store role in localStorage
+      localStorage.setItem("userRole", userData.role);
+      localStorage.setItem("userId", user.uid);
+      window.dispatchEvent(new Event("storage")); // Notify other components
+
+      // ✅ Redirect user based on role
+      redirectUser(userData.role);
+      
+      alert("Login successful!");
     } catch (error) {
-      console.error("Google Login Error:", error);
+      console.error("❌ Google Login Error:", error);
       alert("Google Login Failed. Try again.");
     }
   };
-  
-  
 
   // 🔹 Handle Redirect After Login
   const handleUserRedirect = async (user) => {
@@ -68,21 +67,26 @@ function Login() {
       const userRole = userData.role;
 
       // 🔹 Store role in localStorage for persistence
-      localStorage.setItem("role", userRole);
+      localStorage.setItem("userRole", userRole); // ✅ Fixed key name
       localStorage.setItem("userId", user.uid);
+      window.dispatchEvent(new Event("storage")); // Notify other components
 
       // 🔹 Redirect Based on Role
-      if (userRole === "admin") {
-        navigate("/admin");
-      } else if (userRole === "hirer") {
-        navigate("/post-job");
-      } else {
-        navigate("/home");
-      }
-
+      redirectUser(userRole);
       alert("Login successful!");
     } else {
       alert("User data not found in database.");
+    }
+  };
+
+  // 🔹 Redirect User Based on Role
+  const redirectUser = (role) => {
+    if (role === "admin") {
+      navigate("/admin");
+    } else if (role === "hirer") {
+      navigate("/post-job");
+    } else {
+      navigate("/home");
     }
   };
 

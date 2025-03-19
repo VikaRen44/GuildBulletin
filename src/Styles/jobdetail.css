@@ -1,5 +1,6 @@
 body {
   margin-top: 60px; /* Adjust this value based on the navbar height */
+  overflow-x: hidden;
 }
 
 /* Job Detail Page Container */
@@ -13,7 +14,6 @@ body {
   justify-content: center;
   align-items: flex-start;
   box-sizing: border-box;
-  overflow-x: hidden;
   gap: 20px;
   max-width: 1500px; /* Limit max width */
   margin: 0 auto;
@@ -45,31 +45,112 @@ body {
 
 /* Job Item Card */
 .job-item {
-  background-color: #BDC7A9;
+  position: relative;
   padding: 15px;
   margin-bottom: 15px;
   border-radius: 8px;
   border: 1px solid #888;
   cursor: pointer;
-  transition: 0.3s ease-in-out;
-  position: relative;
+  transition: 0.4s ease-in-out;
   display: flex;
   flex-direction: column;
+  justify-content: flex-end; /* Keeps text at the bottom */
+  height: 160px; /* Adjust card height */
+  background: #BDC7A9; /* ✅ Default solid color */
+  color: white;
+  text-align: center;
+  overflow: hidden;
 }
 
-.job-item:hover {
-  border-radius: 0px;
+/* Dark Overlay (Initially Fully Visible) */
+.job-item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #BDC7A9; /* ✅ Solid background initially */
+  opacity: 1; /* ✅ Solid background is fully visible */
+  transition: opacity 0.4s ease-in-out;
 }
 
-.job-item.selected {
-  background-color: #88935c;
+/* Reveal Image on Hover */
+.job-item:hover::before {
+  opacity: 0; /* ✅ Image becomes visible */
+}
+
+/* Selected Job - Keep Image Revealed */
+.job-item.selected::before {
+  opacity: 0;
+}
+
+/* Overlay for Better Readability */
+.job-item .job-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 70%; /* ✅ Increase the height of the overlay */
+  background: rgba(189, 199, 169, 0.49); /* ✅ Make the background darker */
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: background 0.3s ease-in-out, height 0.3s ease-in-out;
+  padding: 10px;
+}
+
+/* Darken Overlay on Hover */
+.job-item:hover .job-overlay {
+  background: rgba(48, 50, 44, 0.592);
 }
 
 /* Job Title */
 .job-item h4 {
   font-size: 18px;
   font-weight: bold;
-  color: #333;
+  color: #F6FF81;
+  margin-bottom: 5px;
+  position: relative;
+  z-index: 2;
+  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
+}
+
+/* Company & Location */
+.job-item p {
+  font-size: 14px;
+  color: #F2FFD6;
+  position: relative;
+  z-index: 2;
+  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
+}
+
+/* Selected Job - Darker Overlay */
+.job-item.selected .job-overlay {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+/* Hover Effect */
+.job-item:hover {
+  transform: scale(1.02);
+  transition: transform 0.2s ease-in-out;
+}
+
+/* Remove old img styling (Now using background-image) */
+.job-card-image {
+  display: none;
+}
+
+/* Job Title */
+.job-item h4 {
+  font-size: 18px;
+  font-weight: bold;
+  color: #F6FF81;
   margin-bottom: 5px;
 }
 
@@ -90,15 +171,16 @@ body {
 
 /* Job Details Section */
 .detail-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   flex-grow: 1;
   width: 60%;
   padding: 30px;
   background-color: #646F58;
   color: #e0e6d2;
   box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  position: relative;
   min-height: 500px;
   border-radius: 10px;
 }
@@ -126,25 +208,12 @@ body {
   color: #ddd;
 }
 
-/* Salary Box */
-.detail-container .salary {
-  font-size: 16px;
-  font-weight: bold;
-  color: #517800;
-  margin-top: 5px;
-}
-
-/* Job Summary and Responsibilities */
+/* Job Summary */
 .detail-container h3 {
   font-size: 18px;
   margin-top: 20px;
   margin-bottom: 10px;
   color: #fff;
-}
-
-.detail-container ul {
-  list-style-type: disc;
-  padding-left: 20px;
 }
 
 /* Salary Box */
@@ -159,34 +228,145 @@ body {
   max-width: 400px;
 }
 
+/* Buttons - Align in a Single Row */
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Like & Report Buttons */
+.like-report-group {
+  display: flex;
+  gap: 10px;
+}
+
+/* Like & Report Button Styling */
+.like-button, .report-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  min-width: 100px;
+}
+
+/* Like Button */
+.like-button {
+  background-color: white;
+  color: black;
+  border: 1px solid black;
+}
+
+.like-button.liked {
+  background-color: red;
+  color: white;
+}
+
+/* Report Button */
+.report-button {
+  background-color: #ff4d4d;
+  color: white;
+}
 
 /* Apply Button */
 .apply-button {
   background-color: #AFBE8F;
   color: white;
   padding: 12px 20px;
+  font-size: 16px;
+  font-weight: bold;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 16px;
-  font-weight: bold;
   transition: transform 0.2s ease-in-out;
   width: 150px;
   text-align: center;
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
 }
 
 .apply-button:hover {
   transform: scale(1.05);
 }
 
-/* Fix white space issues */
-html, body {
-  overflow-x: hidden;
-  margin: 0;
-  padding: 0;
-  height: 100%;
+/* Report Modal */
+.report-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Modal Box */
+.report-content {
+  background: #292727;
+  padding: 25px;
+  border-radius: 10px;
+  width: 500px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Report Options */
+.report-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #444;
+  padding: 10px;
+  border-radius: 6px;
+  margin: 8px 0;
+  font-size: 16px;
+  background: #333;
+  color: white;
+}
+
+/* Checkbox Styling */
+.report-option input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: red;
+}
+
+/* Report Modal Buttons */
+.report-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+/* Submit & Cancel Buttons */
+.submit-report, .cancel-report {
+  padding: 10px 15px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.submit-report {
+  background-color: #ff4d4d;
+  color: white;
+}
+
+.cancel-report {
+  background-color: gray;
+  color: white;
+}
+
+.submit-report:hover {
+  background-color: #c0392b;
+}
+
+.cancel-report:hover {
+  background-color: #555;
 }

@@ -54,7 +54,7 @@ const Home = () => {
       setLoadingJobs(false);
     });
 
-    return () => unsubscribe(); // Cleanup listener on unmount
+    return () => unsubscribe();
   }, []);
 
   return (
@@ -123,7 +123,7 @@ const Home = () => {
         </div>
       )}
 
-      {/* 🔹 Recommended Jobs Section (Now Dynamic) */}
+      {/* 🔹 Recommended Jobs Section (Now with Background Image Effect) */}
       <div className="recommended-section">
         <h3 className="recommended-title">Recommended Jobs</h3>
 
@@ -132,10 +132,17 @@ const Home = () => {
         ) : recommendedJobs.length > 0 ? (
           <div className="job-list">
             {recommendedJobs.map((job) => (
-              <div key={job.id} className="job-item" onClick={() => navigate(`/job/${job.id}`)}>
-                <h3>{job.position}</h3>
-                <p>{job.companyName} | {job.location}</p>
-                <p className="salary">Php {job.salary.toLocaleString()}</p>
+              <div
+                key={job.id}
+                className="job-card"
+                onClick={() => navigate(`/job/${job.id}`)}
+                style={{ backgroundImage: job.jobImage ? `url(${job.jobImage})` : "none" }}
+              >
+                <div className="job-overlay">
+                  <h3>{job.position}</h3>
+                  <p>{job.companyName} | {job.location}</p>
+                  <p className="salary">Php {job.salary.toLocaleString()}</p>
+                </div>
               </div>
             ))}
           </div>

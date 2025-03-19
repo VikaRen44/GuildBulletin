@@ -198,6 +198,12 @@
   text-align: left;
 }
 
+/* Set variables for adjustable job card dimensions */
+:root {
+  --job-card-width: 500px; /* ✅ Edit this to change width */
+  --job-card-height: 300px; /* ✅ Edit this to change height */
+}
+
 /* Job List (Carousel Container) */
 .job-list {
   display: flex;
@@ -212,58 +218,114 @@
   scrollbar-width: none; /* Hides scrollbar in Firefox */
 }
 
-
 /* Custom Scrollbar Styling */
 .job-list::-webkit-scrollbar {
   display: none; /* Hides the scrollbar */
 }
 
-
-/* Job Card */
+/* Job Card - Uses CSS variables for width & height */
 .job-card {
-  flex: 0 0 500px; /* Adjust width */
-  height: 350px; /* Adjust height */
+  flex: 0 0 var(--job-card-width); /* ✅ Adjustable width */
+  height: var(--job-card-height); /* ✅ Adjustable height */
   margin-right: 10px;
   overflow: hidden;
-  background: none; /* Background color */
   display: flex;
   flex-direction: column;
   align-items: center;
   scroll-snap-align: start;
   transition: transform 0.3s ease-in-out;
-  position: relative; /* Needed for absolute positioning */
+  position: relative;
   border: none;
+  background: none;
 }
 
+/* Job Card Last Item */
 .job-card:last-child {
-  margin-right: 0; /* Removes margin for the last card */
+  margin-right: 0;
 }
 
+/* Job Card Hover Effect */
 .job-card:hover {
   transform: scale(1.05);
 }
 
-/* Job Image */
-.job-image {
-  width: 100%;
-  height: 100%; /* Full height */
-  object-fit: cover; /* Ensures proper scaling */
-}
-
-/* Job Title Overlay */
-.job-title {
+/* Job Image as Background */
+.job-card::before {
+  content: "";
   position: absolute;
-  bottom: 0; /* Stick to bottom */
+  top: 0;
   left: 0;
   width: 100%;
-  height: 60px; /* Reduce height to fit better */
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Default Background Before Hover */
+.job-card::before {
+  background: rgba(189, 199, 169, 1); /* Solid color before hover */
+}
+
+/* Overlay for Readability */
+.job-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  transition: background 0.3s ease-in-out;
+}
+
+/* Hover Effect - Reveal Image */
+.job-card:hover::before {
+  opacity: 1;
+}
+
+.job-card:hover .job-overlay {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+/* Selected Job - Keep Image Revealed */
+.job-card.selected::before {
+  opacity: 1;
+}
+
+.job-card.selected .job-overlay {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+/* Job Title */
+.job-title {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
   display: flex;
-  align-items: center; /* Center text vertically */
-  justify-content: center; /* Center text horizontally */
+  align-items: center;
+  justify-content: center;
   padding: 10px;
-  font-size: 25px; /* Reduce font size for better fit */
+  font-size: 25px;
   font-weight: bold;
-  color: #504B3A; /* Light text for contrast */
-  background: rgba(236, 248, 218, 0.6);  /* Semi-transparent background */
+  color: #504B3A;
+  background: rgba(236, 248, 218, 0.6);
+}
+
+/* Responsive - Adjusts for Smaller Screens */
+@media screen and (max-width: 768px) {
+  :root {
+    --job-card-width: 100%; /* Full width on small screens */
+    --job-card-height: 250px; /* Smaller height */
+  }
+
+  .job-title {
+    font-size: 20px;
+    height: 50px;
+  }
 }
 
