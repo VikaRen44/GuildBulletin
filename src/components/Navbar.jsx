@@ -9,7 +9,7 @@ const Navbar = () => {
   const [loading, setLoading] = useState(true);
   const auth = getAuth();
   const db = getFirestore();
-  const navigate = useNavigate(); // Hook for redirection
+  const navigate = useNavigate();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -20,11 +20,11 @@ const Navbar = () => {
         if (userDoc.exists()) {
           const role = userDoc.data().role;
           setUserRole(role);
-          localStorage.setItem("userRole", role); // ✅ Store in localStorage
+          localStorage.setItem("userRole", role);
         }
       } else {
         setUserRole("");
-        localStorage.removeItem("userRole"); // ✅ Clear localStorage on logout
+        localStorage.removeItem("userRole");
       }
       setLoading(false);
     });
@@ -32,14 +32,14 @@ const Navbar = () => {
     return () => unsubscribe();
   }, []);
 
-  // Logout function with redirection
+  // ✅ Logout function with redirection
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      setUserRole(""); // ✅ Reset role state
-      localStorage.removeItem("userRole"); // ✅ Remove userRole from storage
-      window.dispatchEvent(new Event("storage")); // ✅ Ensure UI updates dynamically
-      navigate("/login"); // ✅ Redirect to Login page
+      setUserRole(""); // Reset role state
+      localStorage.removeItem("userRole"); // Remove from storage
+      window.dispatchEvent(new Event("storage")); // Ensure UI updates dynamically
+      navigate("/login"); // Redirect to Login page
     } catch (error) {
       console.error("❌ Error logging out:", error.message);
     }
@@ -53,13 +53,16 @@ const Navbar = () => {
           <Link to="/home" className="nav-link">Home</Link>
 
           {!loading && userRole === "hirer" && (
-            <Link to="/post-job" className="nav-link">Post a Job</Link>
+            <>
+              <Link to="/post-job" className="nav-link">Post a Job</Link>
+              <Link to="/submissions" className="nav-link">📄 View Submissions</Link>
+            </>
           )}
+
           {!loading && userRole === "applicant" && (
             <Link to="/upload-cv" className="nav-link">Upload CV</Link>
           )}
 
-          {/* Show logout button when user is logged in */}
           {!loading && userRole && (
             <button onClick={handleLogout} className="nav-link logout-btn">
               Logout
