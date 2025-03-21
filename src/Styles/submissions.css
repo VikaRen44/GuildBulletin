@@ -1,3 +1,37 @@
+/* Profile Image Styling */
+.profile-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #ddd;
+  margin-bottom: 10px;
+}
+
+.profile-pic {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Placeholder for Missing Images */
+.profile-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #ccc;
+  font-size: 24px;
+  color: white;
+}
+
+
+
 .submissions-container {
     max-width: 800px;
     margin: auto;

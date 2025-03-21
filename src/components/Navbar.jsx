@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, doc, getDoc } from "firebase/firestore";
 import "../Styles/navbar.css";
 
 const Navbar = () => {
   const [userRole, setUserRole] = useState("");
+  const [firstJobId, setFirstJobId] = useState(null);
   const [loading, setLoading] = useState(true);
   const auth = getAuth();
   const db = getFirestore();
@@ -32,6 +33,22 @@ const Navbar = () => {
     return () => unsubscribe();
   }, []);
 
+  // ✅ Fetch the first available job
+  useEffect(() => {
+    const fetchFirstJob = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "jobs"));
+        if (!querySnapshot.empty) {
+          setFirstJobId(querySnapshot.docs[0].id); // ✅ Set first job ID
+        }
+      } catch (error) {
+        console.error("Error fetching jobs:", error);
+      }
+    };
+
+    fetchFirstJob();
+  }, []);
+
   // ✅ Logout function with redirection
   const handleLogout = async () => {
     try {
@@ -51,7 +68,13 @@ const Navbar = () => {
         <h1 className="navbar-title">Job Bulletin</h1>
         <div className="nav-links">
           <Link to="/home" className="nav-link">Home</Link>
-          <Link to="/jobs" className="nav-link">🔍 Find a Job</Link> {/* ✅ NEW LINK */}
+          
+          {/* ✅ Dynamically link to the first job if available */}
+          {firstJobId ? (
+            <Link to={`/job/${firstJobId}`} className="nav-link">🔍 Find a Job</Link>
+          ) : (
+            <span className="nav-link disabled">🔍 Find a Job</span> // Disabled if no jobs exist
+          )}
 
           {!loading && userRole === "hirer" && (
             <>
@@ -62,6 +85,10 @@ const Navbar = () => {
 
           {!loading && userRole === "applicant" && (
             <Link to="/upload-cv" className="nav-link">Upload CV</Link>
+          )}
+
+          {!loading && userRole === "admin" && (
+            <Link to="/admin" className="nav-link">🛠 Admin Dash</Link>
           )}
 
           {!loading && userRole && (

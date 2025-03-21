@@ -79,14 +79,11 @@ function Login() {
     }
   };
 
-  // 🔹 Redirect User Based on Role
-  const redirectUser = (role) => {
-    if (role === "admin") {
-      navigate("/admin");
-    } else {
-      navigate("/home");
-    }
-  };
+ // 🔹 Redirect User Based on Role
+const redirectUser = (role) => {
+  navigate("/home"); // ✅ All users, including admin, now go to "/home"
+};
+
 
   return (
     <div className="login-page">

@@ -106,7 +106,13 @@ const Home = () => {
             <h2 className="profile-name">
               {profileData.firstName} {profileData.lastName}
             </h2>
-            <div className="badge">{profileData.role === "hirer" ? "Hirer" : "Applicant"}</div>
+            <div className="badge">
+  {profileData.role === "admin"
+    ? "Admin"
+    : profileData.role === "hirer"
+    ? "Hirer"
+    : "Applicant"}
+</div>
             <p className="profile-info">{profileData.about}</p>
 
             <button onClick={() => navigate("/complete-profile", { state: { editMode: true } })} className="edit-profile">

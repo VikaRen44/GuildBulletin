@@ -1,8 +1,15 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { db, auth } from "../firebase";
-import { collection, getDocs, doc, getDoc, addDoc, updateDoc } from "firebase/firestore";
-import { onAuthStateChanged } from "firebase/auth"; 
+import {
+  collection,
+  getDocs,
+  doc,
+  getDoc,
+  addDoc,
+  updateDoc,
+} from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
 import "../Styles/jobdetail.css";
 
 const JobDetail = () => {
@@ -15,15 +22,23 @@ const JobDetail = () => {
   const [cvSubmitted, setCvSubmitted] = useState(false);
   const [reportOpenJobs, setReportOpenJobs] = useState(null);
   const [reportReasons, setReportReasons] = useState({});
+  const [userRole, setUserRole] = useState(""); // ✅ new state
   const reportOptions = ["Scam", "Unresponsive", "Fake Listing", "Spam", "Others"];
 
-  // Fetch job data and user authentication
+  // ✅ Fetch user data and role
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUserId(user.uid);
         fetchUserCv(user.uid);
-        checkIfCvSubmitted(user.uid, id); // Check if CV already submitted
+        checkIfCvSubmitted(user.uid, id);
+
+        // ✅ Get user role
+        const userDoc = await getDoc(doc(db, "Users", user.uid));
+        if (userDoc.exists()) {
+          const data = userDoc.data();
+          setUserRole(data.role || "");
+        }
       }
       setLoading(false);
     });
@@ -31,7 +46,6 @@ const JobDetail = () => {
     return () => unsubscribe();
   }, [id]);
 
-  // Fetch user's CV link from Firestore
   const fetchUserCv = async (userId) => {
     try {
       const submissionsRef = collection(db, "submissions");
@@ -49,7 +63,6 @@ const JobDetail = () => {
     }
   };
 
-  // Fetch job details based on job ID from Firestore
   useEffect(() => {
     const fetchJobs = async () => {
       const querySnapshot = await getDocs(collection(db, "jobs"));
@@ -67,23 +80,28 @@ const JobDetail = () => {
     fetchJobs();
   }, [id]);
 
-  // Check if user has already submitted a CV for this job
   const checkIfCvSubmitted = async (userId, jobId) => {
     try {
       const submissionRef = collection(db, "submissions");
       const submissionDocs = await getDocs(submissionRef);
-      const hasSubmitted = submissionDocs.docs.some(
-        (doc) => doc.data().userId === userId && doc.data().jobId === jobId
-      );
+
+      const hasSubmitted = submissionDocs.docs.some((docSnap) => {
+        const data = docSnap.data();
+        return data.userId === userId && data.jobId === jobId;
+      });
+
       setCvSubmitted(hasSubmitted);
     } catch (error) {
       console.error("Error checking CV submission:", error);
     }
   };
 
-  if (loading) return <p>Loading job details...</p>;
+  useEffect(() => {
+    if (userId && selectedJob?.id) {
+      checkIfCvSubmitted(userId, selectedJob.id);
+    }
+  }, [userId, selectedJob?.id]);
 
-  // Handle CV submission
   const handleCvSubmit = async () => {
     if (!cvLink) {
       alert("You haven't uploaded a CV yet. Please upload one on the home page.");
@@ -114,7 +132,6 @@ const JobDetail = () => {
     }
   };
 
-  // Handle job like (affecting karma)
   const handleLike = async (jobId) => {
     if (!userId) {
       alert("You must be logged in to like a job.");
@@ -128,7 +145,6 @@ const JobDetail = () => {
     const jobData = jobDoc.data();
     const hirerId = jobData.hirerId;
 
-    // Update job's like count
     await updateDoc(jobRef, {
       likes: (jobData.likes || 0) + 1,
     });
@@ -144,7 +160,6 @@ const JobDetail = () => {
     alert("Job liked successfully!");
   };
 
-  // Handle job reporting
   const handleReportSubmit = async (jobId) => {
     if (!reportReasons[jobId] || reportReasons[jobId].length === 0) {
       alert("Please select at least one reason.");
@@ -176,7 +191,7 @@ const JobDetail = () => {
 
   return (
     <div className="job-detail-container">
-      {/* Sidebar with all job listings */}
+      {/* Sidebar */}
       <div className="sidebar">
         <h3>All Jobs</h3>
         {jobs.map((job) => (
@@ -193,7 +208,7 @@ const JobDetail = () => {
         ))}
       </div>
 
-      {/* Job Details Section */}
+      {/* Job Details */}
       {selectedJob && (
         <div className="detail-container">
           <h2>{selectedJob.position}</h2>
@@ -205,23 +220,29 @@ const JobDetail = () => {
           <h3>Base Pay Range</h3>
           <p className="salary">Php {selectedJob.salary.toLocaleString()}</p>
 
-          {/* Submit CV Section */}
-          <h3>Submit Your CV</h3>
-          {cvSubmitted ? (
-            <p>✅ CV already submitted for this job.</p>
-          ) : (
+          {/* ✅ Submit CV - visible only to applicants */}
+          {userRole === "applicant" && (
             <>
-              <p>Your pre-uploaded CV link:</p>
-              <a href={cvLink} target="_blank" rel="noopener noreferrer">{cvLink}</a>
-              <button className="apply-button" onClick={handleCvSubmit}>Submit CV</button>
+              <h3>Submit Your CV</h3>
+              {cvSubmitted ? (
+                <p>✅ CV already submitted for this job.</p>
+              ) : (
+                <>
+                  <p>Your pre-uploaded CV link:</p>
+                  <a href={cvLink} target="_blank" rel="noopener noreferrer">{cvLink}</a>
+                  <button className="apply-button" onClick={handleCvSubmit}>Submit CV</button>
+                </>
+              )}
             </>
           )}
 
-          {/* Buttons Row */}
-          <div className="button-container">
-            <button className="like-button" onClick={() => handleLike(selectedJob.id)}>❤️ Like</button>
-            <button className="report-button" onClick={() => toggleReportPopup(selectedJob.id)}>🚩 Report</button>
-          </div>
+          {/* ✅ Like & Report - hidden from admin */}
+          {userRole !== "admin" && (
+            <div className="button-container">
+              <button className="like-button" onClick={() => handleLike(selectedJob.id)}>❤️ Like</button>
+              <button className="report-button" onClick={() => toggleReportPopup(selectedJob.id)}>🚩 Report</button>
+            </div>
+          )}
         </div>
       )}
 
