@@ -329,3 +329,28 @@
   }
 }
 
+.notice-popup {
+  position: fixed;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  color: black;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
+
+.notice-content {
+  text-align: center;
+}
+
+.notice-button {
+  margin-top: 10px;
+  padding: 8px 16px;
+  border: none;
+  background-color: red;
+  color: white;
+  cursor: pointer;
+}

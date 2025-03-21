@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { getFirestore, doc, getDoc, collection, query, orderBy, limit, onSnapshot } from "firebase/firestore";
+import { getFirestore, doc, getDoc, collection, query, orderBy, limit, onSnapshot, updateDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import "../Styles/stylehome.css";
@@ -13,6 +13,7 @@ const Home = () => {
   const [userRole, setUserRole] = useState("");
   const [recommendedJobs, setRecommendedJobs] = useState([]);
   const [loadingJobs, setLoadingJobs] = useState(true);
+  const [notice, setNotice] = useState(null);
 
   const auth = getAuth();
   const db = getFirestore();
@@ -29,6 +30,11 @@ const Home = () => {
           const data = userSnap.data();
           setProfileData(data);
           setUserRole(data.role);
+
+          // ✅ Check for any notices (Only for hirers)
+          if (data.role === "hirer" && data.statusStep && data.statusStep !== "none") {
+            setNotice(data.statusStep);
+          }
         }
       } else {
         setUser(null);
@@ -57,9 +63,31 @@ const Home = () => {
     return () => unsubscribe();
   }, []);
 
+  // ✅ Function to acknowledge the notice and remove the popup
+  const handleAcknowledgeNotice = async () => {
+    if (user) {
+      const userRef = doc(db, "Users", user.uid);
+      await updateDoc(userRef, { statusStep: "none" });
+      setNotice(null);
+    }
+  };
+
   return (
     <>
       <Navbar />
+
+      {/* ✅ Notice Popup (Only for Hirers) */}
+      {notice && (
+        <div className="notice-popup">
+          <div className="notice-content">
+            <h2>⚠ Important Notice</h2>
+            {notice === "notice" && <p>🚨 Your job posts have received multiple reports. Please review and fix them.</p>}
+            {notice === "deletion" && <p>⚠️ Your job posts have been **deleted** due to repeated reports.</p>}
+            {notice === "ban" && <p>❌ Your account has been **banned** due to excessive reports.</p>}
+            <button onClick={handleAcknowledgeNotice} className="notice-button">Acknowledge</button>
+          </div>
+        </div>
+      )}
 
       <div className="container">
         <header className="header">
@@ -107,12 +135,12 @@ const Home = () => {
               {profileData.firstName} {profileData.lastName}
             </h2>
             <div className="badge">
-  {profileData.role === "admin"
-    ? "Admin"
-    : profileData.role === "hirer"
-    ? "Hirer"
-    : "Applicant"}
-</div>
+              {profileData.role === "admin"
+                ? "Admin"
+                : profileData.role === "hirer"
+                ? "Hirer"
+                : "Applicant"}
+            </div>
             <p className="profile-info">{profileData.about}</p>
 
             <button onClick={() => navigate("/complete-profile", { state: { editMode: true } })} className="edit-profile">
@@ -129,7 +157,7 @@ const Home = () => {
         </div>
       )}
 
-      {/* 🔹 Recommended Jobs Section (Now with Background Image Effect) */}
+      {/* 🔹 Recommended Jobs Section */}
       <div className="recommended-section">
         <h3 className="recommended-title">Recommended Jobs</h3>
 
