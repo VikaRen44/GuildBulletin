@@ -11,8 +11,10 @@ import {
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import "../Styles/jobdetail.css";
+import { useNavigate } from "react-router-dom"; 
 
 const JobDetail = () => {
+  const navigate = useNavigate(); 
   const { id } = useParams();
   const [jobs, setJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
@@ -189,6 +191,9 @@ const JobDetail = () => {
     setReportOpenJobs((prev) => (prev === jobId ? null : jobId));
   };
 
+
+  
+
   return (
     <div className="job-detail-container">
       {/* Sidebar */}
@@ -208,43 +213,60 @@ const JobDetail = () => {
         ))}
       </div>
 
-      {/* Job Details */}
-      {selectedJob && (
-        <div className="detail-container">
+    {/* Job Details */}
+{selectedJob && (
+   <div className="detail-container">
           <h2>{selectedJob.position}</h2>
           <p><strong>Company:</strong> {selectedJob.companyName}</p>
           <p><strong>Location:</strong> {selectedJob.location}</p>
+
+          {/* ✅ Clickable Hirer Account */}
+          <p>
+  <strong>Hirer Account:</strong>{" "}
+  <span
+    className="hirer-link"
+    onClick={() => {navigate(`/hirer/${selectedJob?.hirerId}`); // ✅ Pass only the hirerId
+    }}
+    style={{ color: "blue", cursor: "pointer", textDecoration: "underline" }}
+  >
+    View Profile
+  </span>
+</p>
+
+
+
           <h3>Job Summary</h3>
           <p>{selectedJob.description}</p>
 
-          <h3>Base Pay Range</h3>
-          <p className="salary">Php {selectedJob.salary.toLocaleString()}</p>
 
-          {/* ✅ Submit CV - visible only to applicants */}
-          {userRole === "applicant" && (
-            <>
-              <h3>Submit Your CV</h3>
-              {cvSubmitted ? (
-                <p>✅ CV already submitted for this job.</p>
-              ) : (
-                <>
-                  <p>Your pre-uploaded CV link:</p>
-                  <a href={cvLink} target="_blank" rel="noopener noreferrer">{cvLink}</a>
-                  <button className="apply-button" onClick={handleCvSubmit}>Submit CV</button>
-                </>
-              )}
-            </>
-          )}
+    <h3>Base Pay Range</h3>
+    <p className="salary">Php {selectedJob.salary.toLocaleString()}</p>
 
-          {/* ✅ Like & Report - hidden from admin */}
-          {userRole !== "admin" && (
-            <div className="button-container">
-              <button className="like-button" onClick={() => handleLike(selectedJob.id)}>❤️ Like</button>
-              <button className="report-button" onClick={() => toggleReportPopup(selectedJob.id)}>🚩 Report</button>
-            </div>
-          )}
-        </div>
-      )}
+    {/* ✅ Submit CV - visible only to applicants */}
+    {userRole === "applicant" && (
+      <>
+        <h3>Submit Your CV</h3>
+        {cvSubmitted ? (
+          <p>✅ CV already submitted for this job.</p>
+        ) : (
+          <>
+            <p>Your pre-uploaded CV link:</p>
+            <a href={cvLink} target="_blank" rel="noopener noreferrer">{cvLink}</a>
+            <button className="apply-button" onClick={handleCvSubmit}>Submit CV</button>
+          </>
+        )}
+      </>
+    )}
+
+    {/* ✅ Like & Report - hidden from admin */}
+    {userRole !== "admin" && (
+      <div className="button-container">
+        <button className="like-button" onClick={() => handleLike(selectedJob.id)}>❤️ Like</button>
+        <button className="report-button" onClick={() => toggleReportPopup(selectedJob.id)}>🚩 Report</button>
+      </div>
+    )}
+  </div>
+)}
 
       {/* Report Modal */}
       {reportOpenJobs && (

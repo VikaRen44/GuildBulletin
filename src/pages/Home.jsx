@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import "../Styles/stylehome.css";
 import { FaFacebook, FaTwitter, FaInstagram, FaEnvelope } from "react-icons/fa";
+import { useParams } from "react-router-dom";
+
 
 const Home = () => {
   const navigate = useNavigate();
@@ -14,23 +16,48 @@ const Home = () => {
   const [recommendedJobs, setRecommendedJobs] = useState([]);
   const [loadingJobs, setLoadingJobs] = useState(true);
   const [notice, setNotice] = useState(null);
+  
 
+  const { id } = useParams(); // ✅ Detects if we are viewing a hirer's profile
   const auth = getAuth();
   const db = getFirestore();
 
-  // 🔹 Fetch user data from Firestore
+  useEffect(() => {
+    if (id) {
+      console.log("🌐 Navigating to /hirer/:id →", id);
+  
+      const fetchHirerProfile = async () => {
+        const hirerRef = doc(db, "Users", id);
+        const hirerSnap = await getDoc(hirerRef);
+  
+        if (hirerSnap.exists()) {
+          console.log("✅ Hirer Data Found:", hirerSnap.data());
+          setProfileData(hirerSnap.data()); // ✅ Sets hirer profile
+        } else {
+          console.error("❌ Hirer not found in Users collection");
+        }
+      };
+  
+      fetchHirerProfile();
+    }
+  }, [id]);
+  
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
         const userRef = doc(db, "Users", currentUser.uid);
         const userSnap = await getDoc(userRef);
-
+  
         if (userSnap.exists()) {
           const data = userSnap.data();
-          setProfileData(data);
+  
+          if (!id) { // ✅ Prevent overwriting hirer data
+            setProfileData(data);
+          }
+  
           setUserRole(data.role);
-
+  
           // ✅ Check for any notices (Only for hirers)
           if (data.role === "hirer" && data.statusStep && data.statusStep !== "none") {
             setNotice(data.statusStep);
@@ -38,11 +65,15 @@ const Home = () => {
         }
       } else {
         setUser(null);
-        setProfileData(null);
+  
+        if (!id) { // ✅ Only reset if not in hirer profile mode
+          setProfileData(null);
+        }
+  
         setUserRole("");
       }
     });
-
+  
     return () => unsubscribe();
   }, []);
 
@@ -63,15 +94,30 @@ const Home = () => {
     return () => unsubscribe();
   }, []);
 
-  // ✅ Function to acknowledge the notice and remove the popup
-  const handleAcknowledgeNotice = async () => {
-    if (user) {
-      const userRef = doc(db, "Users", user.uid);
-      await updateDoc(userRef, { statusStep: "none" });
-      setNotice(null);
-    }
+   // ✅ Function to hide the popup but NOT change statusStep
+   const handleCloseNotice = () => {
+    setNotice(null);
   };
 
+  if (id && profileData) {
+    return (
+      <>
+        <Navbar />
+        <div className="hirer-profile-container">
+          <h2>{profileData.firstName} {profileData.lastName}'s Profile</h2>
+          <img src={profileData.profileImage || "/default-profile.png"} alt="Profile" className="profile-image" />
+          <p><strong>About:</strong> {profileData.about || "No description available."}</p>
+          <p><strong>Email:</strong> {profileData.email}</p>
+          <p><strong>Facebook:</strong> {profileData.facebook || "N/A"}</p>
+          <p><strong>Instagram:</strong> {profileData.instagram || "N/A"}</p>
+          <p><strong>X (Twitter):</strong> {profileData.xLink || "N/A"}</p>
+  
+          <button onClick={() => navigate("/")} className="back-button">⬅ Go Back</button>
+        </div>
+      </>
+    );
+  }
+  
   return (
     <>
       <Navbar />
@@ -84,7 +130,7 @@ const Home = () => {
             {notice === "notice" && <p>🚨 Your job posts have received multiple reports. Please review and fix them.</p>}
             {notice === "deletion" && <p>⚠️ Your job posts have been **deleted** due to repeated reports.</p>}
             {notice === "ban" && <p>❌ Your account has been **banned** due to excessive reports.</p>}
-            <button onClick={handleAcknowledgeNotice} className="notice-button">Acknowledge</button>
+            <button onClick={handleCloseNotice} className="notice-button">Acknowledge</button>
           </div>
         </div>
       )}

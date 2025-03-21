@@ -26,20 +26,21 @@ const Admin = () => {
         const reportsRef = collection(db, "reports");
         const reportsSnapshot = await getDocs(reportsRef);
 
-        // Group reports by job ID
+        // 🔹 Group reports by job ID
         const jobReportsMap = {};
         reportsSnapshot.docs.forEach((docSnap) => {
           const data = docSnap.data();
           const { jobId, reasons } = data;
 
           if (!jobReportsMap[jobId]) {
-            jobReportsMap[jobId] = { count: 0, reasons: {} };
+            jobReportsMap[jobId] = { count: 0, reasons: { Scam: 0, Unresponsive: 0, "Fake Listing": 0, Spam: 0, Others: 0 } };
           }
 
           jobReportsMap[jobId].count += 1;
 
           reasons.forEach((reason) => {
-            jobReportsMap[jobId].reasons[reason] = (jobReportsMap[jobId].reasons[reason] || 0) + 1;
+            jobReportsMap[jobId].reasons[reason] =
+              (jobReportsMap[jobId].reasons[reason] || 0) + 1;
           });
         });
 
@@ -53,17 +54,21 @@ const Admin = () => {
             const jobsSnapshot = await getDocs(jobQuery);
 
             let totalReports = 0;
-            let totalLikes = data.totalLikes || 0;
+            let totalLikes = 0;
+            let totalJobs = jobsSnapshot.docs.length;
+
             const jobList = jobsSnapshot.docs.map((jobDoc) => {
               const jobId = jobDoc.id;
-              const jobReports = jobReportsMap[jobId] || { count: 0, reasons: {} };
+              const jobData = jobDoc.data();
+              const jobReports = jobReportsMap[jobId] || { count: 0, reasons: { Scam: 0, Unresponsive: 0, "Fake Listing": 0, Spam: 0, Others: 0 } };
 
               totalReports += jobReports.count;
+              totalLikes += jobData.likes || 0;
 
               return {
                 id: jobId,
-                position: jobDoc.data().position,
-                likes: jobDoc.data().likes || 0,
+                position: jobData.position,
+                likes: jobData.likes || 0,
                 reports: jobReports.count,
                 reportDetails: jobReports.reasons,
               };
@@ -76,9 +81,10 @@ const Admin = () => {
               email: data.email,
               totalLikes,
               totalReports,
+              totalJobs,
               jobList,
-              certified: data.certified || false,
-              statusStep: data.statusStep || "none", // Step tracking (none, notice, deletion, ban)
+              certified: data.certified || false, // ✅ Existing certification status
+              statusStep: data.statusStep || "none",
             };
           })
         );
@@ -95,59 +101,24 @@ const Admin = () => {
     fetchHirers();
   }, []);
 
-  // **Step 1: Send Notice**
-  const handleNotice = async (hirerId) => {
+  // **✅ Grant Certification (Adds `certified: true` in Firestore)**
+  const handleCertification = async (hirerId) => {
     try {
       const userRef = doc(db, "Users", hirerId);
-      await updateDoc(userRef, { statusStep: "notice" });
+      await updateDoc(userRef, { certified: true }); // ✅ Add certification field
 
-      alert("Notice sent! The hirer will see it when they log in.");
+      // ✅ Update state locally to reflect certification
+      setHirers((prevHirers) =>
+        prevHirers.map((hirer) =>
+          hirer.id === hirerId ? { ...hirer, certified: true } : hirer
+        )
+      );
+
+      alert("Certification granted!");
     } catch (error) {
-      console.error("Error updating notice:", error);
+      console.error("Error granting certification:", error);
     }
   };
-
-  // **Step 2: Delete All Jobs**
-  const handleDeleteJobs = async (hirerId) => {
-    try {
-      const jobsRef = collection(db, "jobs");
-      const jobQuery = query(jobsRef, where("hirerId", "==", hirerId));
-      const jobsSnapshot = await getDocs(jobQuery);
-
-      const deletePromises = jobsSnapshot.docs.map((jobDoc) => deleteDoc(jobDoc.ref));
-      await Promise.all(deletePromises);
-
-      const userRef = doc(db, "Users", hirerId);
-      await updateDoc(userRef, { statusStep: "deletion" });
-
-      alert("All jobs deleted. The hirer will see a notice.");
-    } catch (error) {
-      console.error("Error deleting jobs:", error);
-    }
-  };
-
-  // **Step 3: Ban Account**
-  const handleBanAccount = async (hirerId) => {
-    try {
-      const userRef = doc(db, "Users", hirerId);
-      await updateDoc(userRef, { statusStep: "ban" });
-
-      alert("Account banned! The hirer will see a ban message.");
-    } catch (error) {
-      console.error("Error banning account:", error);
-    }
-  };
-
-  // **Reset process if like ratio improves above 50%**
-  useEffect(() => {
-    hirers.forEach(async (hirer) => {
-      const likeRatio = hirer.totalLikes / Math.max(hirer.totalReports, 1);
-      if (likeRatio > 0.5 && hirer.statusStep !== "none") {
-        const userRef = doc(db, "Users", hirer.id);
-        await updateDoc(userRef, { statusStep: "none" });
-      }
-    });
-  }, [hirers]);
 
   return (
     <div className="admin-container">
@@ -168,24 +139,39 @@ const Admin = () => {
               <p>Email: {hirer.email}</p>
               <p>Total Likes: {hirer.totalLikes} 👍</p>
               <p>Total Reports: {hirer.totalReports} 🚩</p>
+              <p>Total Jobs Posted: {hirer.totalJobs}</p>
               <p><strong>Current Status:</strong> {hirer.statusStep.toUpperCase()}</p>
 
-              {/* Show certification button */}
+              {/* ✅ Job List with Report Breakdown */}
+              {hirer.jobList.length > 0 ? (
+                <ul>
+                  {hirer.jobList.map((job) => (
+                    <li key={job.id}>
+                      <strong>{job.position}</strong> - {job.likes} 👍 | {job.reports} 🚩
+                      {job.reports > 0 && (
+                        <ul>
+                          {Object.entries(job.reportDetails).map(([reason, count]) =>
+                            count > 0 ? <li key={reason}>{reason}: {count} 🚩</li> : null
+                          )}
+                        </ul>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No jobs posted.</p>
+              )}
+
+              {/* ✅ Certification & Moderation Buttons */}
               {likeRatio >= 0.8 && !hirer.certified && (
                 <button onClick={() => handleCertification(hirer.id)}>Grant Certification</button>
               )}
-
-              {/* Step 1: Notice */}
               {hirer.statusStep === "none" && reportRatio >= 0.5 && (
                 <button onClick={() => handleNotice(hirer.id)}>Send Notice</button>
               )}
-
-              {/* Step 2: Delete Jobs */}
               {hirer.statusStep === "notice" && reportRatio >= 0.85 && (
                 <button onClick={() => handleDeleteJobs(hirer.id)}>Delete All Jobs</button>
               )}
-
-              {/* Step 3: Ban Account */}
               {hirer.statusStep === "deletion" && reportRatio >= 0.95 && (
                 <button onClick={() => handleBanAccount(hirer.id)}>Ban Account</button>
               )}

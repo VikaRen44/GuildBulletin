@@ -79,6 +79,7 @@ const App = () => {
           <Route path="/complete-profile" element={<CompleteProfile />} />
           <Route path="/home" element={<Home />} />
           <Route path="/job/:id" element={<JobDetail />} />
+          <Route path="/hirer/:id" element={<Home />} />
 
           {/* Role-based Routes */}
           <Route path="/submissions" element={<ProtectedRoute element={<Submissions />} allowedRoles={["hirer"]} />} />
