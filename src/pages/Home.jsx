@@ -16,6 +16,7 @@ const Home = () => {
   const [recommendedJobs, setRecommendedJobs] = useState([]);
   const [loadingJobs, setLoadingJobs] = useState(true);
   const [notice, setNotice] = useState(null);
+  const [searchInput, setSearchInput] = useState("");
   
 
   const { id } = useParams(); // ✅ Detects if we are viewing a hirer's profile
@@ -147,9 +148,20 @@ const Home = () => {
 
       <div className="search-section">
         <div className="search-bar-container">
-          <button className="search-button">Search</button>
+          <button className="search-button"  onClick={() => navigate(`/jobdetails?search=${encodeURIComponent(searchInput)}`)}>Search</button>
           <div className="search-container">
-            <input type="text" placeholder="Enter job title, company, or keyword" className="search-input" />
+          <input
+            type="text"
+            placeholder="Enter job title, company, or keyword"
+            className="search-input"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                navigate(`/jobdetails?search=${encodeURIComponent(searchInput)}`);
+              }
+            }}
+          />
           </div>
         </div>
 

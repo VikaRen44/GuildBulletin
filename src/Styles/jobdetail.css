@@ -6,7 +6,7 @@ body {
 /* Job Detail Page Container */
 .job-detail-container {
   display: flex;
-  flex-wrap: wrap; /* Ensures content wraps on smaller screens */
+  flex-wrap: nowrap; /* ✅ prevent vertical stacking */
   background-color: #1e1e1e;
   padding: 140px 5vw 40px;
   min-height: 100vh;
@@ -14,26 +14,55 @@ body {
   justify-content: center;
   align-items: flex-start;
   box-sizing: border-box;
-  gap: 20px;
+  gap: 25px;
   max-width: 1500px; /* Limit max width */
   margin: 0 auto;
 }
 
 /* Sidebar Styling */
 .sidebar {
-  width: 29%;
-  min-width: 250px; /* Prevents it from becoming too small */
+  width: 50%;
+  min-width: 300px; /* Prevents it from becoming too small */
   max-height: 80vh;
   overflow-y: auto;
   background-color: #292727;
   padding: 15px;
   border-radius: 5px;
   box-sizing: border-box;
+  direction: rtl; /* Flip layout direction */
+  overflow-y: auto;
+  margin-top: 0;         /* just in case there's margin */
+  padding-top: 0;        /* make it flush */
+}
+
+/* Reverse inner content direction to keep text LTR */
+.sidebar * {
+  direction: ltr;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 9px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.sidebar::-webkit-scrollbar-button {
+  display: none;
+  height: 0;
+  width: 0;
 }
 
 /* Search Bar */
 .search-bar {
-  width: 90%;
+  width: 100%;
+  box-sizing: border-box; /* ✅ ensure padding doesn't overflow */
   padding: 10px;
   margin-bottom: 15px;
   border-radius: 5px;
@@ -47,7 +76,7 @@ body {
 .job-item {
   position: relative;
   padding: 15px;
-  margin-bottom: 15px;
+  margin-bottom: 25px;
   border-radius: 8px;
   border: 1px solid #888;
   cursor: pointer;
@@ -55,7 +84,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: flex-end; /* Keeps text at the bottom */
-  height: 160px; /* Adjust card height */
+  height: 210px; /* Adjust card height */
   background: #BDC7A9; /* ✅ Default solid color */
   color: white;
   text-align: center;
@@ -176,13 +205,54 @@ body {
   flex-direction: column;
   justify-content: space-between;
   flex-grow: 1;
-  width: 60%;
+  width: 90%;
   padding: 30px;
   background-color: #646F58;
   color: #e0e6d2;
   box-sizing: border-box;
-  min-height: 500px;
+  min-height: 600px;
   border-radius: 10px;
+  padding: 60px;
+}
+
+.sidebar,
+.detail-container {
+  flex-shrink: 0;
+}
+
+/* Sticky header inside sidebar */
+.sidebar-header {
+  position: sticky;
+  top: 0;
+  background-color: #292727;
+  z-index: 10;
+  padding: 15px;
+  border-bottom: 1px solid #444; /* Optional: adds visual separation */
+}
+
+/* Adjust search bar spacing */
+.sidebar-header h3 {
+  margin-bottom: 8px;
+  color: white;
+}
+
+.search-bar {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #888;
+  background-color: #f5f5f5;
+  color: #333;
+  font-size: 16px;
+}
+
+/* Scrollable job list area */
+.sidebar-job-list {
+  overflow-y: auto;
+  flex-grow: 1;
+  padding: 0 15px 15px;
+  background-color: #292727; /* Match background to avoid contrast when scrolling */
+  z-index: 1;
 }
 
 /* Job Header */
