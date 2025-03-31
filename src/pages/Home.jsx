@@ -95,6 +95,21 @@ const Home = () => {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    if (!id && user) {
+      // You're not in hirer mode, load logged-in user
+      const fetchLoggedInUser = async () => {
+        const userRef = doc(db, "Users", user.uid);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          setProfileData(userSnap.data());
+        }
+      };
+      fetchLoggedInUser();
+    }
+  }, [id, user]);
+  
+
    // ✅ Function to hide the popup but NOT change statusStep
    const handleCloseNotice = () => {
     setNotice(null);
@@ -113,11 +128,28 @@ const Home = () => {
           <p><strong>Instagram:</strong> {profileData.instagram || "N/A"}</p>
           <p><strong>X (Twitter):</strong> {profileData.xLink || "N/A"}</p>
   
-          <button onClick={() => navigate("/")} className="back-button">⬅ Go Back</button>
+          <button
+            onClick={() => {
+              setProfileData(null); // ✅ Reset profile data before navigating
+              navigate("/home");    // ✅ Go to actual home
+            }}
+            className="back-button"
+          >
+            ⬅ Go Back
+          </button>
         </div>
       </>
     );
   }
+
+  const scrollCarousel = (direction) => {
+    const container = document.getElementById("job-carousel");
+    const scrollAmount = 320;
+  
+    if (container) {
+      container.scrollBy({ left: direction === "left" ? -scrollAmount : scrollAmount, behavior: "smooth" });
+    }
+  };  
   
   return (
     <>
@@ -136,16 +168,7 @@ const Home = () => {
         </div>
       )}
 
-      <div className="container">
-        <header className="header">
-          <h1 className="logo">
-            <span className="touch">Touch</span>
-            <span className="grass">Grass</span>
-            <span className="now">Now</span>
-          </h1>
-        </header>
-      </div>
-
+<div className="page-wrapper">
       <div className="search-section">
         <div className="search-bar-container">
           <button className="search-button"  onClick={() => navigate(`/jobdetails?search=${encodeURIComponent(searchInput)}`)}>Search</button>
@@ -164,8 +187,14 @@ const Home = () => {
           />
           </div>
         </div>
+      </div>
 
-        {userRole === "applicant" && (
+      {profileData && (
+        <div className="profile-card">
+          <div className="profile-image-container">
+            <img src={profileData.profileImage || "/default-profile.png"} alt="Profile" className="profile-image" />
+
+            {userRole === "applicant" && (
           <div className="button-wrapper">
             <button onClick={() => navigate("/upload-cv")} className="upload-button">
               Upload CV
@@ -180,18 +209,17 @@ const Home = () => {
             </button>
           </div>
         )}
-      </div>
-
-      {profileData && (
-        <div className="profile-card">
-          <div className="profile-image-container">
-            <img src={profileData.profileImage || "/default-profile.png"} alt="Profile" className="profile-image" />
           </div>
 
           <div className="profile-info-container">
             <h2 className="profile-name">
               {profileData.firstName} {profileData.lastName}
             </h2>
+
+            
+            {/* Divider line */}
+            <div className="profile-divider" />
+            
             <div className="badge">
               {profileData.role === "admin"
                 ? "Admin"
@@ -216,32 +244,59 @@ const Home = () => {
       )}
 
       {/* 🔹 Recommended Jobs Section */}
+      {/* 🔹 Recommended Jobs Section - Carousel Version */}
       <div className="recommended-section">
         <h3 className="recommended-title">Recommended Jobs</h3>
 
-        {loadingJobs ? (
-          <p>Loading recommended jobs...</p>
-        ) : recommendedJobs.length > 0 ? (
-          <div className="job-list">
-            {recommendedJobs.map((job) => (
-              <div
-                key={job.id}
-                className="job-card"
-                onClick={() => navigate(`/job/${job.id}`)}
-                style={{ backgroundImage: job.jobImage ? `url(${job.jobImage})` : "none" }}
-              >
-                <div className="job-overlay">
-                  <h3>{job.position}</h3>
-                  <p>{job.companyName} | {job.location}</p>
-                  <p className="salary">Php {job.salary.toLocaleString()}</p>
-                </div>
+        <div className="recommended-background">
+          {loadingJobs ? (
+            <p>Loading recommended jobs...</p>
+          ) : recommendedJobs.length > 0 ? (
+            <div className="carousel-wrapper">
+              <button className="carousel-button left" onClick={() => scrollCarousel("left")}>←</button>
+
+              <div className="carousel-track" id="job-carousel">
+                {recommendedJobs.map((job) => (
+                  <div
+                    key={job.id}
+                    className="job-card"
+                    onClick={() => navigate(`/job/${job.id}`)}
+                    style={{ backgroundImage: job.jobImage ? `url(${job.jobImage})` : "none" }}
+                  >
+                    <div className="job-overlay">
+                      <h3>{job.position}</h3>
+                      <p>{job.companyName} | {job.location}</p>
+                      <p className="salary">Php {job.salary.toLocaleString()}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        ) : (
-          <p>No jobs available at the moment.</p>
-        )}
+
+              <button className="carousel-button right" onClick={() => scrollCarousel("right")}>→</button>
+            </div>
+          ) : (
+            <p>No jobs available at the moment.</p>
+          )}
+        </div>
       </div>
+</div>
+
+<footer className="site-footer">
+  <div className="footer-container">
+    <div className="footer-left">
+      <p className="footer-title">Our Story</p>
+      <p className="footer-text">
+        InternItUp is a work application site developed for a useful group of LPU students as requirement for their course program, Software Engineering.
+      </p>
+    </div>
+    <div className="footer-right">
+      <p><a href="#">Lyceum of Subic Bay, Inc.</a></p>
+      <p><a href="#">LSB Official FB Page</a></p>
+      <p><a href="#">LSB Pinnacle</a></p>
+    </div>
+  </div>
+</footer>
+
     </>
   );
 };

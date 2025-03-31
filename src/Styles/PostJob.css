@@ -1,0 +1,147 @@
+/* === Job Form Layout === */
+.job-form-wrapper {
+  max-width: 700px;
+  margin: 100px auto;
+  padding: 0 1rem;
+  font-family: 'Segoe UI', sans-serif;
+  text-align: center;
+}
+
+.job-form-title {
+  font-size: 1.8rem;
+  color: #4c3d69;
+  margin-bottom: 0.2rem;
+}
+
+.job-form-subtitle {
+  font-size: 0.9rem;
+  color: #777;
+  margin-bottom: 2rem;
+}
+
+/* === Card === */
+.job-posting-card {
+  background: #fde9dd;
+  padding: 2rem 2.5rem; /* Increased right padding */
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Prevent overflow from inputs */
+.job-posting-card input,
+.job-posting-card textarea {
+  box-sizing: border-box;
+}
+
+.card-header {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #ff6a00;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+/* === Label Styling === */
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.label-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.label-sub {
+  font-size: 0.75rem;
+  color: #888;
+}
+
+/* === Inputs & Textarea === */
+input,
+textarea {
+  padding: 0.8rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  width: 100%;
+  background-color: #fff;
+  color: #333;
+}
+
+textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* === 2-column Layout === */
+.split-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.split-row label {
+  flex: 1;
+}
+
+/* === Disclaimer === */
+.disclaimer {
+  font-size: 0.75rem;
+  color: #666;
+  text-align: center;
+}
+
+/* === Done Button === */
+.done-button {
+  margin-top: 1rem;
+  align-self: center;
+  background-color: #4c3d69;
+  color: white;
+  border: none;
+  padding: 0.6rem 2rem;
+  font-size: 0.95rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.done-button:hover {
+  background-color: #372a54;
+  transform: scale(1.05);
+}
+
+/* === Responsive Fix for Small Screens === */
+@media (max-width: 768px) {
+  .split-row {
+    flex-direction: column;
+  }
+
+  .job-posting-card {
+    padding: 2rem 1.2rem;
+  }
+}
+
+/* === Image Preview Fix === */
+.preview-container {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.preview-image {
+  width: 100%;
+  height: auto;
+  max-height: 300px;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+

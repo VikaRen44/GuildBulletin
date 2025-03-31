@@ -1,12 +1,7 @@
-body {
-  margin-top: 60px; /* Adjust this value based on the navbar height */
-  overflow-x: hidden;
-}
-
-/* Job Detail Page Container */
+/* 🔄 JobDetail.jsx => .job-detail-container */
 .job-detail-container {
   display: flex;
-  flex-wrap: nowrap; /* ✅ prevent vertical stacking */
+  flex-wrap: nowrap;
   background-color: #1e1e1e;
   padding: 140px 5vw 40px;
   min-height: 100vh;
@@ -15,27 +10,25 @@ body {
   align-items: flex-start;
   box-sizing: border-box;
   gap: 25px;
-  max-width: 1500px; /* Limit max width */
+  max-width: 1500px;
   margin: 0 auto;
 }
 
-/* Sidebar Styling */
+/* 🔄 Sidebar container */
 .sidebar {
-  width: 50%;
-  min-width: 300px; /* Prevents it from becoming too small */
+  width: 40%;
+  min-width: 300px;
   max-height: 80vh;
   overflow-y: auto;
   background-color: #292727;
   padding: 15px;
   border-radius: 5px;
   box-sizing: border-box;
-  direction: rtl; /* Flip layout direction */
-  overflow-y: auto;
-  margin-top: 0;         /* just in case there's margin */
-  padding-top: 0;        /* make it flush */
+  direction: rtl;
+  margin-top: 0;
+  padding-top: 0;
 }
 
-/* Reverse inner content direction to keep text LTR */
 .sidebar * {
   direction: ltr;
 }
@@ -43,26 +36,38 @@ body {
 .sidebar::-webkit-scrollbar {
   width: 9px;
 }
-
 .sidebar::-webkit-scrollbar-thumb {
   background: #888;
   border-radius: 4px;
 }
-
 .sidebar::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
-
 .sidebar::-webkit-scrollbar-button {
   display: none;
   height: 0;
   width: 0;
 }
 
-/* Search Bar */
+/* 🔄 Sidebar Header */
+.sidebar-header {
+  position: sticky;
+  top: 0;
+  background-color: #292727;
+  z-index: 10;
+  padding: 15px;
+  border-bottom: 1px solid #444;
+}
+
+.sidebar-header h3 {
+  margin-bottom: 8px;
+  color: white;
+}
+
+/* 🔄 Search Input */
 .search-bar {
   width: 100%;
-  box-sizing: border-box; /* ✅ ensure padding doesn't overflow */
+  box-sizing: border-box;
   padding: 10px;
   margin-bottom: 15px;
   border-radius: 5px;
@@ -72,7 +77,16 @@ body {
   font-size: 16px;
 }
 
-/* Job Item Card */
+/* 🔄 Scrollable job list */
+.sidebar-job-list {
+  overflow-y: auto;
+  flex-grow: 1;
+  padding: 0 15px 15px;
+  background-color: #292727;
+  z-index: 1;
+}
+
+/* 🔄 Individual Job Item */
 .job-item {
   position: relative;
   padding: 15px;
@@ -83,15 +97,14 @@ body {
   transition: 0.4s ease-in-out;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end; /* Keeps text at the bottom */
-  height: 210px; /* Adjust card height */
-  background: #BDC7A9; /* ✅ Default solid color */
+  justify-content: flex-end;
+  height: 210px;
+  background: #BDC7A9;
   color: white;
   text-align: center;
   overflow: hidden;
 }
 
-/* Dark Overlay (Initially Fully Visible) */
 .job-item::before {
   content: "";
   position: absolute;
@@ -102,117 +115,106 @@ body {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-color: #BDC7A9; /* ✅ Solid background initially */
-  opacity: 1; /* ✅ Solid background is fully visible */
+  background-color: #BDC7A9;
+  opacity: 1;
   transition: opacity 0.4s ease-in-out;
 }
 
-/* Reveal Image on Hover */
 .job-item:hover::before {
-  opacity: 0; /* ✅ Image becomes visible */
+  opacity: 0;
 }
 
-/* Selected Job - Keep Image Revealed */
 .job-item.selected::before {
   opacity: 0;
 }
 
-/* Overlay for Better Readability */
-.job-item .job-overlay {
+/* 🔄 Overlay inside each job card */
+.job-overlay {
   position: absolute;
-  bottom: 0;
+  top: 0;
   left: 0;
-  width: 100%;
-  height: 70%; /* ✅ Increase the height of the overlay */
-  background: rgba(189, 199, 169, 0.49); /* ✅ Make the background darker */
-  color: white;
+  width: 75%;
+  height: 100%;
+  background: rgba(30, 30, 30, 0.4); /* light semi-transparent overlay */
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  transition: background 0.3s ease-in-out, height 0.3s ease-in-out;
-  padding: 10px;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 25px;
+  gap: 6px;
+  z-index: 2;
+  text-shadow: 0 0 4px rgba(0, 0, 0, 0.5); /* optional: improves contrast */
+  box-sizing: border-box;
 }
 
-/* Darken Overlay on Hover */
+.job-overlay h4 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #00f8fc;
+  margin: 0;
+}
+
+.job-overlay p {
+  margin: 0;
+  font-size: 14px;
+  color: #f6f6f6;
+}
+
 .job-item:hover .job-overlay {
-  background: rgba(48, 50, 44, 0.592);
+  background: rgba(30, 30, 30, 0.877); /* light semi-transparent overlay */
 }
 
-/* Job Title */
+.job-item.selected .job-overlay {
+  background: rgba(42, 20, 0, 0.447);
+  
+}
+
+/* 🔄 Job Titles */
 .job-item h4 {
-  font-size: 18px;
+  font-size: 30px;
   font-weight: bold;
   color: #F6FF81;
-  margin-bottom: 5px;
   position: relative;
   z-index: 2;
   text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
 }
 
-/* Company & Location */
+/* 🔄 Company & Location */
 .job-item p {
-  font-size: 14px;
+  font-size: 16px;
   color: #F2FFD6;
   position: relative;
   z-index: 2;
   text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
 }
 
-/* Selected Job - Darker Overlay */
-.job-item.selected .job-overlay {
-  background: rgba(0, 0, 0, 0.8);
-}
-
-/* Hover Effect */
-.job-item:hover {
-  transform: scale(1.02);
-  transition: transform 0.2s ease-in-out;
-}
-
-/* Remove old img styling (Now using background-image) */
-.job-card-image {
-  display: none;
-}
-
-/* Job Title */
-.job-item h4 {
-  font-size: 18px;
-  font-weight: bold;
-  color: #F6FF81;
-  margin-bottom: 5px;
-}
-
-/* Company & Location */
 .company-location {
   font-size: 14px;
   color: #F2FFD6;
   margin-bottom: 5px;
 }
 
-/* Salary Text */
 .salary {
   font-weight: bold;
-  color: #517800;
-  font-size: 16px;
+  color: #00aaff;
+  font-size: px;
   margin-top: 5px;
 }
 
-/* Job Details Section */
+/* 🔄 Detail Container (Right Panel) */
 .detail-container {
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   flex-grow: 1;
-  width: 90%;
-  padding: 30px;
+  width: 60%;
+  padding: 50px;
   background-color: #646F58;
   color: #e0e6d2;
   box-sizing: border-box;
-  min-height: 600px;
+  min-height: 500px;
   border-radius: 10px;
-  padding: 60px;
 }
 
 .sidebar,
@@ -220,42 +222,7 @@ body {
   flex-shrink: 0;
 }
 
-/* Sticky header inside sidebar */
-.sidebar-header {
-  position: sticky;
-  top: 0;
-  background-color: #292727;
-  z-index: 10;
-  padding: 15px;
-  border-bottom: 1px solid #444; /* Optional: adds visual separation */
-}
-
-/* Adjust search bar spacing */
-.sidebar-header h3 {
-  margin-bottom: 8px;
-  color: white;
-}
-
-.search-bar {
-  width: 100%;
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid #888;
-  background-color: #f5f5f5;
-  color: #333;
-  font-size: 16px;
-}
-
-/* Scrollable job list area */
-.sidebar-job-list {
-  overflow-y: auto;
-  flex-grow: 1;
-  padding: 0 15px 15px;
-  background-color: #292727; /* Match background to avoid contrast when scrolling */
-  z-index: 1;
-}
-
-/* Job Header */
+/* 🔄 Detail Header */
 .detail-header {
   display: flex;
   justify-content: space-between;
@@ -263,22 +230,20 @@ body {
   margin-bottom: 20px;
 }
 
-/* Job Title */
 .detail-container h2 {
-  font-size: 24px;
+  font-size: 30px;
   font-weight: bold;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   color: #fff;
 }
 
-/* Job Info (Company, Location) */
-.detail-container .company-location {
-  font-size: 16px;
-  margin-bottom: 12px;
+.detail-container {
+  font-size: 18px;
+  margin-bottom: 10px;
   color: #ddd;
 }
 
-/* Job Summary */
+/*Job Summary, Base Pay, Submit CV Title*/
 .detail-container h3 {
   font-size: 18px;
   margin-top: 20px;
@@ -286,7 +251,7 @@ body {
   color: #fff;
 }
 
-/* Salary Box */
+/* 🔄 Salary Box (optional future use) */
 .salary-box {
   background-color: #fff;
   padding: 15px;
@@ -298,7 +263,7 @@ body {
   max-width: 400px;
 }
 
-/* Buttons - Align in a Single Row */
+/* 🔄 Button Group */
 .button-container {
   display: flex;
   justify-content: space-between;
@@ -306,14 +271,14 @@ body {
   gap: 10px;
 }
 
-/* Like & Report Buttons */
 .like-report-group {
   display: flex;
   gap: 10px;
 }
 
-/* Like & Report Button Styling */
-.like-button, .report-button {
+/* 🔄 Like and Report Buttons */
+.like-button,
+.report-button {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -325,7 +290,6 @@ body {
   min-width: 100px;
 }
 
-/* Like Button */
 .like-button {
   background-color: white;
   color: black;
@@ -337,13 +301,12 @@ body {
   color: white;
 }
 
-/* Report Button */
 .report-button {
   background-color: #ff4d4d;
   color: white;
 }
 
-/* Apply Button */
+/* 🔄 CV Submission Button */
 .apply-button {
   background-color: #AFBE8F;
   color: white;
@@ -362,7 +325,7 @@ body {
   transform: scale(1.05);
 }
 
-/* Report Modal */
+/* 🔄 Report Modal Overlay */
 .report-modal {
   position: fixed;
   top: 0;
@@ -375,7 +338,7 @@ body {
   align-items: center;
 }
 
-/* Modal Box */
+/* 🔄 Modal Box */
 .report-content {
   background: #292727;
   padding: 25px;
@@ -385,7 +348,7 @@ body {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
-/* Report Options */
+/* 🔄 Report Reasons List */
 .report-option {
   display: flex;
   align-items: center;
@@ -399,7 +362,7 @@ body {
   color: white;
 }
 
-/* Checkbox Styling */
+/* 🔄 Custom Checkbox */
 .report-option input[type="checkbox"] {
   width: 20px;
   height: 20px;
@@ -407,15 +370,15 @@ body {
   accent-color: red;
 }
 
-/* Report Modal Buttons */
+/* 🔄 Modal Action Buttons */
 .report-buttons {
   display: flex;
   justify-content: space-between;
   margin-top: 15px;
 }
 
-/* Submit & Cancel Buttons */
-.submit-report, .cancel-report {
+.submit-report,
+.cancel-report {
   padding: 10px 15px;
   font-size: 16px;
   border: none;

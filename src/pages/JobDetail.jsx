@@ -200,9 +200,8 @@ const JobDetail = () => {
               }}
             >
               <div className="job-overlay">
+                <p>{job.companyName} | {job.location}</p>
                 <h4>{job.position}</h4>
-                <p>{job.companyName}</p>
-                <p>{job.location}</p>
                 <p className="salary">Php {job.salary.toLocaleString()}</p>
               </div>
             </div>

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { db } from "../firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import "../Styles/UploadCV.css";
 
 const UploadCV = ({ userId }) => {
   const [pdfLink, setPdfLink] = useState("");
@@ -37,20 +38,33 @@ const UploadCV = ({ userId }) => {
   };
 
   return (
-    <div className="upload-container">
-      <h2>Submit Your CV</h2>
-      <p>Upload your CV to **Google Drive**, make it **public**, and paste the link below.</p>
-      <input
-        type="url"
-        placeholder="Enter PDF link..."
-        value={pdfLink}
-        onChange={(e) => setPdfLink(e.target.value)}
-      />
-      <button onClick={handleUpload} disabled={uploading}>
-        {uploading ? "Uploading..." : "Submit"}
-      </button>
+    <div className="uploadcv-wrapper">
+      <div className="uploadcv-card">
+        <h2>Submit Your CV</h2>
+        <p>
+          Upload your CV to <strong>Google Drive</strong>, make it{" "}
+          <strong>public</strong>, and paste the link below.
+        </p>
+  
+        <div className="uploadcv-form">
+          <input
+            type="url"
+            placeholder="Enter PDF link..."
+            value={pdfLink}
+            onChange={(e) => setPdfLink(e.target.value)}
+            className="uploadcv-input"
+          />
+          <button
+            onClick={handleUpload}
+            disabled={uploading}
+            className="uploadcv-btn"
+          >
+            {uploading ? "Uploading..." : "Submit"}
+          </button>
+        </div>
+      </div>
     </div>
-  );
+  );  
 };
 
 export default UploadCV;

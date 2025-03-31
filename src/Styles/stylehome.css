@@ -1,356 +1,449 @@
-/* Ensure everything is properly centered */
-.container {
-  width: 90% !important;
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 20px;
+body {
+  overflow-x: hidden;
 }
 
-/* 🔍 Search Section - Stacks Elements Vertically */
+/* === Ensure page content starts after Navbar === */
+.page-wrapper {
+  padding-top: 150px; /* Leave space for fixed navbar */
+  padding-left: 2rem;
+  padding-right: 2rem;
+  width: 1000px;
+  margin: auto;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f9f9f9;
+}
+
+/* === Search Section === */
 .search-section {
   display: flex;
-  padding: 20px 15px;
-  flex-direction: column; /* Stack elements */
-  align-items: flex-start; /* Align items to the left */
-  width: 100%;
-  max-width: 1280px;
-  margin: 0 auto;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2.5rem;
 }
 
-/* 🔎 Search Bar and Button in a Row */
 .search-bar-container {
   display: flex;
-  align-items: center;
-  width: 100%;
-}
-
-/* 🔍 Search Bar */
-.search-container {
-  display: flex;
-  align-items: center;
-  background-color: #f0f0d8; /* Beige background */
-  padding: 5px 15px;
-  border-radius: 0px 10px 10px 0px;
-  border: 1px solid #504B3A;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-  flex-grow: 1;
-}
-
-/* 🔍 Search Button */
-.search-button {
-  background: #504B3A;
-  border: none;
-  padding: 21px 15px;
-  width: 150px;
-  border-radius: 15px 0px 0px 15px;
-  font-weight: bold;
-  cursor: pointer;
-  color: #F2FFD6;
-  font-size: 16px;
-  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
   align-items: center;
   justify-content: center;
+  margin-bottom: 1rem;
 }
 
-/* 🔎 Search Input */
 .search-input {
-  flex-grow: 1;
-  padding: 10px;
-  border: none;
-  font-size: 14px;
-  background: transparent;
-  color: #3a3a3a;
-  outline: none;
+  padding: 0.6rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  min-width: 850px;
+  background-color: white;
+  color: #333;
 }
 
-/* 📝 Upload CV & Post a Job Button */
+.search-button {
+  background-color: #ff6a00;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s ease;
+}
+
+.search-button:hover {
+  background-color: #e25a00;
+  transform: scale(1.05);
+}
+
 .button-wrapper {
-  width: 100%; /* Ensures button stays left-aligned */
   display: flex;
-  justify-content: flex-start; /* Aligns the button to the left */
-  margin-top: 20px;
-  margin-bottom: 30px; /* Adds spacing below the search bar */
+  justify-content: center;
+  margin-top: 1rem;
+  gap: 1rem;
 }
 
 .upload-button,
 .post-button {
-  padding: 20px 20px;
-  border-radius: 5px;
-  background: #646F58;
+  background-color: white;
+  color: #ff6a00;
+  padding: 0.6rem 1.2rem;
+  border: 1px solid #ff6a00;
+  border-radius: 20px;
   font-weight: bold;
-  color: #DDE392;
   cursor: pointer;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 200px; /* Consistent button width */
-  height: 80px;
-  transition: transform 0.3s ease-in-out;
+  transition: all 0.3s ease;
 }
 
 .upload-button:hover,
 .post-button:hover {
+  background-color: #ff6a00;
+  color: white;
   transform: scale(1.05);
 }
 
-/* 🏆 Profile Card Layout */
+/* === Profile Card === */
 .profile-card {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
   display: flex;
-  align-items: center; /* Align content vertically */
-  background-color: #f0f0d8; /* Soft background */
-  padding: 50px;
-  border-radius: 12px;
-  max-width: 1220px;
-  margin: 0 auto;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-  gap: 20px;
-  justify-content: space-between;
-  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
 }
 
-/* Profile Image */
 .profile-image-container {
-  flex-shrink: 0;
+  margin-bottom: 0.1rem;
 }
 
 .profile-image {
-  width: 300px;
-  height:300px;
-  border-radius:50%;
+  width: 100px;
+  height: 100px;
+  border-radius: 20px;
   object-fit: cover;
-  border: 4px solid white;
+  border: 1px solid #ccc;
 }
 
-/* Profile Info */
 .profile-info-container {
-  flex-grow: 1;
-  text-align: left;
+  text-align: center;
+  margin-top: 1rem;
 }
 
 .profile-name {
-  font-size: 40px;
+  color: #ff6a00;
+  font-size: 2rem;
   font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.profile-divider {
+  height: 1px;
+  background-color: #eee;
+  width: 100%;
+  margin: 1rem 0;
+}
+
+.badge {
+  background-color: #f2f2f2;
+  padding: 0.3rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  margin-bottom: 1rem;
   color: #333;
 }
 
 .profile-info {
-  font-size: 14px;
+  font-size: 0.9rem;
   color: #555;
-  line-height: 1.4;
-  max-width: 400px;
+  margin-bottom: 1rem;
 }
 
-.badge {
-  color: #1e1e1e;
-}
-
-/* Edit Profile Button */
 .edit-profile {
-  margin-top: 10px;
-  padding: 8px 12px;
-  border-radius: 6px;
-  background-color: #4a5a3e;
+  background-color: #ff6a00;
   color: white;
+  padding: 0.5rem 1rem;
   border: none;
-  cursor: pointer;
-}
-
-/* Social Icons */
-.social-icons {
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
-  align-items: flex-end;
-}
-
-.social-icons .icon {
-  color: #4a5a3e;
-  width: 30px; /* Change to desired size */
-  height: 30px;
-  transition: transform 0.3s ease-in-out;
-  cursor: pointer;
-}
-
-/* Hover Effect */
-.social-icons .icon:hover {
-  color:#3a3a3a;
-  transform: scale(1.1);
-}
-
-/* Recommended Jobs Section (Independent) */
-.recommended-section {
-  background-color: #646F58;
-  width: 120%;
-  max-width: 1280px;
-  margin: 40px auto;
-  padding: 20px;
-  overflow: hidden; /* Prevents unwanted scrolling */
-  
-}
-
-/* Recommended Title */
-.recommended-title {
-  color: #F2FFD6;
-  font-size: 25px;
+  border-radius: 20px;
   font-weight: bold;
-  margin-bottom: 10px;
-  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-/* Set variables for adjustable job card dimensions */
-:root {
-  --job-card-width: 500px; /* ✅ Edit this to change width */
-  --job-card-height: 300px; /* ✅ Edit this to change height */
-}
-
-/* Job List (Carousel Container) */
-.job-list {
-  display: flex;
-  gap: 15px;
-  overflow-x: auto; /* Enables horizontal scrolling */
-  scroll-snap-type: x mandatory; /* Snaps items while scrolling */
-  padding-bottom: 10px; /* Prevents clipping at the bottom */
-  width: 1280px; /* Takes full width of container */
-  max-width: 100%;
-  justify-content: flex-start;
-  -ms-overflow-style: none; /* Hides scrollbar in Internet Explorer & Edge */
-  scrollbar-width: none; /* Hides scrollbar in Firefox */
-}
-
-/* Custom Scrollbar Styling */
-.job-list::-webkit-scrollbar {
-  display: none; /* Hides the scrollbar */
-}
-
-/* Job Card - Uses CSS variables for width & height */
-.job-card {
-  flex: 0 0 var(--job-card-width); /* ✅ Adjustable width */
-  height: var(--job-card-height); /* ✅ Adjustable height */
-  margin-right: 10px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  scroll-snap-align: start;
-  transition: transform 0.3s ease-in-out;
-  position: relative;
-  border: none;
-  background: none;
-}
-
-/* Job Card Last Item */
-.job-card:last-child {
-  margin-right: 0;
-}
-
-/* Job Card Hover Effect */
-.job-card:hover {
+.edit-profile:hover {
+  background-color: #e25a00;
   transform: scale(1.05);
 }
 
-/* Job Image as Background */
-.job-card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+.social-icons {
+  margin-top: 1rem;
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.icon {
+  color: #ff6a00;
+  font-size: 1.2rem;
+  transition: transform 0.3s;
+}
+
+.icon:hover {
+  transform: scale(1.2);
+}
+
+/* === Job Listings === */
+.recommended-section {
+  margin-top: 4rem;
+}
+
+.recommended-background {
+  background: linear-gradient(to bottom right, #fffdfc, #f9f9f9);
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+}
+
+.recommended-title {
+  font-size: 1.6rem;
+  color: #333;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.job-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.job-card {
+  position: relative;
   background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
-}
-
-/* Default Background Before Hover */
-.job-card::before {
-  background: rgba(189, 199, 169, 1); /* Solid color before hover */
-}
-
-/* Overlay for Readability */
-.job-overlay {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  padding: 15px;
-  background: rgba(0, 0, 0, 0.6);
+  padding: 1.5rem;
+  border-radius: 20px;
+  cursor: pointer;
   color: white;
-  transition: background 0.3s ease-in-out;
+  overflow: hidden;
+  min-height: 150px;
+  transition: transform 0.3s ease;
 }
 
-/* Hover Effect - Reveal Image */
-.job-card:hover::before {
-  opacity: 1;
+.job-card:hover {
+  transform: scale(1.02);
 }
 
-.job-card:hover .job-overlay {
-  background: rgba(0, 0, 0, 0.8);
+.job-overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 1rem;
+  border-radius: 20px;
+  height: 100%;
 }
 
-/* Selected Job - Keep Image Revealed */
-.job-card.selected::before {
-  opacity: 1;
-}
-
-.job-card.selected .job-overlay {
-  background: rgba(0, 0, 0, 0.8);
-}
-
-/* Job Title */
-.job-title {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px;
-  font-size: 25px;
+.salary {
   font-weight: bold;
-  color: #504B3A;
-  background: rgba(236, 248, 218, 0.6);
+  color: #ffdd99;
 }
 
-/* Responsive - Adjusts for Smaller Screens */
-@media screen and (max-width: 768px) {
-  :root {
-    --job-card-width: 100%; /* Full width on small screens */
-    --job-card-height: 250px; /* Smaller height */
-  }
-
-  .job-title {
-    font-size: 20px;
-    height: 50px;
-  }
-}
-
+/* === Notice Popup === */
 .notice-popup {
   position: fixed;
-  top: 30%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: white;
-  color: black;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
-}
-
-.notice-content {
-  text-align: center;
+  top: 80px;
+  right: 20px;
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+  border-radius: 10px;
+  padding: 1rem;
+  z-index: 1001;
+  max-width: 300px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
 .notice-button {
-  margin-top: 10px;
-  padding: 8px 16px;
-  border: none;
-  background-color: red;
+  background-color: #ff6a00;
   color: white;
+  border: none;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  margin-top: 1rem;
   cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
+
+.notice-button:hover {
+  background-color: #e25a00;
+  transform: scale(1.05);
+}
+
+/* === Hirer Profile View === */
+.hirer-profile-container {
+  background-color: #241d33; /* Same as login box */
+  padding: 2rem;
+  width: 500px;
+  margin: 8rem auto 4rem; /* ⬅ adds space from top (navbar) */
+  border-radius: 20px; /* Rounded card */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Soft shadow */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
+  color: #ffffff;
+}
+
+/* === Profile Title === */
+.hirer-profile-container h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #ffffff;
+}
+
+/* === Profile Image Styling === */
+.profile-image {
+  width: 160px;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 16px;
+  border: 1px solid #ffffff44;
+  margin: 0 auto 0.1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* === Profile Info Section === */
+.profile-info {
+  padding: 0 0.5rem;
+  font-size: 14px;
+  margin-bottom: 1.5rem;
+}
+
+.profile-info p {
+  margin: 10px 0;
+  line-height: 1.4;
+}
+
+.profile-info p strong {
+  color: #ffffff;
+}
+
+/* === Back Button === */
+.back-button {
+  background-color: #ff713b;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.back-button:hover {
+  background-color: #e25a00;
+  transform: scale(1.05);
+}
+
+
+/* === Carousel Styles === */
+.carousel-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 1rem;
+  position: relative;
+}
+
+.carousel-track {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 1rem 0;
+  scrollbar-width: none; /* Firefox */
+}
+
+.carousel-track::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.carousel-button {
+  background-color: #ff6a00;
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  outline: none;
+}
+
+.carousel-button:hover {
+  background-color: #FF7038;
+}
+
+.carousel-button:focus {
+  outline: none;
+}
+
+.carousel-button.left {
+  margin-right: 0.5rem;
+}
+
+.carousel-button.right {
+  margin-left: 0.5rem;
+}
+
+
+/* Optional override if needed for horizontal cards */
+.job-card {
+  min-width: 280px;
+  height: 160px;
+  flex-shrink: 0;
+}
+
+/* === Footer === */
+.site-footer {
+  background-color: #2c1a4d;
+  color: #f4eaff;
+  padding: 2rem 1rem;
+  font-size: 0.9rem;
+  margin-top: 4rem;
+
+  /* Make footer full width */
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
+
+
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  max-width: 1100px;
+  margin: auto;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.footer-left, .footer-right {
+  flex: 1;
+  min-width: 250px;
+}
+
+.footer-title {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #fcb045;
+}
+
+.footer-text {
+  line-height: 1.5;
+  color: #e0d3f7;
+}
+
+.footer-right p {
+  margin: 0.3rem 0;
+}
+
+.footer-right a {
+  color: #ff9900;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.footer-right a:hover {
+  color: #ffc766;
+}
+

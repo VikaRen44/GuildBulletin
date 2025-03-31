@@ -65,7 +65,7 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-container">
-        <h1 className="navbar-title">Job Bulletin</h1>
+        <h1 className="navbar-title">InternItUp</h1>
         <div className="nav-links">
           <Link to="/home" className="nav-link">Home</Link>
           
@@ -92,7 +92,7 @@ const Navbar = () => {
           )}
 
           {!loading && userRole && (
-            <button onClick={handleLogout} className="nav-link logout-btn">
+            <button onClick={handleLogout} className="nav-link-logout-btn">
               Logout
             </button>
           )}

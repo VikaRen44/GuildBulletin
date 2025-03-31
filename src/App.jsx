@@ -41,12 +41,16 @@ const ProtectedRoute = ({ element, allowedRoles, userId }) => {
 const Layout = ({ children }) => {
   const location = useLocation();
 
-  return (
-    <>
-      {location.pathname !== "/login" && location.pathname !== "/register" && <Navbar />}
-      {children}
-    </>
-  );
+    // 👇 List of routes where Navbar should be hidden
+    const hideNavbarRoutes = ["/login", "/register", "/complete-profile"];
+
+    return (
+      <>
+        {/* Hide Navbar on these specific routes */}
+        {!hideNavbarRoutes.includes(location.pathname) && <Navbar />}
+        {children}
+      </>
+    );
 };
 
 const App = () => {

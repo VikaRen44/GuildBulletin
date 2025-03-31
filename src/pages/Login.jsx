@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "../firebase"; // ✅ Import Firebase
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import "../Styles/login.css"; // Import CSS file
+import googleLogo from "../assets/google.png";
 
 const googleProvider = new GoogleAuthProvider(); // 🔹 Google Auth Provider
 
@@ -84,6 +85,19 @@ const redirectUser = (role) => {
   navigate("/home"); // ✅ All users, including admin, now go to "/home"
 };
 
+useEffect(() => {
+  // Prevent user from going back to a protected page
+  window.history.pushState(null, "", window.location.href);
+  const handlePopState = () => {
+    window.history.pushState(null, "", window.location.href);
+  };
+  window.addEventListener("popstate", handlePopState);
+
+  return () => {
+    window.removeEventListener("popstate", handlePopState);
+  };
+}, []);
+
 
   return (
     <div className="login-page">
@@ -99,6 +113,7 @@ const redirectUser = (role) => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            className="login_input"
           />
 
           <label>Password</label>
@@ -107,6 +122,7 @@ const redirectUser = (role) => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            className="login_input"
           />
         </div>
 
@@ -114,7 +130,7 @@ const redirectUser = (role) => {
         <div className="button-container">
           <button className="login-btn" onClick={handleLogin}>Login</button>
           <button className="google-btn" onClick={handleGoogleLogin}>
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" alt="Google Logo" style={{ width: "20px", marginRight: "10px" }} />
+            <img src={googleLogo} alt="Google Logo" style={{ width: "20px", marginRight: "10px" }} />
             Sign in with Google
           </button>
         </div>

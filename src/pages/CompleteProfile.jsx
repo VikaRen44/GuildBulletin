@@ -10,7 +10,7 @@ const db = getFirestore();
 const CompleteProfile = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const isEditMode = location.state?.editMode || false; // Check if edit mode
+  const isEditMode = location.state?.editMode || false;
 
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
@@ -23,7 +23,7 @@ const CompleteProfile = () => {
     instagram: "",
     role: "applicant",
     profileImage: "",
-    password: "", // Added password field
+    password: "",
   });
 
   useEffect(() => {
@@ -35,7 +35,7 @@ const CompleteProfile = () => {
         setUser(currentUser);
         const userDoc = await getDoc(doc(db, "Users", currentUser.uid));
         if (userDoc.exists()) {
-          setFormData((prev) => ({ ...prev, ...userDoc.data(), password: "" })); // Do not load password from Firestore
+          setFormData((prev) => ({ ...prev, ...userDoc.data(), password: "" }));
         }
       }
     });
@@ -51,7 +51,7 @@ const CompleteProfile = () => {
     const file = e.target.files[0];
     if (!file) return;
 
-    if (file.size > 700 * 1024) { // Limit file size (~700KB max)
+    if (file.size > 700 * 1024) {
       alert("Image too large! Please use an image under 700KB.");
       return;
     }
@@ -66,12 +66,15 @@ const CompleteProfile = () => {
   const handleSubmit = async () => {
     if (!user) return;
     try {
-      await setDoc(doc(db, "Users", user.uid), {
-        ...formData,
-        updatedAt: new Date(),
-      }, { merge: true });
+      await setDoc(
+        doc(db, "Users", user.uid),
+        {
+          ...formData,
+          updatedAt: new Date(),
+        },
+        { merge: true }
+      );
 
-      // If password is set and not in edit mode, update Firebase Authentication password
       if (formData.password && !isEditMode) {
         await updatePassword(user, formData.password);
       }
@@ -85,14 +88,17 @@ const CompleteProfile = () => {
   };
 
   return (
-    <div className="complete-profile-page">
-      <div className="container">
+    <div className="complete-profile-wrapper">
+      <div className="complete-profile-container">
         <h1>{isEditMode ? "Edit Your Profile" : "Complete Your Profile"}</h1>
 
-        {/* ✅ Always allow profile picture upload */}
-        <div className="profile-pic-container">
+        <div className="complete-profile-pic-container">
           {formData.profileImage ? (
-            <img src={formData.profileImage} alt="Profile" className="profile-preview" />
+            <img
+              src={formData.profileImage}
+              alt="Profile"
+              className="complete-profile-preview"
+            />
           ) : (
             <p>No profile picture uploaded</p>
           )}
@@ -101,36 +107,69 @@ const CompleteProfile = () => {
         </div>
 
         <label>First Name</label>
-        <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} />
+        <input
+          type="text"
+          name="firstName"
+          value={formData.firstName}
+          onChange={handleChange}
+        />
 
         <label>Last Name</label>
-        <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} />
+        <input
+          type="text"
+          name="lastName"
+          value={formData.lastName}
+          onChange={handleChange}
+        />
 
         <label>About You</label>
         <textarea name="about" value={formData.about} onChange={handleChange} />
 
         <label>Facebook</label>
-        <input type="text" name="facebook" value={formData.facebook} onChange={handleChange} />
+        <input
+          type="text"
+          name="facebook"
+          value={formData.facebook}
+          onChange={handleChange}
+        />
 
         <label>Gmail</label>
-        <input type="text" name="gmail" value={formData.gmail} onChange={handleChange} />
+        <input
+          type="text"
+          name="gmail"
+          value={formData.gmail}
+          onChange={handleChange}
+        />
 
         <label>X (Twitter)</label>
-        <input type="text" name="xLink" value={formData.xLink} onChange={handleChange} />
+        <input
+          type="text"
+          name="xLink"
+          value={formData.xLink}
+          onChange={handleChange}
+        />
 
         <label>Instagram</label>
-        <input type="text" name="instagram" value={formData.instagram} onChange={handleChange} />
+        <input
+          type="text"
+          name="instagram"
+          value={formData.instagram}
+          onChange={handleChange}
+        />
 
-        {/* 🔹 Show password field ONLY if NOT in Edit Mode */}
         {!isEditMode && (
           <>
             <label>Password</label>
-            <input type="password" name="password" value={formData.password} onChange={handleChange} />
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+            />
             <small>⚠️ Choose a secure password</small>
           </>
         )}
 
-        {/* 🔹 Hide role selection ONLY in Edit Mode */}
         {!isEditMode && (
           <>
             <label>Register as:</label>
@@ -141,12 +180,13 @@ const CompleteProfile = () => {
           </>
         )}
 
-        <button onClick={handleSubmit}>{isEditMode ? "Update Profile" : "Save Profile"}</button>
+        <button onClick={handleSubmit}>
+          {isEditMode ? "Update Profile" : "Save Profile"}
+        </button>
       </div>
     </div>
   );
 };
 
 export default CompleteProfile;
-
 

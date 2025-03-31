@@ -1,97 +1,154 @@
-/* styles.css */
-
-/* Center the whole form */
-body {
-  background-color: #1e1e1e;
-  font-family: "Arial", sans-serif;
+/* === Whole Page === */
+.login-page {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  margin: 0;
+  min-height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
+  animation: fadeIn 1s ease-in;
 }
 
+/* === Fade-in Animation === */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* === Container Box === */
 .container {
-  width: 320px; /* Adjust width */
-  padding: 20px;
-  color: #e0f8d0;
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* Centers the whole container */
+  background-color: #1f182e;
+  padding: 2.5rem 3rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  width: 450px;
+  text-align: center;
+  animation: popUp 0.6s ease-in-out;
 }
 
-/* Title and Subtitle */
+/* === Pop-up Animation for container === */
+@keyframes popUp {
+  from {
+    scale: 0.95;
+    opacity: 0;
+  }
+  to {
+    scale: 1;
+    opacity: 1;
+  }
+}
+
+/* === Title / Subtitle === */
 .title {
-  font-size: 2rem;
+  color: #ff6a00;
+  font-size: 1.5rem;
   font-weight: bold;
-  text-align: center;
-  text-shadow: 0 0 10px #e0f8d0;
+  margin-bottom: 0.3rem;
 }
 
 .subtitle {
-  font-style: italic;
-  text-align: center;
-  color: #b5b5b5;
+  color: #f1f1f1;
+  font-size: 0.75rem;
+  margin-bottom: 2rem;
 }
 
-/* 🔹 Input Section */
+/* === Input Section === */
 .input-container {
-  width: 100%;
-  text-align: left; /* Ensures labels and inputs are left-aligned */
+  text-align: left;
+  margin-bottom: 1.5rem;
 }
 
-label {
-  font-size: 1rem;
-  font-weight: bold;
-  color: #c1c1c1;
+.input-container label {
   display: block;
-  margin-bottom: 5px;
+  font-size: 0.75rem;
+  color: #fff;
+  margin-bottom: 0.25rem;
 }
 
-input {
+.login_input {
   width: 100%;
-  padding: 10px;
+  padding: 0.75rem;
+  border-radius: 8px;
   border: none;
-  border-radius: 5px;
-  background-color: #2b2b2b; /* Dark background */
-  color: #e0f8d0;
-  font-size: 1rem;
-  outline: none;
-  margin-bottom: 10px;
-  display: block;
+  background-color: #2a233b;
+  color: white;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+  transition: box-shadow 0.3s ease;
 }
 
-/* 🔹 Button Section */
+/* === Input Focus Animation === */
+.login_input:focus {
+  outline: none;
+  box-shadow: 0 0 5px 2px #ff6a00;
+}
+
+/* === Buttons Container === */
 .button-container {
   display: flex;
+  gap: 0.5rem;
   justify-content: center;
-  gap: 10px;
-  margin-top: 15px;
+  margin-bottom: 1.5rem;
 }
 
-button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: bold;
-  cursor: pointer;
-  text-align: center;
-  transition: opacity 0.2s ease-in-out;
-  width: 120px; /* Makes both buttons uniform in width */
-}
-
-.register-btn {
-  background-color: #554d3f;
-  color: #fff;
-}
-
+/* === Orange Login Button === */
 .login-btn {
-  background-color: #98a675;
-  color: #fff;
+  background-color: #ff6a00;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-button:hover {
-  opacity: 0.8;
+.login-btn:hover {
+  background-color: #e65a00;
+  transform: translateY(-2px);
 }
 
+/* === Google Button === */
+.google-btn {
+  background-color: #e6e6fa;
+  color: black;
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  height: 100%;            /* Prevent height override */
+}
+
+.google-btn:hover {
+  background-color: #d8d8f0;
+  transform: translateY(-2px);
+}
+
+/* === Register Prompt === */
+.container p {
+  font-size: 0.75rem;
+  color: #ccc;
+}
+
+.container a {
+  color: #ff6a00;
+  text-decoration: none;
+  font-weight: bold;
+  margin-left: 0.25rem;
+  transition: color 0.2s ease;
+}
+
+.container a:hover {
+  color: #ffa64d;
+}
