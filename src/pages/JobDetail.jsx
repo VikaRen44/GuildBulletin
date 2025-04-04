@@ -217,12 +217,12 @@ const JobDetail = () => {
           <p><strong>Location:</strong> {selectedJob.location}</p>
           <p>
             <strong>Hirer Account:</strong>{" "}
-            <span
+            <button
+              className="view-profile-btn"
               onClick={() => navigate(`/hirer/${selectedJob.hirerId}`)}
-              style={{ color: "blue", cursor: "pointer", textDecoration: "underline" }}
             >
               View Profile
-            </span>
+            </button>
           </p>
           <h3>Job Summary</h3>
           <p>{selectedJob.description}</p>

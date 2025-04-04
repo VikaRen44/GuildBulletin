@@ -1,70 +1,180 @@
-/* Center the whole form */
-.admin-container {
-  background-color: #5d624d; /* Match the background color */
-  padding: 20px;
-  min-height: 100vh;
-  text-align: center;
+.admin-page-container {
+  padding: 2rem;
+  font-family: 'Segoe UI', sans-serif;
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
-.admin-title {
-  color: white;
-  font-size: 20px;
-  margin-bottom: 20px;
+.admin-hirer-card {
+  display: flex;
+  flex-direction: row;
+  background-color: #f8f8f8;
+  border-radius: 2.2rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+  margin-bottom: 2rem;
+  overflow: hidden;
+  border: 3px solid transparent;
+  transition: border-color 0.3s ease;
 }
 
-.user-card {
+.admin-picture-section {
+  width: 180px;
   display: flex;
   align-items: center;
-  background-color: #c1c5a5;
-  padding: 15px;
-  margin: 10px auto;
-  border-radius: 8px;
-  border: 3px solid;
-  max-width: 600px;
+  justify-content: center;
+  overflow: hidden;
   position: relative;
 }
 
-.user-image {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
+.admin-profile-image {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  margin-right: 15px;
+  border-top-left-radius: 2rem;
+  border-bottom-left-radius: 2rem;
 }
 
-.user-info {
+.admin-details-section {
   flex: 1;
-  text-align: left;
-  font-size: 14px;
-}
-
-.input-box {
-  width: 200px;
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.action-buttons {
+  padding: 1.5rem 2rem;
   display: flex;
-  gap: 5px;
+  flex-direction: column;
+  justify-content: center;
+  color: #4e387e;
 }
 
-.green-btn,
-.red-btn {
-  width: 30px;
-  height: 20px;
-  border-radius: 5px;
+.admin-details-section p {
+  margin: 0.3rem 0;
+  font-size: 0.95rem;
+}
+
+.admin-detail-label {
+  font-size: 0.75rem;
+  color: #888;
+  margin-top: 10px;
+  margin-bottom: 2px;
+}
+
+.admin-actions-section {
+  width: 150px;
+  border-left: 2px solid #e0a09b;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-top-right-radius: 2rem;
+  border-bottom-right-radius: 2rem;
+  gap: 1rem;
+}
+
+.admin-accept-btn,
+.admin-reject-btn {
+  padding: 0.6rem 1.4rem;
+  font-size: 0.9rem;
+  font-weight: bold;
   border: none;
+  border-radius: 0.6rem;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+  width: 100%; /* or any fixed value like 120px */
+  text-align: center;
+}
+
+.admin-accept-btn:hover,
+.admin-reject-btn:hover {
+  transform: scale(1.05);
+}
+
+.admin-accept-btn {
+  background-color: #a3ff5f;
+  color: #222;
+}
+
+.admin-reject-btn {
+  background-color: #f44336;
+  color: white;
+}
+
+.admin-view-btn {
+  background-color: orange;
+  border: none;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: bold;
+  padding: 0.3rem 0.7rem;
+  border-radius: 0.5rem;
+  margin-left: 0.4rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.admin-view-btn:hover {
+  background-color: #e69500;
+}
+
+.admin-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-modal-content {
+  background: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  max-height: 80vh;
+  overflow-y: auto;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  color: #333;
+}
+
+.admin-close-btn {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #f44336;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 0.5rem;
   cursor: pointer;
 }
 
-.green-btn {
-  background-color: green;
+.admin-dropdown-toggle {
+  background-color: #f9f9f9;
+  color: #333;
+  border: 1px solid #ccc;
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+  width: 100%;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
-.red-btn {
-  background-color: red;
+.admin-dropdown-toggle:hover {
+  background-color: #eee;
 }
 
-  
+.admin-job-reports {
+  background-color: #fff;
+  border-left: 4px solid #ddd;
+  padding: 0.8rem 1rem;
+  border-radius: 0 0 8px 8px;
+  font-size: 0.9rem;
+  color: #444;
+}
+
