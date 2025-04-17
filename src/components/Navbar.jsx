@@ -8,6 +8,7 @@ const Navbar = () => {
   const [userRole, setUserRole] = useState("");
   const [firstJobId, setFirstJobId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const auth = getAuth();
   const db = getFirestore();
   const navigate = useNavigate();
@@ -33,13 +34,12 @@ const Navbar = () => {
     return () => unsubscribe();
   }, []);
 
-  // ✅ Fetch the first available job
   useEffect(() => {
     const fetchFirstJob = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, "jobs"));
         if (!querySnapshot.empty) {
-          setFirstJobId(querySnapshot.docs[0].id); // ✅ Set first job ID
+          setFirstJobId(querySnapshot.docs[0].id);
         }
       } catch (error) {
         console.error("Error fetching jobs:", error);
@@ -49,7 +49,6 @@ const Navbar = () => {
     fetchFirstJob();
   }, []);
 
-  // ✅ Logout function with redirection
   const handleLogout = async () => {
     try {
       await signOut(auth);
@@ -63,42 +62,63 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="navbar">
-      <div className="navbar-container">
-        <h1 className="navbar-title">InternItUp</h1>
-        <div className="nav-links">
-          <Link to="/home" className="nav-link">Home</Link>
-          
-          {/* ✅ Dynamically link to the first job if available */}
-          {firstJobId ? (
-            <Link to={`/job/${firstJobId}`} className="nav-link">🔍 Find a Job</Link>
-          ) : (
-            <span className="nav-link disabled">🔍 Find a Job</span> // Disabled if no jobs exist
-          )}
+    <>
+      <nav className="navbar">
+        <div className="navbar-container">
+          <h1 className="navbar-title">InternItUp</h1>
+          <div className="nav-links">
+            <Link to="/home" className="nav-link">Home</Link>
 
-          {!loading && userRole === "hirer" && (
-            <>
-              <Link to="/post-job" className="nav-link">Post a Job</Link>
-              <Link to="/submissions" className="nav-link">📄 View Submissions</Link>
-            </>
-          )}
+            {firstJobId ? (
+              <Link to={`/job/${firstJobId}`} className="nav-link">🔍 Find a Job</Link>
+            ) : (
+              <span className="nav-link disabled">🔍 Find a Job</span>
+            )}
 
-          {!loading && userRole === "applicant" && (
-            <Link to="/upload-cv" className="nav-link">Upload CV</Link>
-          )}
+            {!loading && userRole === "hirer" && (
+              <>
+                <Link to="/post-job" className="nav-link">Post a Job</Link>
+                <Link to="/submissions" className="nav-link">📄 View Submissions</Link>
+              </>
+            )}
 
-          {!loading && userRole === "admin" && (
-            <Link to="/admin" className="nav-link">🛠 Admin Dash</Link>
-          )}
+            {!loading && userRole === "applicant" && (
+              <Link to="/upload-cv" className="nav-link">Upload CV</Link>
+            )}
 
-          {!loading && userRole && (
-            <button onClick={handleLogout} className="nav-link-logout-btn">
-              Logout
-            </button>
-          )}
+            {!loading && userRole === "admin" && (
+              <Link to="/admin" className="nav-link">🛠 Admin Dash</Link>
+            )}
+
+            {!loading && userRole && (
+              <button onClick={() => setShowLogoutModal(true)} className="nav-link-logout-btn">
+                Logout
+              </button>
+            )}
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+
+      {/* ✅ Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div className="logout-modal-overlay" onClick={() => setShowLogoutModal(false)}>
+          <div className="logout-modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>
+              <span>Confirmation</span> Are you sure you want to log out?
+            </h2>
+
+            <div className="logout-button-group">
+              <button onClick={() => setShowLogoutModal(false)} className="logout-cancel-btn">
+              ✖
+              </button>
+              <button onClick={handleLogout} className="logout-confirm-btn">
+              ✔
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

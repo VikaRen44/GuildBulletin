@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { db, auth } from "../firebase";
 import {
   collection,
@@ -8,6 +8,7 @@ import {
   getDoc,
   addDoc,
   updateDoc,
+  setDoc,
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import "../Styles/jobdetail.css";
@@ -30,6 +31,7 @@ const JobDetail = () => {
   const location = useLocation();
   const reportOptions = ["Scam", "Unresponsive", "Fake Listing", "Spam", "Others"];
 
+
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const query = params.get("search");
@@ -44,6 +46,7 @@ const JobDetail = () => {
         checkIfCvSubmitted(user.uid, id);
         const userDoc = await getDoc(doc(db, "Users", user.uid));
         if (userDoc.exists()) setUserRole(userDoc.data().role || "");
+        fetchUserLikes(user.uid);
       }
       setLoading(false);
     });
@@ -64,9 +67,30 @@ const JobDetail = () => {
     }
   };
 
+  const fetchUserLikes = async (userId) => {
+    try {
+      const snapshot = await getDocs(collection(db, "likes"));
+      const userLikes = {};
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        if (data.userId === userId) {
+          userLikes[data.jobId] = true;
+        }
+      });
+      setLikedJobs(userLikes);
+    } catch (error) {
+      console.error("Error fetching likes:", error);
+    }
+  };
+
   useEffect(() => {
     const fetchJobs = async () => {
-      const snapshot = await getDocs(collection(db, "jobs"));
+      // ✅ Only get jobs that are not frozen
+      const jobQuery = query(
+        collection(db, "jobs"),
+        where("frozen", "in", [false, null])
+      );
+      const snapshot = await getDocs(jobQuery);
       const jobList = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
@@ -78,6 +102,7 @@ const JobDetail = () => {
     };
     fetchJobs();
   }, [id]);
+  
 
   const checkIfCvSubmitted = async (userId, jobId) => {
     try {
@@ -124,6 +149,7 @@ const JobDetail = () => {
     if (!jobSnap.exists()) return;
 
     const jobData = jobSnap.data();
+
     await updateDoc(jobRef, {
       likes: (jobData.likes || 0) + 1,
     });
@@ -135,6 +161,13 @@ const JobDetail = () => {
         totalLikes: (hirerSnap.data().totalLikes || 0) + 1,
       });
     }
+
+    const likeId = `${userId}_${jobId}`;
+    await setDoc(doc(db, "likes", likeId), {
+      userId,
+      jobId,
+      likedAt: new Date(),
+    });
 
     setLikedJobs((prev) => ({ ...prev, [jobId]: true }));
     alert("Job liked successfully!");
@@ -173,7 +206,6 @@ const JobDetail = () => {
 
   return (
     <div className="job-detail-container">
-      {/* 🔹 Sidebar */}
       <div className="sidebar">
         <div className="sidebar-header">
           <h3>All Jobs</h3>
@@ -185,8 +217,6 @@ const JobDetail = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-
-        {/* Scrollable Job List */}
         <div className="sidebar-job-list">
           {filteredJobs.map((job) => (
             <div
@@ -208,8 +238,6 @@ const JobDetail = () => {
           ))}
         </div>
       </div>
-
-      {/* 🔹 Job Details */}
       {selectedJob && (
         <div className="detail-container">
           <h2>{selectedJob.position}</h2>
@@ -219,7 +247,7 @@ const JobDetail = () => {
             <strong>Hirer Account:</strong>{" "}
             <button
               className="view-profile-btn"
-              onClick={() => navigate(`/hirer/${selectedJob.hirerId}`)}
+              onClick={() => navigate(`/hirer/${selectedJob.hirerId}/from/${selectedJob.id}`)}
             >
               View Profile
             </button>
@@ -255,7 +283,6 @@ const JobDetail = () => {
           )}
         </div>
       )}
-
       {reportOpenJobs && (
         <div className="report-modal">
           <div className="report-content">

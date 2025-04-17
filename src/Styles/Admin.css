@@ -43,6 +43,66 @@
   color: #4e387e;
 }
 
+/* ✅ Admin Details Section - Two Column Layout */
+.admin-details-section {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 30px;
+  padding: 10px 30px;
+  width: 100%;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+  color: #4e387e;
+}
+
+/* ✅ Left side: name, email, status, job count */
+.admin-info-left {
+  flex: 1;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ✅ Right side: likes & reports */
+.admin-info-right {
+  flex: 1;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ✅ Label styling for both sides */
+.admin-detail-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #777;
+  margin-top: 12px;
+  margin-bottom: 2px;
+}
+
+/* ✅ View button styling (likes/reports) */
+.admin-view-btn {
+  background-color: #ffb100;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  margin-left: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.admin-view-btn:hover {
+  transform: scale(1.05);
+  background-color: #ffa000;
+}
+
+
 .admin-details-section p {
   margin: 0.3rem 0;
   font-size: 0.95rem;
@@ -178,3 +238,18 @@
   color: #444;
 }
 
+@keyframes fadeSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.admin-hirer-card {
+  animation: fadeSlideIn 0.5s ease forwards;
+  opacity: 0; /* ensure it starts hidden before animation runs */
+}

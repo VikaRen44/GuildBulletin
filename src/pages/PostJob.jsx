@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { db, auth } from "../firebase"; 
 import { collection, addDoc, doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
 import "../Styles/PostJob.css"; 
+import { useNavigate } from "react-router-dom";
+
 
 const MAX_FILE_SIZE = 200 * 1024; // 200KB limit
 
@@ -19,6 +21,8 @@ const JobForm = () => {
   const [loading, setLoading] = useState(true);
   const [imageError, setImageError] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     const fetchUserRole = async () => {
@@ -69,41 +73,35 @@ const JobForm = () => {
       alert("Only hirers can post jobs.");
       return;
     }
-
+  
     try {
       const userId = auth.currentUser.uid;
-      await addDoc(collection(db, "jobs"), {
+      const newJobRef = await addDoc(collection(db, "jobs"), {
         ...formData,
         salary: Number(formData.salary),
         hirerId: userId,
         createdAt: serverTimestamp(),
       });
-
+  
       const userRef = doc(db, "users", userId);
       const userSnap = await getDoc(userRef);
-
+  
       if (userSnap.exists()) {
         const userData = userSnap.data();
         await updateDoc(userRef, {
           jobCount: (userData.jobCount || 0) + 1,
         });
       }
-
+  
       alert("Job Posted Successfully!");
-      setFormData({
-        companyName: "",
-        employerName: "",
-        location: "",
-        position: "",
-        salary: "",
-        description: "",
-        jobImage: "",
-      });
-      setShowConfirm(false);
+  
+      // ✅ Redirect to Job Detail
+      navigate(`/job/${newJobRef.id}`);
     } catch (error) {
       alert("Error posting job: " + error.message);
     }
   };
+  
 
   return (
     <div className="job-form-wrapper">
@@ -223,12 +221,20 @@ const JobForm = () => {
               <span className="confirm-subtext">You are about to post a Job Opportunity.</span>
             </h2>
             <div className="confirm-details">
-              <p><span className="label">Company Name:</span> {formData.companyName}</p>
-              <p><span className="label">Employer's Name:</span> {formData.employerName}</p>
-              <p><span className="label">Location:</span> {formData.location}</p>
-              <p><span className="label">Position:</span> {formData.position}</p>
-              <p><span className="label">Offered Salary:</span> Php {Number(formData.salary).toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+              {[
+                ["Company Name:", formData.companyName],
+                ["Employer's Name:", formData.employerName],
+                ["Location:", formData.location],
+                ["Position:", formData.position],
+                ["Offered Salary:", `Php ${Number(formData.salary).toLocaleString(undefined, { minimumFractionDigits: 2 })}`],
+              ].map(([label, value], i) => (
+                <div key={i} className="confirm-row">
+                  <span className="confirm-label">{label}</span>
+                  <span className="confirm-value">{value}</span>
+                </div>
+              ))}
             </div>
+
             <p className="confirm-prompt">Are these details correct?</p>
             <div className="confirm-buttons">
               <button onClick={() => setShowConfirm(false)} className="cancel-btn">✖</button>

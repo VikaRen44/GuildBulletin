@@ -1,16 +1,16 @@
-import React from "react";  // ✅ Ensure React is imported
+import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { auth } from "./firebase"; // Import Firebase Auth
+import { auth } from "./firebase";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import JobDetail from "./pages/JobDetail";
 import PostJob from "./pages/PostJob";
-import UploadCV from "./pages/UploadCV"; 
+import UploadCV from "./pages/UploadCV";
 import Login from "./pages/Login";
 import CreateAccount from "./pages/CreateAccount";
 import CompleteProfile from "./pages/CompleteProfile";
-import Admin from "./pages/Admin"; 
+import Admin from "./pages/Admin";
 import Submissions from "./pages/Submissions";
 
 const ProtectedRoute = ({ element, allowedRoles, userId }) => {
@@ -35,22 +35,19 @@ const ProtectedRoute = ({ element, allowedRoles, userId }) => {
     return <Navigate to="/home" replace />;
   }
 
-  return React.cloneElement(element, { userId }); // ✅ Pass userId as a prop
+  return React.cloneElement(element, { userId });
 };
 
 const Layout = ({ children }) => {
   const location = useLocation();
+  const hideNavbarRoutes = ["/login", "/register", "/complete-profile"];
 
-    // 👇 List of routes where Navbar should be hidden
-    const hideNavbarRoutes = ["/login", "/register", "/complete-profile"];
-
-    return (
-      <>
-        {/* Hide Navbar on these specific routes */}
-        {!hideNavbarRoutes.includes(location.pathname) && <Navbar />}
-        {children}
-      </>
-    );
+  return (
+    <>
+      {!hideNavbarRoutes.includes(location.pathname) && <Navbar />}
+      {children}
+    </>
+  );
 };
 
 const App = () => {
@@ -61,7 +58,6 @@ const App = () => {
     const storedRole = localStorage.getItem("userRole");
     setUserRole(storedRole);
 
-    // Listen for Firebase Auth state changes
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         setUserId(user.uid);
@@ -84,13 +80,30 @@ const App = () => {
           <Route path="/home" element={<Home />} />
           <Route path="/job/:id" element={<JobDetail />} />
           <Route path="/jobdetails" element={<JobDetail />} />
+
+          {/* ✅ Existing hirer route */}
           <Route path="/hirer/:id" element={<Home />} />
 
-          {/* Role-based Routes */}
-          <Route path="/submissions" element={<ProtectedRoute element={<Submissions />} allowedRoles={["hirer"]} />} />
-          <Route path="/post-job" element={<ProtectedRoute element={<PostJob />} allowedRoles={["hirer"]} />} />
-          <Route path="/upload-cv" element={<ProtectedRoute element={<UploadCV />} allowedRoles={["applicant"]} userId={userId} />} />
-          <Route path="/admin" element={<ProtectedRoute element={<Admin />} allowedRoles={["admin"]} />} />
+          {/* ✅ New hirer profile with origin job tracking */}
+          <Route path="/hirer/:id/from/:jobId" element={<Home />} />
+
+          {/* ✅ Protected Routes */}
+          <Route
+            path="/submissions"
+            element={<ProtectedRoute element={<Submissions />} allowedRoles={["hirer"]} />}
+          />
+          <Route
+            path="/post-job"
+            element={<ProtectedRoute element={<PostJob />} allowedRoles={["hirer"]} />}
+          />
+          <Route
+            path="/upload-cv"
+            element={<ProtectedRoute element={<UploadCV />} allowedRoles={["applicant"]} userId={userId} />}
+          />
+          <Route
+            path="/admin"
+            element={<ProtectedRoute element={<Admin />} allowedRoles={["admin"]} />}
+          />
         </Routes>
       </Layout>
     </Router>

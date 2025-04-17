@@ -34,14 +34,26 @@ const CompleteProfile = () => {
       } else {
         setUser(currentUser);
         const userDoc = await getDoc(doc(db, "Users", currentUser.uid));
+        const incomingPassword = location.state?.password || "";
+  
         if (userDoc.exists()) {
-          setFormData((prev) => ({ ...prev, ...userDoc.data(), password: "" }));
+          setFormData((prev) => ({
+            ...prev,
+            ...userDoc.data(),
+            password: incomingPassword // ✅ prefill password if passed
+          }));
+        } else {
+          setFormData((prev) => ({
+            ...prev,
+            password: incomingPassword // ✅ fallback when no doc exists
+          }));
         }
       }
     });
-
+  
     return () => unsubscribe();
-  }, [navigate]);
+  }, [navigate, location.state]);
+  
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -90,6 +102,13 @@ const CompleteProfile = () => {
   return (
     <div className="complete-profile-wrapper">
       <div className="complete-profile-container">
+
+        {isEditMode && (
+          <button onClick={() => navigate("/home")} className="back-button">
+            ⬅ Back
+          </button>
+        )}
+        
         <h1>{isEditMode ? "Edit Your Profile" : "Complete Your Profile"}</h1>
 
         <div className="complete-profile-pic-container">

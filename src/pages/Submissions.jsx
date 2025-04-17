@@ -44,7 +44,7 @@ const Submissions = () => {
                 const userData = userDoc.data();
                 console.log("✅ User Found:", userData); // Debugging
                 applicantName = `${userData.firstName || "Unknown"} ${userData.lastName || "User"}`;
-                userEmail = userData.email || "No Email Provided";
+                userEmail = userData.gmail || "No Email Provided";
                 profileImage = userData.profileImage || ""; // Store profile image URL
               } else {
                 console.warn("⚠️ User document not found for userId:", data.userId);

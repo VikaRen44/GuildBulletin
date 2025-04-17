@@ -14,16 +14,34 @@ function Login() {
   const navigate = useNavigate();
 
   // 🔹 Handle Email/Password Login
-  const handleLogin = async () => {
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      await handleUserRedirect(user);
-    } catch (error) {
-      console.error("❌ Login Error:", error);
-      alert(error.message || "Invalid credentials! Please try again.");
+// 🔹 Handle Login
+const handleLogin = async () => {
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    // 🔍 Check if user data exists in Firestore
+    const userDoc = await getDoc(doc(db, "Users", user.uid));
+    if (!userDoc.exists()) {
+      alert("User data not found in database.");
+      return;
     }
-  };
+
+    const userData = userDoc.data();
+    if (userData.banned) {
+      alert("🚫 Your account has been banned. You cannot log in.");
+      await auth.signOut();
+      return;
+    }
+
+    await handleUserRedirect(user);
+  } catch (error) {
+    console.error("❌ Login Error:", error);
+    alert(error.message || "Invalid credentials! Please try again.");
+  }
+};
+
+  
 
   // 🔹 Handle Google Login
   const handleGoogleLogin = async () => {
@@ -31,33 +49,36 @@ function Login() {
       const userCredential = await signInWithPopup(auth, googleProvider);
       const user = userCredential.user;
   
-      // 🔹 Check if user exists in Firestore
       const userRef = doc(db, "Users", user.uid);
       const userDoc = await getDoc(userRef);
   
       if (!userDoc.exists()) {
-        // ❌ User is NOT registered → Redirect to CreateAccount.jsx
         alert("No account found. Please create an account first.");
-        navigate("/register"); // Redirect to your registration page
+        navigate("/register");
         return;
       }
   
       const userData = userDoc.data();
   
-      // 🔹 Store role in localStorage
+      // 🔒 Check if banned
+      if (userData.banned) {
+        alert("🚫 Your account has been banned. You cannot log in.");
+        await auth.signOut();
+        return;
+      }
+  
       localStorage.setItem("userRole", userData.role);
       localStorage.setItem("userId", user.uid);
-      window.dispatchEvent(new Event("storage")); // Notify other components
-
-      // ✅ Redirect user based on role
+      window.dispatchEvent(new Event("storage"));
+  
       redirectUser(userData.role);
-      
       alert("Login successful!");
     } catch (error) {
       console.error("❌ Google Login Error:", error);
       alert("Google Login Failed. Try again.");
     }
   };
+  
 
   // 🔹 Handle Redirect After Login
   const handleUserRedirect = async (user) => {
@@ -102,7 +123,7 @@ useEffect(() => {
   return (
     <div className="login-page">
       <div className="container">
-        <h1 className="title">Touch Grass Now</h1>
+        <h1 className="title">Intern It Up</h1>
         <p className="subtitle">Get Jobs, <i>Touch Grass</i></p>
 
         {/* 🔹 Inputs Section */}

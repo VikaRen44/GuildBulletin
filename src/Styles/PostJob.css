@@ -181,23 +181,40 @@ textarea {
 }
 
 .confirm-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   margin-top: 1rem;
-  font-size: 1rem;
-  line-height: 1.6;
+  gap: 0.6rem;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.confirm-details .label {
+
+.confirm-row {
+  display: flex;
+  width: 100%;
+  max-width: 400px;
+  justify-content: flex-start;
+}
+
+.confirm-label {
+  width: 160px;
   font-weight: bold;
   color: #FF7038;
-  display: inline-block;
-  width: 140px;
+  text-align: right;
+  margin-right: 3rem;  /* ← was 0.75rem */
+  flex-shrink: 0;
 }
 
-.confirm-prompt {
-  margin-top: 1.5rem;
-  font-weight: 500;
-  font-size: 1.1rem;
+.confirm-value {
+  color: #3b2f5e;
+  text-align: left;
+  word-break: break-word;
 }
+
+
+
 
 /* === Confirmation Buttons (Improved) === */
 .confirm-buttons {

@@ -135,3 +135,24 @@
     background-color: #e65a00;
     transform: translateY(-1px);
   }
+
+  .back-button {
+    background-color: #ff6b00;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    display: block;
+    margin: 0 auto 20px auto; /* Centered */
+    transition: background 0.3s ease;
+    max-width: 150px; /* ✅ Reduced width */
+    text-align: center;
+  }
+  
+  .back-button:hover {
+    background-color: #e65c00;
+  }
+  

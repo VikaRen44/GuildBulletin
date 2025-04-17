@@ -11,6 +11,7 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 import "../Styles/admin.css";
+import emailjs from "@emailjs/browser";
 
 const Admin = () => {
   const [hirers, setHirers] = useState([]);
@@ -109,6 +110,7 @@ const Admin = () => {
                 reports: jobReports.count,
                 reportDetails: jobReports.reasons,
                 reportsFrom: jobReports.reporters,
+                frozen: jobData.frozen || false, // ✅ add frozen flag
               };
             });
 
@@ -116,7 +118,7 @@ const Admin = () => {
               id: hirerId,
               firstName: data.firstName,
               lastName: data.lastName,
-              email: data.email,
+              email: data.email || data.gmail || "",
               profilePicURL: data.profileImage || data.profilePicURL || "",
               totalLikes,
               totalReports,
@@ -158,16 +160,140 @@ const Admin = () => {
   };
 
   const handleNotice = async (hirerId) => {
-    alert(`Notice sent to hirer: ${hirerId}`);
-  };
+    try {
+      const hirer = hirers.find((h) => h.id === hirerId);
+  
+      // ⛔ Prevent sending if email is missing
+      if (!hirer?.email || hirer.email.trim() === "") {
+        alert("⚠️ This hirer has no email address on file.");
+        return;
+      }
+  
+      // Format report details
+      const reportDetails = hirer.jobList
+        .filter((job) => job.reports > 0)
+        .map((job) => {
+          const reasons = Object.entries(job.reportDetails)
+            .filter(([_, count]) => count > 0)
+            .map(([reason, count]) => `• ${reason}: ${count} report(s)`)
+            .join("\n");
+  
+          return `🔹 Job Position: ${job.position}\n${reasons}`;
+        })
+        .join("\n\n");
+  
+      const noticeEmailContent = {
+        to_email: hirer.email,
+        to_name: `${hirer.firstName} ${hirer.lastName}`,
+      };
+  
+      console.log("📧 Sending notice email with content:", noticeEmailContent);
+  
+      await emailjs.send(
+        "service_4y9z6j9",         // ✅ Your EmailJS service ID
+        "template_3grqprk",        // ✅ Your Template ID
+        noticeEmailContent,        // ✅ Payload
+        "ptcOjfNiUXksV1-v4"        // ✅ Your Public Key
+      );
+  
+      alert("📨 Notice sent to hirer via email.");
+    } catch (error) {
+      console.error("❌ Failed to send notice email:", error);
+      alert("❌ Failed to send notice email.");
+    }
+  }; 
 
-  const handleDeleteJobs = async (hirerId) => {
-    alert(`Deleted all jobs for: ${hirerId}`);
+  const handleFreezeJobs = async (hirerId) => {
+    try {
+      const hirer = hirers.find((h) => h.id === hirerId);
+
+      if (!hirer?.email || hirer.email.trim() === "") {
+        alert("⚠️ This hirer has no email address on file.");
+        return;
+      }
+
+      const jobsRef = collection(db, "jobs");
+      const jobQuery = query(jobsRef, where("hirerId", "==", hirerId));
+      const jobSnapshot = await getDocs(jobQuery);
+
+      const freezePromises = jobSnapshot.docs.map((jobDoc) => {
+        const jobData = jobDoc.data();
+        if (!jobData.frozen) {
+          return updateDoc(doc(db, "jobs", jobDoc.id), { frozen: true });
+        }
+        return null;
+      });
+
+      await Promise.all(freezePromises.filter(Boolean));
+
+      const freezeEmailContent = {
+        to_email: hirer.email,
+        to_name: `${hirer.firstName} ${hirer.lastName}`,
+      };
+
+      await emailjs.send(
+        "service_4y9z6j9",
+        "template_2znf28c",
+        freezeEmailContent,
+        "ptcOjfNiUXksV1-v4"
+      );
+
+      alert(`❄️ ${freezePromises.length} job(s) frozen and email sent.`);
+    } catch (error) {
+      console.error("❌ Failed to freeze jobs or send email:", error);
+      alert("❌ Something went wrong freezing the jobs.");
+    }
+  };
+  
+
+  const handleUnfreezeJobs = async (hirerId) => {
+    try {
+      const hirer = hirers.find((h) => h.id === hirerId);
+  
+      if (!hirer?.email || hirer.email.trim() === "") {
+        alert("⚠️ This hirer has no email address on file.");
+        return;
+      }
+  
+      const jobsRef = collection(db, "jobs");
+      const jobQuery = query(jobsRef, where("hirerId", "==", hirerId));
+      const jobSnapshot = await getDocs(jobQuery);
+  
+      const unfreezePromises = jobSnapshot.docs.map((jobDoc) =>
+        updateDoc(doc(db, "jobs", jobDoc.id), { frozen: false })
+      );
+  
+      await Promise.all(unfreezePromises);
+  
+      alert(`✅ Unfrozen ${unfreezePromises.length} job(s).`);
+    } catch (error) {
+      console.error("❌ Failed to unfreeze jobs:", error);
+      alert("❌ Something went wrong unfreezing the jobs.");
+    }
   };
 
   const handleBanAccount = async (hirerId) => {
-    alert(`Account banned: ${hirerId}`);
+    try {
+      const userRef = doc(db, "Users", hirerId);
+      await updateDoc(userRef, {
+        banned: true,
+        statusStep: "banned"
+      });
+  
+      alert(`🚫 Account banned: ${hirerId}`);
+  
+      // Update local state so UI reflects changes
+      setHirers((prev) =>
+        prev.map((h) =>
+          h.id === hirerId ? { ...h, statusStep: "banned", banned: true } : h
+        )
+      );
+    } catch (error) {
+      console.error("Error banning account:", error);
+      alert("❌ Failed to ban account.");
+    }
   };
+  
 
   const JobReportDropdown = ({ job }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -245,35 +371,41 @@ const Admin = () => {
                 </div>
 
                 <div className="admin-details-section">
-                  <p className="admin-detail-label">Name</p>
-                  <p><strong>{hirer.firstName} {hirer.lastName}</strong></p>
+                  <div className="admin-info-left">
+                    <p className="admin-detail-label">Name</p>
+                    <p><strong>{hirer.firstName} {hirer.lastName}</strong></p>
 
-                  <p className="admin-detail-label">Email</p>
-                  <p><strong>{hirer.email}</strong></p>
+                    <p className="admin-detail-label">Email</p>
+                    <p><strong>{hirer.email}</strong></p>
 
-                  <p className="admin-detail-label">Total Likes</p>
-                  <p>
-                    <strong>{hirer.totalLikes} 👍</strong>{" "}
-                    <button className="admin-view-btn" onClick={() => setOpenModal(`likes-${hirer.id}`)}>View Likes</button>
-                  </p>
+                    <p className="admin-detail-label">Jobs Posted</p>
+                    <p><strong>{hirer.totalJobs}</strong></p>
+                  </div>
 
-                  <p className="admin-detail-label">Total Reports</p>
-                  <p>
-                    <strong>{hirer.totalReports} 🚩</strong>{" "}
-                    <button className="admin-view-btn" onClick={() => setOpenModal(`reports-${hirer.id}`)}>View Reports</button>
-                  </p>
+                  <div className="admin-info-right">
+                    <p className="admin-detail-label">Total Likes</p>
+                    <p>
+                      <strong>{hirer.totalLikes} 👍</strong>{" "}
+                      <button className="admin-view-btn" onClick={() => setOpenModal(`likes-${hirer.id}`)}>View Likes</button>
+                    </p>
 
-                  <p className="admin-detail-label">Jobs Posted</p>
-                  <p><strong>{hirer.totalJobs}</strong></p>
+                    <p className="admin-detail-label">Total Reports</p>
+                    <p>
+                      <strong>{hirer.totalReports} 🚩</strong>{" "}
+                      <button className="admin-view-btn" onClick={() => setOpenModal(`reports-${hirer.id}`)}>View Reports</button>
+                    </p>
 
-                  <p className="admin-detail-label">Current Status</p>
-                  <p><strong>{hirer.statusStep.toUpperCase()}</strong></p>
+                    <p className="admin-detail-label">Current Status</p>
+                    <p><strong>{hirer.statusStep.toUpperCase()}</strong></p>
+                  </div>
                 </div>
 
                 <div className="admin-actions-section">
-                  {likeRatio >= 0.8 && !hirer.certified && (
+                  {likeRatio >= 0.0 && !hirer.certified && (
                     <button className="admin-accept-btn" onClick={() => handleCertification(hirer.id)}>Accept</button>
                   )}
+
+                  {/*
                   {hirer.statusStep === "none" && reportRatio >= 0.5 && (
                     <button className="admin-reject-btn" onClick={() => handleNotice(hirer.id)}>Send Notice</button>
                   )}
@@ -283,6 +415,18 @@ const Admin = () => {
                   {hirer.statusStep === "deletion" && reportRatio >= 0.95 && (
                     <button className="admin-reject-btn" onClick={() => handleBanAccount(hirer.id)}>Ban Account</button>
                   )}
+                  */}
+
+                {reportRatio >= 0.0 && (
+                  <>
+                    <button className="admin-reject-btn" onClick={() => handleNotice(hirer.id)}>Send Notice</button>
+                    <button className="admin-reject-btn" onClick={() => handleFreezeJobs(hirer.id)}>Freeze All Jobs</button>
+                    <button className="admin-accept-btn" onClick={() => handleUnfreezeJobs(hirer.id)}>Unfreeze Jobs</button>
+                    <button className="admin-reject-btn" onClick={() => handleBanAccount(hirer.id)}>Ban Account</button>
+                  </>
+                )}
+
+
                 </div>
               </div>
 
