@@ -1,0 +1,202 @@
+/* === Navbar Base === */
+.navbar {
+  width: 100%;
+  background-color: #FF7038; /* 🔶 Bold orange background */
+  padding: 15px 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000; /* Keep it above all other elements */
+}
+
+/* === Navbar Inner Layout === */
+.navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+}
+
+/* === Logo Title === */
+.navbar-title {
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+/* === Navigation Links Wrapper === */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* === Individual Nav Link === */
+.nav-link {
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+}
+
+.nav-link:hover {
+  color: #fcecdc;
+  transform: scale(1.1); /* Subtle zoom on hover */
+}
+
+/* === Logout Button Styled Like a Nav Link === */
+.nav-link-logout-btn {
+  background-color: #332046;
+  border: none;
+  color: white;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.nav-link-logout-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.logout-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.logout-modal-content {
+  background: white;
+  padding: 35px 50px;
+  border-radius: 20px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  animation: scaleFadeIn 0.3s ease forwards;
+  max-width: 400px;
+  width: 90%;
+  color: #333;
+}
+
+.logout-modal-content h2 {
+  font-size: 22px;
+  margin-bottom: 30px;
+  font-weight: 500;
+}
+
+.logout-modal-content h2 span:first-child {
+  font-weight: bold;
+  color: #ff6b00;
+  margin-right: 6px;
+}
+
+.logout-button-group {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 15px;
+}
+
+.logout-cancel-btn,
+.logout-confirm-btn {
+  width: 55px;
+  height: 55px;
+  font-size: 22px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ❌ Cancel Button */
+.logout-cancel-btn {
+  background: white;
+  color: #3f2b63;
+  border: 2px solid #3f2b63;
+}
+
+.logout-cancel-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(63, 43, 99, 0.2);
+}
+
+/* ✅ Confirm Button */
+.logout-confirm-btn {
+  background: #ff6b00;
+  color: white;
+  border: none;
+}
+
+.logout-confirm-btn:hover {
+  background: #e65a00;
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(255, 107, 0, 0.3);
+}
+
+
+@keyframes scaleFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 650px) {
+  .navbar-container {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 10px;
+  }
+
+  .navbar-title {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  .nav-links {
+    flex-direction: row; /* 🔁 Keep them in a row */
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+    flex-wrap: wrap; /* Optional: wrap on smaller widths */
+  }
+
+  .nav-link,
+  .nav-link-logout-btn {
+    width: auto;
+    justify-content: center;
+    padding: 10px 10px;
+    font-size: 15px;
+  }
+
+  .nav-link-logout-btn {
+    padding-left: 15px;
+    background-color: #4e2d66;
+  }
+}

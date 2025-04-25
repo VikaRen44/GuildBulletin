@@ -1,0 +1,187 @@
+/* === Whole Page === */
+.register-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Segoe UI', sans-serif;
+    animation: fadeIn 1s ease-in;
+  }
+  
+  /* === Fade-in Animation === */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* === Container Box === */
+  .container {
+    background-color: #1f182e;
+    padding: 2.5rem 3rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    width: 360px;
+    text-align: center;
+    animation: popUp 0.6s ease-in-out;
+  }
+  
+  /* === Pop-up Animation for container === */
+  @keyframes popUp {
+    from {
+      scale: 0.95;
+      opacity: 0;
+    }
+    to {
+      scale: 1;
+      opacity: 1;
+    }
+  }
+  
+  /* === Title === */
+  .container h1 {
+    color: #ff6a00;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
+  }
+  
+  /* === Input Labels === */
+  .container label {
+    display: block;
+    font-size: 0.75rem;
+    color: #fff;
+    margin-bottom: 0.25rem;
+    text-align: left;
+  }
+  
+  /* === Input Fields === */
+  .container input {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: none;
+    background-color: #2a233b;
+    color: white;
+    font-size: 0.85rem;
+    margin-bottom: 1.25rem;
+    transition: box-shadow 0.3s ease;
+  }
+  
+  /* === Input Focus Animation === */
+  .container input:focus {
+    outline: none;
+    box-shadow: 0 0 5px 2px #ff6a00;
+  }
+  
+  /* === Buttons === */
+  .container button {
+    width: 100%;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.85rem;
+    margin-bottom: 0.8rem;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  /* === Register Button === */
+  .container button:first-of-type {
+    background-color: #ff6a00;
+    color: white;
+  }
+  
+  .container button:first-of-type:hover {
+    background-color: #e65a00;
+    transform: translateY(-2px);
+  }
+  
+  /* === Google Sign Up Button === */
+  .container button:last-of-type {
+    background-color: #e6e6fa;
+    color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .container button:last-of-type:hover {
+    background-color: #d8d8f0;
+    transform: translateY(-2px);
+  }
+  
+  /* === Google Logo (Optional Add) === */
+  .container button:last-of-type img {
+    width: 20px;
+    margin-right: 10px;
+  }
+  
+  /* === Redirect Link === */
+  .container p {
+    font-size: 0.75rem;
+    color: #ccc;
+  }
+  
+  .container a {
+    color: #ff6a00;
+    text-decoration: none;
+    font-weight: bold;
+    margin-left: 0.25rem;
+    transition: color 0.2s ease;
+  }
+  
+  .container a:hover {
+    color: #ffa64d;
+  }
+  
+  /* 🔶 Base Toast */
+.Toastify__toast {
+  border-radius: 12px;
+  padding: 16px 20px;
+  font-family: 'Inter', 'Poppins', sans-serif;
+  font-size: 15px;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.05);
+}
+
+/* ✅ Success */
+.Toastify__toast--success {
+  background: #ffffff;
+  border-left: 6px solid #ff7a00; /* orange */
+  color: #333;
+}
+
+/* ❌ Error */
+.Toastify__toast--error {
+  background: #ffffff;
+  border-left: 6px solid #7f1d7c; /* deep violet */
+  color: #7f1d7c;
+}
+
+/* ℹ️ Info */
+.Toastify__toast--info {
+  background: #ffffff;
+  border-left: 6px solid #7f1d7c;
+  color: #555;
+}
+
+/* ⚠️ Warning */
+.Toastify__toast--warning {
+  background: #fff9f0;
+  border-left: 6px solid #ff7a00;
+  color: #a85a00;
+}
+
+/* 🚫 Close button hover effect */
+.Toastify__close-button {
+  color: #aaa;
+}
+.Toastify__close-button:hover {
+  color: #ff7a00;
+}

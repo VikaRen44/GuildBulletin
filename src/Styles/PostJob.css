@@ -1,0 +1,265 @@
+/* === Job Form Layout === */
+.job-form-wrapper {
+  max-width: 700px;
+  margin: 100px auto;
+  padding: 0 1rem;
+  font-family: 'Segoe UI', sans-serif;
+  text-align: center;
+  margin-top: 150px;
+}
+
+.job-form-title {
+  font-size: 1.8rem;
+  color: #4c3d69;
+  margin-bottom: 0.2rem;
+}
+
+.job-form-subtitle {
+  font-size: 0.9rem;
+  color: #777;
+  margin-bottom: 2rem;
+}
+
+/* === Card === */
+.job-posting-card {
+  background: #fde9dd;
+  padding: 2rem 2.5rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.job-posting-card input,
+.job-posting-card textarea {
+  box-sizing: border-box;
+}
+
+.card-header {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #ff6a00;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+/* === Label Styling === */
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.label-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.label-sub {
+  font-size: 0.75rem;
+  color: #888;
+}
+
+/* === Inputs & Textarea === */
+input,
+textarea {
+  padding: 0.8rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  width: 100%;
+  background-color: #fff;
+  color: #333;
+}
+
+textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* === 2-column Layout === */
+.split-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.split-row label {
+  flex: 1;
+}
+
+/* === Disclaimer === */
+.disclaimer {
+  font-size: 0.75rem;
+  color: #666;
+  text-align: center;
+}
+
+/* === Done Button === */
+.done-button {
+  margin-top: 1rem;
+  align-self: center;
+  background-color: #4c3d69;
+  color: white;
+  border: none;
+  padding: 0.6rem 2rem;
+  font-size: 0.95rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.done-button:hover {
+  background-color: #372a54;
+  transform: scale(1.05);
+}
+
+/* === Responsive Fix === */
+@media (max-width: 768px) {
+  .split-row {
+    flex-direction: column;
+  }
+
+  .job-posting-card {
+    padding: 2rem 1.2rem;
+  }
+}
+
+/* === Image Preview === */
+.preview-container {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.preview-image {
+  width: 100%;
+  height: auto;
+  max-height: 300px;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* === Confirmation Modal === */
+.confirm-modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.confirm-modal-content {
+  background: #fdfdfd;
+  border-radius: 1.2rem;
+  padding: 2rem;
+  width: 95%;
+  max-width: 550px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  color: #3b2f5e;
+  border: 3px solid #FF7038;
+  border-top-color: #FF7038;
+  border-bottom-color: #FF7038;
+}
+
+.confirm-title {
+  color: #FF7038;
+  font-size: 1.6rem;
+  font-weight: bold;
+}
+
+.confirm-subtext {
+  font-size: 1rem;
+  color: #444;
+}
+
+.confirm-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1rem;
+  gap: 0.6rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+.confirm-row {
+  display: flex;
+  width: 100%;
+  max-width: 400px;
+  justify-content: flex-start;
+}
+
+.confirm-label {
+  width: 160px;
+  font-weight: bold;
+  color: #FF7038;
+  text-align: right;
+  margin-right: 3rem;  /* ← was 0.75rem */
+  flex-shrink: 0;
+}
+
+.confirm-value {
+  color: #3b2f5e;
+  text-align: left;
+  word-break: break-word;
+}
+
+
+
+
+/* === Confirmation Buttons (Improved) === */
+.confirm-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 1.8rem;
+}
+
+.cancel-btn, .confirm-btn {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  font-size: 1.6rem;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.cancel-btn {
+  background-color: #fff;
+  color: #4c3d69;
+  border: 2px solid #4c3d69;
+}
+
+.cancel-btn:hover {
+  background-color: #f3f3f3;
+  transform: scale(1.05);
+}
+
+.confirm-btn {
+  background-color: #FF7038;
+  color: white;
+  border: none;
+}
+
+.confirm-btn:hover {
+  background-color: #FF7038;
+  transform: scale(1.05);
+}
+

@@ -1,0 +1,276 @@
+/* === Page Background & Layout === */
+.complete-profile-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f7f7f7;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  
+  /* === Main Container === */
+  .complete-profile-container {
+    background-color: #ffffff;
+    padding: 4.5rem;
+    padding-top: 1rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 700px;
+    animation: fadeIn 0.8s ease;
+  }
+  
+  /* === Fade-in Animation === */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* === Headings === */
+  .complete-profile-container h1 {
+    color: #ff6a00;
+    text-align: center;
+    margin-bottom: 2rem;
+    margin-top: 0;
+    font-size: 20px;
+  }
+  
+  /* === Input & Label Styling === */
+  .complete-profile-container label {
+    font-size: 0.9rem;
+    color: #222;
+    margin-bottom: 4px;
+    display: block;
+    margin-top: 1rem;
+  }
+  
+  .complete-profile-container input[type="text"],
+  .complete-profile-container input[type="email"],
+  .complete-profile-container input[type="password"],
+  .complete-profile-container textarea,
+  .complete-profile-container select {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    border: 1px solid #f4b195;
+    border-radius: 20px;
+    background-color: #fff;
+    color: #333;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    transition: border-color 0.3s;
+  }
+  
+  .complete-profile-container input:focus,
+  .complete-profile-container textarea:focus,
+  .complete-profile-container select:focus {
+    border-color: #ff6a00;
+    outline: none;
+  }
+  
+  /* === Small text (under password/image inputs) === */
+  .complete-profile-container small {
+    font-size: 0.7rem;
+    color: #888;
+    margin-left: 4px;
+  }
+  
+  /* === Profile Picture Box === */
+  .complete-profile-pic-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .complete-profile-pic-container p{
+    text-wrap: wrap;
+    text-align: center;
+  }
+  
+  /* 🟧 Image Preview Box */
+  .complete-profile-preview {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 25px;
+    background-color: white;
+    border: 1px solid #d1d1d1;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* 🟧 Placeholder box if no image */
+  .complete-profile-pic-container p {
+    width: 180px;
+    height: 180px;
+    border-radius: 25px;
+    border: 1px solid #d1d1d1;
+    background-color: white;
+    color: #ff6a00;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* === File Upload Input (image) === */
+  .complete-profile-pic-container input[type="file"] {
+    margin-bottom: 0.5rem;
+  }
+  
+  /* === Submit Button === */
+  .complete-profile-container button {
+    margin-top: 1.5rem;
+    padding: 0.75rem 1.5rem;
+    width: 100%;
+    border: none;
+    border-radius: 20px;
+    background-color: #ff6a00;
+    color: white;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .complete-profile-container button:hover {
+    background-color: #e65a00;
+    transform: translateY(-1px);
+  }
+
+  .choose-file {
+    margin-top: 10px;
+  }
+
+  .button-h1 {
+    display: flex;
+    align-items: center;
+    vertical-align: middle;
+    gap: 10px; /* space between button and heading */
+    margin-left: 10px;
+    flex-wrap: wrap; /* ensures wrapping on small screens */
+  }
+  
+  .button-h1 h1 {
+    color: #ff6a00;
+    margin: 0px 0 25px 0;
+    font-weight: 600;
+  }
+
+  .back-button {
+    background-color: #ff6b00;
+    color: white;
+    border: none;
+    padding: 6px 16px; /* Reduced padding to fit height */
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 9px;
+    cursor: pointer;
+    display: flex; /* Use flex for perfect centering */
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease;
+    max-width: 45px;
+    height: 25px; /* Use height instead of max-height */
+    margin-left: 1px;
+    text-align: center;
+    white-space: nowrap; /* Prevent wrapping issues */
+    margin-bottom: 3rem;
+  }
+  
+  .back-button:hover {
+    background-color: #e65c00;
+  }
+
+  /* 🔶 Base Toast */
+.Toastify__toast {
+  border-radius: 12px;
+  padding: 16px 20px;
+  font-family: 'Inter', 'Poppins', sans-serif;
+  font-size: 15px;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.05);
+}
+
+/* ✅ Success */
+.Toastify__toast--success {
+  background: #ffffff;
+  border-left: 6px solid #ff7a00; /* orange */
+  color: #333;
+}
+
+/* ❌ Error */
+.Toastify__toast--error {
+  background: #ffffff;
+  border-left: 6px solid #7f1d7c; /* deep violet */
+  color: #7f1d7c;
+}
+
+/* ℹ️ Info */
+.Toastify__toast--info {
+  background: #ffffff;
+  border-left: 6px solid #7f1d7c;
+  color: #555;
+}
+
+/* ⚠️ Warning */
+.Toastify__toast--warning {
+  background: #fff9f0;
+  border-left: 6px solid #ff7a00;
+  color: #a85a00;
+}
+
+/* 🚫 Close button hover effect */
+.Toastify__close-button {
+  color: #aaa;
+}
+.Toastify__close-button:hover {
+  color: #ff7a00;
+}
+
+@media (width <= 650px) {
+
+  .complete-profile-container h1 {
+    color: #ff6a00;
+    text-align: center;
+    margin: auto;
+    font-size: 20px;
+  }
+
+  .back-button {
+    margin-bottom: auto;
+  }
+
+  .button-h1 {
+    display: flex;
+    align-items: center;
+    vertical-align: middle;
+    gap: 10px; /* space between button and heading */
+    margin-left: 10px;
+    flex-wrap: wrap; /* ensures wrapping on small screens */
+  }
+  
+  .button-h1 h1 {
+    font-size: 18px;
+    color: #ff6a00;
+    margin: 25px 0 5px 0;
+    font-weight: 600;
+  }
+
+  .button-h1 button {
+    height: 10px;
+    width: 10px;
+  }
+  
+  .complete-profile-pic-container {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  
+}
+  

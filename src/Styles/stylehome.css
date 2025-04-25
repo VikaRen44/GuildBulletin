@@ -1,0 +1,625 @@
+body {
+  overflow-x: hidden;
+}
+
+/* === Ensure page content starts after Navbar === */
+.page-wrapper {
+  padding-top: 150px; /* Leave space for fixed navbar */
+  padding-left: 2rem;
+  padding-right: 2rem;
+  width: 1000px;
+  margin: auto;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f9f9f9;
+}
+
+/* === Search Section === */
+.search-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2.5rem;
+}
+
+.search-bar-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.search-input {
+  padding: 0.6rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  min-width: 850px;
+  background-color: white;
+  color: #333;
+}
+
+.search-button {
+  background-color: #ff6a00;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s ease;
+}
+
+.search-button:hover {
+  background-color: #e25a00;
+  transform: scale(1.05);
+}
+
+.button-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+  gap: 1rem;
+}
+
+.upload-button,
+.post-button {
+  background-color: white;
+  color: #ff6a00;
+  padding: 0.6rem 1.2rem;
+  border: 1px solid #ff6a00;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.upload-button:hover,
+.post-button:hover {
+  background-color: #ff6a00;
+  color: white;
+  transform: scale(1.05);
+}
+
+/* === Profile Card === */
+.profile-card {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.profile-image-container {
+  margin-bottom: 0.1rem;
+}
+
+.profile-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 20px;
+  object-fit: cover;
+  border: 1px solid #ccc;
+}
+
+.profile-info-container {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.profile-name {
+  color: #ff6a00;
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.profile-divider {
+  height: 1px;
+  background-color: #eee;
+  width: 100%;
+  margin: 1rem 0;
+}
+
+.badge {
+  display: inline-block;
+  width: 120px; /* You can adjust this value as needed */
+  text-align: center;
+  background-color: #f3f3f3;
+  padding: 8px 0;
+  border-radius: 20px;
+  font-weight: 600;
+  margin: 10px auto;
+  color: #333;
+}
+
+
+
+.profile-info {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 1rem;
+}
+
+.edit-profile {
+  background-color: #ff6a00;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.edit-profile:hover {
+  background-color: #e25a00;
+  transform: scale(1.05);
+}
+
+.social-icons {
+  margin-top: 1rem;
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.icon {
+  color: #ff6a00;
+  font-size: 1.2rem;
+  transition: transform 0.3s;
+}
+
+.icon:hover {
+  transform: scale(1.2);
+}
+
+/* === Job Listings === */
+.recommended-section {
+  margin-top: 4rem;
+}
+
+.recommended-background {
+  background: linear-gradient(to bottom right, #fffdfc, #f9f9f9);
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+}
+
+.recommended-title {
+  font-size: 1.6rem;
+  color: #333;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.job-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.job-card {
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  padding: 1.5rem;
+  border-radius: 20px;
+  cursor: pointer;
+  color: white;
+  overflow: hidden;
+  min-height: 150px;
+  transition: transform 0.3s ease;
+}
+
+.job-card:hover {
+  transform: scale(1.02);
+}
+
+.job-overlay-home {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 75%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.6); /* updated */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 25px;
+  gap: 6px;
+  z-index: 2;
+  text-shadow: none; /* removed to match light theme */
+  box-sizing: border-box;
+}
+
+.job-overlay-home h4 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ff6b00; /* updated */
+  margin: 0;
+}
+
+.job-overlay-home p {
+  font-size: 14px; /* auto-scaling between 12px and 24px */
+  white-space: nowrap;               /* prevent wrapping */
+  overflow: hidden;                  /* hide overflow */
+  text-overflow: ellipsis;          /* show '...' if it's too long */
+  max-width: 100%;                   /* ensure it stays within parent */
+  margin: 0;
+}
+
+.job-overlay-home {
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 1rem;
+  border-radius: 20px;
+  height: 100%;
+}
+
+.job-overlay-home h3 {
+  color: #e25a00;
+  font-size: clamp(12px, 5vw, 18px); /* auto-scaling between 12px and 24px */
+  white-space: nowrap;               /* prevent wrapping */
+  overflow: hidden;                  /* hide overflow */
+  text-overflow: ellipsis;          /* show '...' if it's too long */
+  max-width: 100%;                   /* ensure it stays within parent */
+}
+
+
+.salary {
+  font-weight: bold;
+  color: #ffdd99;
+}
+
+/* === Notice Popup === */
+.notice-popup {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+  border-radius: 10px;
+  padding: 1rem;
+  z-index: 1001;
+  max-width: 300px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.notice-button {
+  background-color: #ff6a00;
+  color: white;
+  border: none;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  margin-top: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.notice-button:hover {
+  background-color: #e25a00;
+  transform: scale(1.05);
+}
+
+/* === Hirer Profile View === */
+.hirer-profile-container {
+  background-color: white;
+  padding: 2rem;
+  width: 90%;
+  max-width: 480px;
+  margin: 6rem auto 4rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #ffffff;
+  border: 1px solid #ff6b00;
+  transition: transform 0.2s ease;
+  animation: fadeIn 0.4s ease-out;
+  margin-top: 160px;
+}
+
+/* Hover lift */
+.hirer-profile-container:hover {
+  transform: translateY(-2px);
+}
+
+/* === Section Title === */
+.hirer-profile-container h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #ff8833;
+  border-bottom: 1px solid #2c2542;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  margin-top: auto;
+  text-align: center;
+}
+
+/* === Subtitles or Labels === */
+.hirer-profile-container h3,
+.hirer-profile-container label {
+  font-size: 16px;
+  color: #ffb87a;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+/* === Paragraph or Info Text === */
+.hirer-profile-container p {
+  font-size: 14px;
+  color: #241d33;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+
+/* === Fade In Animation === */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+/* === Profile Image Styling === */
+.profile-image {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 20%;
+  /* border: 3px solid #ff6b00; */
+  border: none;
+  margin: 0 auto 1.5rem auto;
+  display: block;
+}
+
+/* === Profile Info Section === */
+.profile-info {
+  padding: 0 0.5rem;
+  font-size: 14px;
+  margin-bottom: 1.5rem;
+}
+
+.profile-info p {
+  margin: 10px 0;
+  line-height: 1.4;
+}
+
+.profile-info p strong {
+  color: #ffffff;
+}
+
+/* === Back Button === */
+.home-back-button {
+  background-color: white;
+  border-color: 1px solid #e25a00;
+  color: #e25a00;
+  padding: 4px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 20px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.home-back-button:hover {
+  background-color: #e25a0031;
+  transform: scale(1.3);
+  color: #2c2542;
+  border: none;
+}
+
+/* === socials layout === */
+.socials {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  row-gap: 0.75rem;
+  column-gap: 1rem;
+  background-color: #2c2542;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  color: #e0e0e046;
+  margin-top: 1.5rem;
+  font-size: 14px;
+  border: 1px solid #ff6b00;
+}
+
+/* Make each <p> span full row so we can style children */
+.socials {
+  display: grid;
+  grid-template-columns: max-content 1fr; /* Left column tight, right flexible */
+  row-gap: 1rem; /* More space between rows */
+  column-gap: 1.5rem; /* More space between label and value */
+  background-color: #e0e0e046;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  border: none;
+  color: #e0e0e046;
+  margin: 1.5rem 0 1.5rem 0.5rem; /* Shift slightly to the left */
+  font-size: 14px;
+}
+
+/* Let each <p> behave as grid content */
+.socials p {
+  display: contents;
+}
+
+/* Style the label (Facebook, Instagram, etc.) */
+.socials p strong {
+  color: #241d33;
+  font-weight: 600;
+  text-align: left;
+  display: block;
+}
+
+.about-profile {
+  background-color: #e0e0e046;
+  padding: 1.25rem 1.5rem;
+  border-radius: 12px;
+  color: #e0e0e0;
+  margin: 1.5rem 0 0.5rem 0.5rem;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* === Carousel Styles === */
+.carousel-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 1rem;
+  position: relative;
+}
+
+.carousel-track {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 1rem 0;
+  scrollbar-width: none; /* Firefox */
+}
+
+.carousel-track::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.carousel-button {
+  background-color: #ff6a00;
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  outline: none;
+}
+
+.carousel-button:hover {
+  background-color: #FF7038;
+}
+
+.carousel-button:focus {
+  outline: none;
+}
+
+.carousel-button.left {
+  margin-right: 0.5rem;
+}
+
+.carousel-button.right {
+  margin-left: 0.5rem;
+}
+
+
+/* Optional override if needed for horizontal cards */
+.job-card {
+  min-width: 280px;
+  height: 160px;
+  flex-shrink: 0;
+}
+
+/* === Footer === */
+.site-footer {
+  background-color: #2c1a4d;
+  color: #f4eaff;
+  padding: 2rem 1rem;
+  font-size: 0.9rem;
+  margin-top: 4rem;
+
+  /* Make footer full width */
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
+
+
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  max-width: 1100px;
+  margin: auto;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.footer-left, .footer-right {
+  flex: 1;
+  min-width: 250px;
+}
+
+.footer-title {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #fcb045;
+}
+
+.footer-text {
+  line-height: 1.5;
+  color: #e0d3f7;
+}
+
+.footer-right p {
+  margin: 0.3rem 0;
+}
+
+.footer-right a {
+  color: #ff9900;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.footer-right a:hover {
+  color: #ffc766;
+}
+
+@media (width <= 650px) {
+  .search-section{
+    width: 100px;
+    margin-left: 1px;
+  }
+}
+
+
+
+.profile-image-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 1rem 0;
+}
+
+.verified-badge {
+  color: #28a745;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.profile-image {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border: 3px solid transparent;
+}
+
+/* Green border for verified hirers */
+.certified-border {
+  border-color: #28a745;
+}

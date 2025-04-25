@@ -1,0 +1,444 @@
+/* 🔄 JobDetail.jsx => .job-detail-container */
+.job-detail-container {
+  display: flex;
+  flex-wrap: nowrap;
+  background-color: #f8f8f8; /* updated */
+  padding: 140px 5vw 40px;
+  min-height: 100vh;
+  width: 90vw;
+  justify-content: center;
+  align-items: flex-start;
+  box-sizing: border-box;
+  gap: 25px;
+  max-width: 1500px;
+  margin: 0 auto;
+}
+
+/* 🔄 Sidebar container */
+.sidebar {
+  width: 40%;
+  min-width: 300px;
+  max-height: 80vh;
+  overflow-y: auto;
+  background-color: #ffffff; /* updated */
+  padding: 15px;
+  border-radius: 5px;
+  box-sizing: border-box;
+  direction: rtl;
+  margin-top: 0;
+  padding-top: 0;
+  border: 1px solid #e0e0e0; /* added */
+}
+
+.sidebar * {
+  direction: ltr;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 9px;
+}
+.sidebar::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}
+.sidebar::-webkit-scrollbar-button {
+  display: none;
+  height: 0;
+  width: 0;
+}
+
+/* 🔄 Sidebar Header */
+.sidebar-header {
+  position: sticky;
+  top: 0;
+  background-color: #ffffff; /* updated */
+  z-index: 10;
+  padding: 15px;
+  border-bottom: 1px solid #e0e0e0; /* updated */
+}
+
+.sidebar-header h3 {
+  margin-bottom: 8px;
+  color: #ff6b00; /* updated */
+}
+
+/* 🔄 Search Input */
+.search-bar {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  border: 1px solid #e0e0e0; /* updated */
+  background-color: #ffffff; /* updated */
+  color: #333;
+  font-size: 16px;
+}
+
+/* 🔄 Scrollable job list */
+.sidebar-job-list {
+  overflow-y: auto;
+  flex-grow: 1;
+  padding: 0 15px 15px;
+  background-color: #ffffff; /* updated */
+  z-index: 1;
+}
+
+/* 🔄 Individual Job Item */
+.job-item {
+  position: relative;
+  padding: 15px;
+  margin-bottom: 25px;
+  border-radius: 25px;
+  border: 1px solid #e0e0e0; /* updated */
+  cursor: pointer;
+  transition: 0.4s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 210px;
+  background: #ffffff; /* updated */
+  color: #333; /* updated */
+  text-align: center;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* added */
+}
+
+.job-item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #ffffff; /* updated */
+  opacity: 1;
+  transition: opacity 0.4s ease-in-out;
+}
+
+.job-item:hover::before,
+.job-item.selected::before {
+  opacity: 0;
+}
+
+/* 🔄 Overlay inside each job card */
+.job-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 75%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.6); /* updated */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 25px;
+  gap: 6px;
+  z-index: 2;
+  text-shadow: none; /* removed to match light theme */
+  box-sizing: border-box;
+}
+
+.job-overlay h4 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ff6b00; /* updated */
+  margin: 0;
+}
+
+.job-overlay p {
+  font-size: 14px; /* auto-scaling between 12px and 24px */
+  white-space: nowrap;               /* prevent wrapping */
+  overflow: hidden;                  /* hide overflow */
+  text-overflow: ellipsis;          /* show '...' if it's too long */
+  max-width: 100%;                   /* ensure it stays within parent */
+  margin: 0;
+}
+
+.job-item:hover .job-overlay {
+  background: rgba(255, 255, 255, 0.85); /* updated */
+}
+
+.job-item.selected .job-overlay {
+  background: rgba(255, 106, 0, 0.258); /* updated */
+}
+
+/* 🔄 Job Titles */
+.job-item h4 {
+  font-size: 30px;
+  font-weight: bold;
+  color: #ff6b00; /* updated */
+  position: relative;
+  z-index: 2;
+  text-shadow: none;
+}
+
+/* 🔄 Company & Location */
+.job-item p {
+  font-size: 16px;
+  color: #333; /* updated */
+  position: relative;
+  z-index: 2;
+  text-shadow: none;
+}
+
+.job-item.selected p {
+  color: #e6e6e6; /* or any highlight color */
+}
+
+.company-location {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.salary {
+  font-weight: bold;
+  color: #ff6b00; /* updated */
+  font-size: 16px;
+  margin-top: 5px;
+}
+
+/* 🔄 Detail Container (Right Panel) */
+.detail-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-grow: 1;
+  width: 60%;
+  padding: 50px;
+  background-color: #ffffff; /* updated */
+  color: #333;
+  box-sizing: border-box;
+  min-height: 500px;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0; /* added */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); /* added */
+}
+
+.sidebar,
+.detail-container {
+  flex-shrink: 0;
+}
+
+/* 🔄 Detail Header */
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.detail-container h2 {
+  font-size: 30px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #ff6b00; /* updated */
+}
+
+.detail-container {
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #555; /* updated */
+}
+
+.detail-container h3 {
+  font-size: 18px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  color: #ff6b00; /* updated */
+}
+
+/* 🔄 Salary Box */
+.salary-box {
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 5px;
+  border: 1px solid #e0e0e0;
+  margin-bottom: 20px;
+  color: #333;
+  width: auto;
+  max-width: 400px;
+}
+
+/* 🔄 Button Group */
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.like-report-group {
+  display: flex;
+  gap: 10px;
+}
+
+/* 🔄 Like and Report Buttons */
+.like-button,
+.report-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  min-width: 100px;
+}
+
+.like-button {
+  background-color: white;
+  color: #ff6b00;
+  border: 1px solid #ff6b00;
+}
+
+.like-button.liked {
+  background-color: #ff6b00;
+  color: white;
+}
+
+.report-button {
+  background-color: #ff4d4d;
+  color: white;
+}
+
+/* 🔄 CV Submission Button */
+.apply-button {
+  background-color: #ff6b00; /* updated */
+  color: white;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+  width: 150px;
+  text-align: center;
+}
+
+.apply-button:hover {
+  transform: scale(1.05);
+  background-color: #e65a00; /* hover */
+}
+
+/* 🔄 Report Modal Overlay */
+.report-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 🔄 Modal Box */
+.report-content {
+  background: #ffffff; /* updated */
+  padding: 25px;
+  border-radius: 10px;
+  width: 500px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  color: #333;
+}
+
+/* 🔄 Report Reasons List */
+.report-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #e0e0e0;
+  padding: 10px;
+  border-radius: 6px;
+  margin: 8px 0;
+  font-size: 16px;
+  background: #f9f9f9;
+  color: #333;
+}
+
+/* 🔄 Custom Checkbox */
+.report-option input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #ff6b00;
+}
+
+/* 🔄 Modal Action Buttons */
+.report-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.submit-report,
+.cancel-report {
+  padding: 10px 15px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.submit-report {
+  background-color: #ff6b00; /* updated */
+  color: white;
+}
+
+.cancel-report {
+  background-color: gray;
+  color: white;
+}
+
+.submit-report:hover {
+  background-color: #e65a00;
+}
+
+.cancel-report:hover {
+  background-color: #555;
+}
+
+.view-profile-btn {
+  background-color: #ffffff;
+  border: 1.5px solid #ff6b00;
+  color: #ff6b00;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 6px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+}
+
+.view-profile-btn:hover {
+  background-color: #ff6b00;
+  color: white; /* 🔥 this makes the text white on hover */ /* subtle orange background on hover */
+}
+
+.view-profile-btn:focus {
+  outline: 2px solid #3399ff; /* blue focus ring like your screenshot */
+  outline-offset: 2px;
+}
+
+
+.job-overlay h4 {
+  font-size: clamp(12px, 5vw, 24px); /* auto-scaling between 12px and 24px */
+  white-space: nowrap;               /* prevent wrapping */
+  overflow: hidden;                  /* hide overflow */
+  text-overflow: ellipsis;          /* show '...' if it's too long */
+  max-width: 100%;                   /* ensure it stays within parent */
+}
