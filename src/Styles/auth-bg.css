@@ -1,0 +1,23 @@
+/* Full-screen image with a dark shader that never affects layout */
+.auth-bg {
+  position: relative;
+  min-height: 100vh;
+}
+
+/* Fixed background layer behind everything */
+.auth-bg::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    /* shader on top */
+    linear-gradient(rgba(0,0,0,.55), rgba(0,0,0,.55)),
+    /* image from CSS variable (set inline from React) */
+    var(--auth-bg) center / cover no-repeat;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Remove default margin and ensure full-height mount */
+html, body, #root { height: 100%; }
+body { margin: 0; }

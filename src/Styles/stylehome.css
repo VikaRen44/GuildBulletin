@@ -1,10 +1,13 @@
+/* =========================
+   Global / Page Layout
+   ========================= */
 body {
   overflow-x: hidden;
 }
 
-/* === Ensure page content starts after Navbar === */
 .page-wrapper {
-  padding-top: 150px; /* Leave space for fixed navbar */
+  /* leaves space for fixed navbar */
+  padding-top: 150px;
   padding-left: 2rem;
   padding-right: 2rem;
   width: 1000px;
@@ -13,7 +16,9 @@ body {
   background-color: #f9f9f9;
 }
 
-/* === Search Section === */
+/* =========================
+   Search – legacy (kept if still used anywhere)
+   ========================= */
 .search-section {
   display: flex;
   flex-direction: column;
@@ -36,13 +41,13 @@ body {
   border-radius: 20px;
   font-size: 0.9rem;
   min-width: 850px;
-  background-color: white;
+  background-color: #fff;
   color: #333;
 }
 
 .search-button {
   background-color: #ff6a00;
-  color: white;
+  color: #fff;
   border: none;
   padding: 0.6rem 1.2rem;
   border-radius: 20px;
@@ -50,22 +55,21 @@ body {
   cursor: pointer;
   transition: background-color 0.3s, transform 0.2s ease;
 }
-
 .search-button:hover {
   background-color: #e25a00;
   transform: scale(1.05);
 }
 
+/* Upload/Post buttons (legacy section) */
 .button-wrapper {
   display: flex;
   justify-content: center;
   margin-top: 1rem;
   gap: 1rem;
 }
-
 .upload-button,
 .post-button {
-  background-color: white;
+  background-color: #fff;
   color: #ff6a00;
   padding: 0.6rem 1.2rem;
   border: 1px solid #ff6a00;
@@ -74,60 +78,52 @@ body {
   cursor: pointer;
   transition: all 0.3s ease;
 }
-
 .upload-button:hover,
 .post-button:hover {
   background-color: #ff6a00;
-  color: white;
+  color: #fff;
   transform: scale(1.05);
 }
 
-/* === Profile Card === */
+/* =========================
+   Profile Card (legacy)
+   ========================= */
 .profile-card {
-  background-color: white;
+  background-color: #fff;
   padding: 2rem;
   border-radius: 20px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.05);
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-bottom: 2rem;
 }
-
-.profile-image-container {
-  margin-bottom: 0.1rem;
-}
-
+.profile-image-container { margin-bottom: .1rem; }
 .profile-image {
-  width: 100px;
-  height: 100px;
-  border-radius: 20px;
+  width: 150px;  /* final consolidated size */
+  height: 150px;
   object-fit: cover;
-  border: 1px solid #ccc;
+  border-radius: 20%;
+  border: 3px solid transparent; /* becomes green when .certified-border */
 }
+.certified-border { border-color: #28a745; }
 
-.profile-info-container {
-  text-align: center;
-  margin-top: 1rem;
-}
-
+.profile-info-container { text-align: center; margin-top: 1rem; }
 .profile-name {
   color: #ff6a00;
   font-size: 2rem;
   font-weight: bold;
-  margin-bottom: 0.5rem;
+  margin-bottom: .5rem;
 }
-
 .profile-divider {
   height: 1px;
   background-color: #eee;
   width: 100%;
   margin: 1rem 0;
 }
-
 .badge {
   display: inline-block;
-  width: 120px; /* You can adjust this value as needed */
+  width: 120px;
   text-align: center;
   background-color: #f3f3f3;
   padding: 8px 0;
@@ -136,26 +132,21 @@ body {
   margin: 10px auto;
   color: #333;
 }
-
-
-
 .profile-info {
-  font-size: 0.9rem;
+  font-size: .9rem;
   color: #555;
   margin-bottom: 1rem;
 }
-
 .edit-profile {
   background-color: #ff6a00;
-  color: white;
-  padding: 0.5rem 1rem;
+  color: #fff;
+  padding: .5rem 1rem;
   border: none;
   border-radius: 20px;
   font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition: background-color .3s ease, transform .2s ease;
 }
-
 .edit-profile:hover {
   background-color: #e25a00;
   transform: scale(1.05);
@@ -167,41 +158,37 @@ body {
   gap: 15px;
   justify-content: center;
 }
-
 .icon {
   color: #ff6a00;
   font-size: 1.2rem;
-  transition: transform 0.3s;
+  transition: transform .3s;
 }
+.icon:hover { transform: scale(1.2); }
 
-.icon:hover {
-  transform: scale(1.2);
-}
-
-/* === Job Listings === */
-.recommended-section {
-  margin-top: 4rem;
-}
+/* =========================
+   Recommended Jobs / Cards
+   ========================= */
+.recommended-section { margin-top: 4rem; }
 
 .recommended-background {
   background: linear-gradient(to bottom right, #fffdfc, #f9f9f9);
   padding: 2rem;
   border-radius: 20px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.06);
 }
 
+/* final, bold title */
 .recommended-title {
-  font-size: 1.6rem;
-  color: #333;
   text-align: center;
-  margin-bottom: 1rem;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: .2px;
+  color: #222;
+  margin: 12px 0 18px;
 }
 
-.job-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
+/* individual job card */
+.job-list { display: flex; flex-direction: column; gap: 1rem; }
 
 .job-card {
   position: relative;
@@ -210,73 +197,105 @@ body {
   padding: 1.5rem;
   border-radius: 20px;
   cursor: pointer;
-  color: white;
+  color: #fff;
   overflow: hidden;
   min-height: 150px;
-  transition: transform 0.3s ease;
+  transition: transform .3s ease;
+  min-width: 280px;   /* ensure horizontal width */
+  height: 160px;      /* for carousel line-up */
+  flex-shrink: 0;
 }
+.job-card:hover { transform: scale(1.02); }
 
-.job-card:hover {
-  transform: scale(1.02);
-}
-
+/* card overlay */
 .job-overlay-home {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 0; left: 0;
   width: 75%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.6); /* updated */
+  background-color: rgba(0,0,0,0.5);
+  padding: 1rem 25px;
+  border-radius: 20px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
-  padding: 25px;
   gap: 6px;
   z-index: 2;
-  text-shadow: none; /* removed to match light theme */
   box-sizing: border-box;
+  text-shadow: none;
 }
-
-.job-overlay-home h4 {
-  font-size: 20px;
-  font-weight: 700;
-  color: #ff6b00; /* updated */
-  margin: 0;
-}
-
-.job-overlay-home p {
-  font-size: 14px; /* auto-scaling between 12px and 24px */
-  white-space: nowrap;               /* prevent wrapping */
-  overflow: hidden;                  /* hide overflow */
-  text-overflow: ellipsis;          /* show '...' if it's too long */
-  max-width: 100%;                   /* ensure it stays within parent */
-  margin: 0;
-}
-
-.job-overlay-home {
-  background-color: rgba(0, 0, 0, 0.5);
-  padding: 1rem;
-  border-radius: 20px;
-  height: 100%;
-}
-
 .job-overlay-home h3 {
   color: #e25a00;
-  font-size: clamp(12px, 5vw, 18px); /* auto-scaling between 12px and 24px */
-  white-space: nowrap;               /* prevent wrapping */
-  overflow: hidden;                  /* hide overflow */
-  text-overflow: ellipsis;          /* show '...' if it's too long */
-  max-width: 100%;                   /* ensure it stays within parent */
+  font-size: clamp(12px, 5vw, 18px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
-
-
-.salary {
-  font-weight: bold;
-  color: #ffdd99;
+.job-overlay-home p {
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  margin: 0;
 }
+.salary { font-weight: bold; color: #ffdd99; }
 
-/* === Notice Popup === */
+/* carousel */
+.carousel-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 1rem;
+  position: relative;
+}
+.carousel-track {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 1rem 0;
+  scrollbar-width: none;           /* Firefox */
+}
+.carousel-track::-webkit-scrollbar { display: none; }
+
+/* square-rounded arrow buttons, icon centered */
+.carousel-button {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  line-height: 0;
+  background: #ff6a00;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  transition: background .2s ease, transform .15s ease, box-shadow .2s ease;
+}
+.carousel-button:hover {
+  background: #e65a00;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.16);
+}
+.carousel-button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+.carousel-button svg { display: block; pointer-events: none; }
+.carousel-button.left  { margin-right: .5rem; }
+.carousel-button.right { margin-left: .5rem; }
+
+/* =========================
+   Notice Popup
+   ========================= */
 .notice-popup {
   position: fixed;
   top: 80px;
@@ -290,114 +309,101 @@ body {
   max-width: 300px;
   box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
-
 .notice-button {
   background-color: #ff6a00;
-  color: white;
+  color: #fff;
   border: none;
-  padding: 0.4rem 1rem;
+  padding: .4rem 1rem;
   border-radius: 20px;
   margin-top: 1rem;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition: background-color .3s ease, transform .2s ease;
 }
-
 .notice-button:hover {
   background-color: #e25a00;
   transform: scale(1.05);
 }
 
-/* === Hirer Profile View === */
+/* =========================
+   Hirer Profile View
+   ========================= */
 .hirer-profile-container {
-  background-color: white;
+  background-color: #fff;
   padding: 2rem;
   width: 90%;
   max-width: 480px;
-  margin: 6rem auto 4rem;
+  margin: 160px auto 4rem; /* top aligned to navbar gap */
   border-radius: 20px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #ffffff;
   border: 1px solid #ff6b00;
-  transition: transform 0.2s ease;
-  animation: fadeIn 0.4s ease-out;
-  margin-top: 160px;
+  transition: transform .2s ease;
+  animation: fadeIn .4s ease-out;
 }
-
-/* Hover lift */
-.hirer-profile-container:hover {
-  transform: translateY(-2px);
-}
-
-/* === Section Title === */
+.hirer-profile-container:hover { transform: translateY(-2px); }
 .hirer-profile-container h2 {
   font-size: 24px;
   font-weight: 700;
   color: #ff8833;
   border-bottom: 1px solid #2c2542;
-  padding-bottom: 0.5rem;
-  margin-bottom: 1rem;
-  margin-top: auto;
+  padding-bottom: .5rem;
+  margin: 0 0 1rem;
   text-align: center;
 }
-
-/* === Subtitles or Labels === */
 .hirer-profile-container h3,
 .hirer-profile-container label {
   font-size: 16px;
   color: #ffb87a;
   margin-top: 1rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: .5rem;
   font-weight: 600;
 }
-
-/* === Paragraph or Info Text === */
 .hirer-profile-container p {
   font-size: 14px;
   color: #241d33;
   margin-bottom: 1rem;
   line-height: 1.6;
 }
-
-
-/* === Fade In Animation === */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-
-/* === Profile Image Styling === */
-.profile-image {
-  width: 200px;
-  height: 200px;
-  object-fit: cover;
-  border-radius: 20%;
-  /* border: 3px solid #ff6b00; */
+/* socials block in hirer view */
+.socials {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  row-gap: 1rem;
+  column-gap: 1.5rem;
+  background-color: #e0e0e046;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
   border: none;
-  margin: 0 auto 1.5rem auto;
+  color: #e0e0e046;
+  margin: 1.5rem 0 1.5rem .5rem;
+  font-size: 14px;
+}
+.socials p { display: contents; }
+.socials p strong {
+  color: #241d33;
+  font-weight: 600;
+  text-align: left;
   display: block;
 }
-
-/* === Profile Info Section === */
-.profile-info {
-  padding: 0 0.5rem;
+.about-profile {
+  background-color: #e0e0e046;
+  padding: 1.25rem 1.5rem;
+  border-radius: 12px;
+  color: #e0e0e0;
+  margin: 1.5rem 0 .5rem .5rem;
   font-size: 14px;
-  margin-bottom: 1.5rem;
+  line-height: 1.7;
 }
 
-.profile-info p {
-  margin: 10px 0;
-  line-height: 1.4;
-}
-
-.profile-info p strong {
-  color: #ffffff;
-}
-
-/* === Back Button === */
+/* Back button */
 .home-back-button {
-  background-color: white;
+  background-color: #fff;
   border-color: 1px solid #e25a00;
   color: #e25a00;
   padding: 4px 10px;
@@ -405,9 +411,8 @@ body {
   cursor: pointer;
   font-weight: bold;
   font-size: 20px;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition: background-color .3s ease, transform .2s ease;
 }
-
 .home-back-button:hover {
   background-color: #e25a0031;
   transform: scale(1.3);
@@ -415,132 +420,169 @@ body {
   border: none;
 }
 
-/* === socials layout === */
-.socials {
+/* =========================
+   Home – Search (new compact)
+   ========================= */
+.home-search-shell {
+  max-width: 880px;
+  margin: 0 auto 24px;
+  padding: 0 16px;
+}
+.home-search {
   display: grid;
-  grid-template-columns: 1fr 2fr;
-  row-gap: 0.75rem;
-  column-gap: 1rem;
-  background-color: #2c2542;
-  padding: 1rem 1.5rem;
-  border-radius: 12px;
-  color: #e0e0e046;
-  margin-top: 1.5rem;
-  font-size: 14px;
-  border: 1px solid #ff6b00;
-}
-
-/* Make each <p> span full row so we can style children */
-.socials {
-  display: grid;
-  grid-template-columns: max-content 1fr; /* Left column tight, right flexible */
-  row-gap: 1rem; /* More space between rows */
-  column-gap: 1.5rem; /* More space between label and value */
-  background-color: #e0e0e046;
-  padding: 1rem 1.5rem;
-  border-radius: 12px;
-  border: none;
-  color: #e0e0e046;
-  margin: 1.5rem 0 1.5rem 0.5rem; /* Shift slightly to the left */
-  font-size: 14px;
-}
-
-/* Let each <p> behave as grid content */
-.socials p {
-  display: contents;
-}
-
-/* Style the label (Facebook, Instagram, etc.) */
-.socials p strong {
-  color: #241d33;
-  font-weight: 600;
-  text-align: left;
-  display: block;
-}
-
-.about-profile {
-  background-color: #e0e0e046;
-  padding: 1.25rem 1.5rem;
-  border-radius: 12px;
-  color: #e0e0e0;
-  margin: 1.5rem 0 0.5rem 0.5rem;
-  font-size: 14px;
-  line-height: 1.7;
-}
-
-/* === Carousel Styles === */
-.carousel-wrapper {
-  display: flex;
+  grid-template-columns: 120px 1fr;
+  gap: 12px;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 1rem;
-  position: relative;
 }
-
-.carousel-track {
-  display: flex;
-  gap: 1rem;
-  overflow-x: auto;
-  scroll-behavior: smooth;
-  padding: 1rem 0;
-  scrollbar-width: none; /* Firefox */
-}
-
-.carousel-track::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
-}
-
-.carousel-button {
-  background-color: #ff6a00;
-  color: white;
+.home-search__btn {
+  height: 44px;
   border: none;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  font-size: 1.2rem;
+  border-radius: 999px;
+  font-weight: 700;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  padding: 0 18px;
+  background: #ff6a00;
+  color: #fff;
+  transition: transform .15s ease, background .2s ease;
+}
+.home-search__btn:hover { transform: translateY(-1px); }
+.home-search__input {
+  height: 44px;
+  width: 100%;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid #e6e6e6;
+  outline: none;
+  font-size: 14px;
+  background: #fff;
+  color: #222;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.03) inset;
+}
+.home-search__input:focus {
+  border-color: #ff6a00;
+  box-shadow: 0 0 0 3px rgba(255,106,0,.15);
+}
+
+/* =========================
+   Home – Profile (preferred layout)
+   ========================= */
+.home-profile {
+  max-width: 1050px;
+  margin: 28px auto;
+  padding: 28px;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 12px 35px rgba(0,0,0,0.06);
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 28px;
+}
+
+.home-profile__left { display: flex; flex-direction: column; align-items: center; }
+
+.home-pfp {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 28px;
+  overflow: hidden;
+  background: #111;
+}
+.home-pfp__img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.home-verified {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #2ecc71;
+  color: #fff;
+  font-weight: 800;
+  font-size: 14px;
+  line-height: 1;
+  padding: 6px 8px;
+  border-radius: 10px;
+}
+
+.home-role {
+  margin-top: 16px;
+  padding: 12px 22px;   /* (bigger) */
+  border-radius: 999px;
+  border: 1px solid rgba(0,0,0,0.08);
+  font-weight: 700;
+  font-size: 18px;      /* (bigger) */
+  background: #f7f7f7;
+  color: #222;
+}
+
+.home-profile__right { display: flex; flex-direction: column; gap: 18px; }
+.home-name {
+  margin: 6px 0 0;
+  font-size: 34px;
+  font-weight: 800;
+  color: #222;
+}
+.home-name__underline {
+  height: 4px;
+  width: 220px;
+  border-radius: 999px;
+  background: rgba(0,0,0,0.1);
+  margin-top: -6px;
+}
+.home-about {
+  border: 2px solid rgba(0,0,0,0.08);
+  border-radius: 14px;
+  padding: 16px 18px;
+  line-height: 1.6;
+  font-size: 16px;
+  color: #333;
+  background: #fff;
+}
+.home-edit {
+  align-self: flex-start;
+  height: 48px;
+  padding: 0 22px;
+  border: none;
+  border-radius: 14px;
+  font-weight: 800;
+  font-size: 18px;
+  cursor: pointer;
+  background: #111;
+  color: #fff;
+  transition: transform .15s ease, opacity .2s ease;
+  margin-bottom: 8px;   /* extra breathing room before icons */
+}
+.home-edit:hover { transform: translateY(-1px); }
+
+.home-social {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  outline: none;
+  gap: 18px;           /* slightly larger gaps */
+  margin-top: 28px;    /* more room under Edit button */
+}
+.home-social a {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #fff;
+  border: 2px solid rgba(0,0,0,0.08);
+  color: #ff6a00;
+  font-size: 20px;
+  transition: transform .15s ease, background .2s ease;
+}
+.home-social a:hover {
+  background: #fff3e9;
+  transform: translateY(-1px);
 }
 
-.carousel-button:hover {
-  background-color: #FF7038;
-}
-
-.carousel-button:focus {
-  outline: none;
-}
-
-.carousel-button.left {
-  margin-right: 0.5rem;
-}
-
-.carousel-button.right {
-  margin-left: 0.5rem;
-}
-
-
-/* Optional override if needed for horizontal cards */
-.job-card {
-  min-width: 280px;
-  height: 160px;
-  flex-shrink: 0;
-}
-
-/* === Footer === */
+/* =========================
+   Footer
+   ========================= */
 .site-footer {
   background-color: #2c1a4d;
   color: #f4eaff;
   padding: 2rem 1rem;
-  font-size: 0.9rem;
+  font-size: .9rem;
   margin-top: 4rem;
-
-  /* Make footer full width */
   width: 100vw;
   position: relative;
   left: 50%;
@@ -548,8 +590,6 @@ body {
   margin-left: -50vw;
   margin-right: -50vw;
 }
-
-
 .footer-container {
   display: flex;
   justify-content: space-between;
@@ -559,67 +599,42 @@ body {
   flex-wrap: wrap;
   gap: 2rem;
 }
+.footer-left, .footer-right { flex: 1; min-width: 250px; }
+.footer-title { font-weight: bold; margin-bottom: .5rem; color: #fcb045; }
+.footer-text { line-height: 1.5; color: #e0d3f7; }
+.footer-right p { margin: .3rem 0; }
+.footer-right a { color: #ff9900; text-decoration: none; transition: color .3s; }
+.footer-right a:hover { color: #ffc766; }
 
-.footer-left, .footer-right {
-  flex: 1;
-  min-width: 250px;
-}
-
-.footer-title {
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  color: #fcb045;
-}
-
-.footer-text {
-  line-height: 1.5;
-  color: #e0d3f7;
-}
-
-.footer-right p {
-  margin: 0.3rem 0;
-}
-
-.footer-right a {
-  color: #ff9900;
-  text-decoration: none;
-  transition: color 0.3s;
-}
-
-.footer-right a:hover {
-  color: #ffc766;
-}
-
+/* =========================
+   Responsive
+   ========================= */
 @media (width <= 650px) {
-  .search-section{
-    width: 100px;
-    margin-left: 1px;
-  }
+  .search-section { width: 100px; margin-left: 1px; }
 }
 
+@media (max-width: 960px) {
+  .home-profile { grid-template-columns: 1fr; padding: 22px; }
+  .home-name { font-size: 28px; }
+  .home-name__underline { width: 160px; }
+}
 
+@media (max-width: 520px) {
+  .home-search { grid-template-columns: 1fr; }
+  .home-search__btn { width: 140px; justify-self: start; }
+  .home-social { margin-top: 22px; gap: 16px; }
+  .home-role   { font-size: 17px; padding: 11px 20px; }
+}
 
 .profile-image-wrapper {
   display: flex;
-  flex-direction: column;
+  justify-content: center;  /* centers horizontally */
   align-items: center;
-  margin: 1rem 0;
-}
-
-.verified-badge {
-  color: #28a745;
-  font-weight: 600;
-  font-size: 0.95rem;
+  margin: 16px auto;        /* centers inside parent */
 }
 
 .profile-image {
-  width: 150px;
-  height: 150px;
-  object-fit: cover;
-  border: 3px solid transparent;
-}
-
-/* Green border for verified hirers */
-.certified-border {
-  border-color: #28a745;
+  border: 2px solid #ff6a00;  /* orange border */
+  max-width: 100%;
+  height: auto;
 }

@@ -1,202 +1,164 @@
-/* === Navbar Base === */
+/* ===== Navbar Base ===== */
 .navbar {
-  width: 100%;
-  background-color: #FF7038; /* 🔶 Bold orange background */
-  padding: 15px 0;
   position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 1000; /* Keep it above all other elements */
+  top: 0; left: 0;
+  width: 100%;
+  background: #FF7038;
+  padding: 14px 0;
+  z-index: 1000;
 }
 
-/* === Navbar Inner Layout === */
+/* ===== Inner Layout ===== */
 .navbar-container {
   max-width: 1200px;
   margin: 0 auto;
+  padding: 0 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 20px;
 }
 
-/* === Logo Title === */
-.navbar-title {
-  color: white;
+/* ===== Brand ===== */
+.navbar-brand {
+  color: #fff;
   font-size: 24px;
-  font-weight: bold;
+  font-weight: 800;
+  text-decoration: none;
+  letter-spacing: .2px;
 }
+.navbar-brand:hover { opacity: .95; }
 
-/* === Navigation Links Wrapper === */
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-/* === Individual Nav Link === */
-.nav-link {
-  color: white;
+/* ===== Links ===== */
+.nav-links { display: flex; align-items: center; gap: 0; }
+.nav-item {
+  --pad-x: 14px;
+  color: #fff;
   text-decoration: none;
   font-size: 16px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  display: flex;
+  font-weight: 600;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  padding: 8px 12px;
-}
-
-.nav-link:hover {
-  color: #fcecdc;
-  transform: scale(1.1); /* Subtle zoom on hover */
-}
-
-/* === Logout Button Styled Like a Nav Link === */
-.nav-link-logout-btn {
-  background-color: #332046;
+  gap: 8px;
+  padding: 8px var(--pad-x);
+  transition: transform .15s ease, opacity .15s ease;
+  position: relative;
   border: none;
-  color: white;
-  padding: 12px 20px;
-  font-size: 16px;
-  font-weight: 500;
+  background: transparent;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
 }
+.nav-ic { font-size: 18px; line-height: 0; }
 
-.nav-link-logout-btn:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+/* item dividers */
+.nav-item:not(:last-child)::after {
+  content: "";
+  width: 1px; height: 18px;
+  background: rgba(255,255,255,.35);
+  position: absolute; right: 0; top: 50%;
+  transform: translateY(-50%);
 }
+.nav-item:not(:last-child){ padding-right: calc(var(--pad-x) + 10px); }
+.nav-item:hover { transform: translateY(-1px); opacity: .92; }
+.nav-item--disabled { opacity: .6; cursor: not-allowed; }
 
+/* logout pill */
+.nav-item--logout {
+  background: #332046;
+  border-radius: 6px;
+  margin-left: 12px;
+}
+.nav-item--logout:hover { opacity: .95; transform: translateY(-1px); }
+
+/* ===== Logout Modal ===== */
 .logout-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.4);
+  display: grid; place-items: center;
+  z-index: 9999;
+  padding: 16px;
 }
 
 .logout-modal-content {
-  background: white;
-  padding: 35px 50px;
-  border-radius: 20px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+  width: min(92vw, 420px);
+  background: #fff;
+  border-radius: 16px;
+  padding: 26px 28px;
+  box-shadow: 0 20px 55px rgba(0,0,0,.20), 0 2px 10px rgba(0,0,0,.06);
+  animation: modalIn .18s ease-out both;
+  border: 1px solid #f1f1f1;
   text-align: center;
-  animation: scaleFadeIn 0.3s ease forwards;
-  max-width: 400px;
-  width: 90%;
-  color: #333;
 }
 
 .logout-modal-content h2 {
-  font-size: 22px;
-  margin-bottom: 30px;
-  font-weight: 500;
+  margin: 0 0 20px;
+  font-size: 20px;
+  line-height: 1.35;
+  color: #222;
 }
-
-.logout-modal-content h2 span:first-child {
-  font-weight: bold;
-  color: #ff6b00;
+.logout-modal-content h2 span {
+  color: #FF7038;
+  font-weight: 800;
   margin-right: 6px;
 }
 
+/* Buttons row */
 .logout-button-group {
   display: flex;
   justify-content: center;
-  gap: 30px;
-  margin-top: 15px;
+  gap: 24px;
 }
 
-.logout-cancel-btn,
-.logout-confirm-btn {
-  width: 55px;
-  height: 55px;
-  font-size: 22px;
-  border-radius: 50%;
-  border: none;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+/* Shared icon style so they’re centered & consistent */
+.logout-ic { width: 22px; height: 22px; }
 
-/* ❌ Cancel Button */
+/* Cancel (outlined) */
 .logout-cancel-btn {
-  background: white;
-  color: #3f2b63;
-  border: 2px solid #3f2b63;
+  width: 60px; height: 60px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  background: #fff;
+  color: #332046;
+  border: 2px solid #332046;              /* outline ring */
+  box-shadow: 0 8px 18px rgba(0,0,0,.08);  /* soft elevation */
+  transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
 }
-
 .logout-cancel-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 16px rgba(63, 43, 99, 0.2);
+  transform: translateY(-1px);
+  background: #f7f4fb;                    /* subtle hover bg */
+  box-shadow: 0 12px 22px rgba(0,0,0,.12);
 }
 
-/* ✅ Confirm Button */
+/* Confirm (solid) */
 .logout-confirm-btn {
-  background: #ff6b00;
-  color: white;
-  border: none;
+  width: 60px; height: 60px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  border: 2px solid #FF7038;
+  background: #FF7038;
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(255,112,56,.28);
+  transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
 }
-
 .logout-confirm-btn:hover {
-  background: #e65a00;
-  transform: scale(1.05);
-  box-shadow: 0 6px 16px rgba(255, 107, 0, 0.3);
+  transform: translateY(-1px);
+  background: #ff5f1f;            /* slightly darker */
+  box-shadow: 0 14px 26px rgba(255,112,56,.34);
 }
 
+/* make sure the icon strokes look crisp */
+.logout-cancel-btn .logout-ic { stroke-width: 2.4; }
+.logout-confirm-btn .logout-ic { stroke: #fff; stroke-width: 2.6; }
 
-@keyframes scaleFadeIn {
-  0% {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(6px) scale(.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-@media (max-width: 650px) {
-  .navbar-container {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 10px 10px;
-  }
-
-  .navbar-title {
-    font-size: 20px;
-    margin-bottom: 10px;
-  }
-
-  .nav-links {
-    flex-direction: row; /* 🔁 Keep them in a row */
-    align-items: center;
-    width: 100%;
-    gap: 10px;
-    flex-wrap: wrap; /* Optional: wrap on smaller widths */
-  }
-
-  .nav-link,
-  .nav-link-logout-btn {
-    width: auto;
-    justify-content: center;
-    padding: 10px 10px;
-    font-size: 15px;
-  }
-
-  .nav-link-logout-btn {
-    padding-left: 15px;
-    background-color: #4e2d66;
-  }
+/* ===== Responsive ===== */
+@media (max-width: 760px) {
+  .navbar-container { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .navbar-brand { font-size: 20px; }
+  .nav-links { flex-wrap: wrap; gap: 6px; }
+  .nav-item:not(:last-child)::after { display: none; }
+  .nav-item { padding: 8px 10px; }
+  .nav-item--logout { margin-left: 0; }
 }

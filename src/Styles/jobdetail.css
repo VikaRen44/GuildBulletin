@@ -1,444 +1,420 @@
-/* 🔄 JobDetail.jsx => .job-detail-container */
-.job-detail-container {
+/* =========================
+   Job Detail — isolated styles
+   Prefix: jd-
+   ========================= */
+   /* Optional: one knob to control the detail panel width */
+:root { --jd-detail-width: 720px; }  /* tweak to taste */
+
+.jd-shell {
+  padding-top: 110px;           /* clear fixed navbar */
+  padding-left: 24px;
+  padding-right: 24px;
+  max-width: 1200px;
+  margin: 0 auto 48px;
+  display: grid;
+  grid-template-columns: 420px auto;
+  gap: 22px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Sidebar */
+.jd-sidebar {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 10px 28px rgba(0,0,0,.06);
   display: flex;
-  flex-wrap: nowrap;
-  background-color: #f8f8f8; /* updated */
-  padding: 140px 5vw 40px;
-  min-height: 100vh;
-  width: 90vw;
-  justify-content: center;
-  align-items: flex-start;
-  box-sizing: border-box;
-  gap: 25px;
-  max-width: 1500px;
-  margin: 0 auto;
+  flex-direction: column;
+  height: calc(100vh - 160px);  /* eliminates the awkward bottom gap */
+  overflow: hidden;             /* clip inner scroll */
 }
 
-/* 🔄 Sidebar container */
-.sidebar {
-  width: 40%;
-  min-width: 300px;
-  max-height: 80vh;
-  overflow-y: auto;
-  background-color: #ffffff; /* updated */
-  padding: 15px;
-  border-radius: 5px;
-  box-sizing: border-box;
-  direction: rtl;
-  margin-top: 0;
-  padding-top: 0;
-  border: 1px solid #e0e0e0; /* added */
-}
-
-.sidebar * {
-  direction: ltr;
-}
-
-.sidebar::-webkit-scrollbar {
-  width: 9px;
-}
-.sidebar::-webkit-scrollbar-thumb {
-  background: #ccc;
-  border-radius: 4px;
-}
-.sidebar::-webkit-scrollbar-thumb:hover {
-  background: #aaa;
-}
-.sidebar::-webkit-scrollbar-button {
-  display: none;
-  height: 0;
-  width: 0;
-}
-
-/* 🔄 Sidebar Header */
-.sidebar-header {
+.jd-sidebar__top {
   position: sticky;
   top: 0;
-  background-color: #ffffff; /* updated */
-  z-index: 10;
-  padding: 15px;
-  border-bottom: 1px solid #e0e0e0; /* updated */
+  background: #fff;
+  padding: 16px 16px 8px;
+  border-bottom: 1px solid #f0f0f0;
+  z-index: 2;
 }
 
-.sidebar-header h3 {
-  margin-bottom: 8px;
-  color: #ff6b00; /* updated */
+.jd-sidebar__title {
+  margin: 0 0 10px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #ff6a00;
 }
 
-/* 🔄 Search Input */
-.search-bar {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 10px;
-  margin-bottom: 15px;
-  border-radius: 5px;
-  border: 1px solid #e0e0e0; /* updated */
-  background-color: #ffffff; /* updated */
-  color: #333;
-  font-size: 16px;
+/* shorter & centered search (vs full-width) */
+.jd-search {
+  width: 92%;
+  height: 40px;
+  margin: 0 auto;             /* centers it */
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid #e6e6e6;
+  outline: none;
+  font-size: 14px;
+  transition: box-shadow .15s ease, border-color .2s ease;
+}
+.jd-search:focus {
+  border-color: #ff6a00;
+  box-shadow: 0 0 0 3px rgba(255,106,0,.15);
 }
 
-/* 🔄 Scrollable job list */
-.sidebar-job-list {
+.jd-list {
   overflow-y: auto;
-  flex-grow: 1;
-  padding: 0 15px 15px;
-  background-color: #ffffff; /* updated */
-  z-index: 1;
+  padding: 12px;
+  display: grid;
+  gap: 14px;
 }
 
-/* 🔄 Individual Job Item */
-.job-item {
+/* tidy scrollbar; no phantom gap */
+.jd-list::-webkit-scrollbar { width: 10px; }
+.jd-list::-webkit-scrollbar-thumb {
+  background: #d9d9d9;
+  border-radius: 8px;
+}
+.jd-list::-webkit-scrollbar-track { background: transparent; }
+
+/* Job cards in the list */
+.jd-card {
   position: relative;
-  padding: 15px;
-  margin-bottom: 25px;
-  border-radius: 25px;
-  border: 1px solid #e0e0e0; /* updated */
+  display: block;
+  width: 100%;
+  min-height: 175px;
+  border: 1px solid #eee;
+  border-radius: 16px;
+  background: #fafafa center / cover no-repeat;
   cursor: pointer;
-  transition: 0.4s ease-in-out;
+  overflow: hidden;
+  text-align: left;
+  padding: 0;                 /* remove default button padding */
+  transition: transform .15s ease, box-shadow .2s ease, border-color .2s;
+}
+.jd-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px rgba(0,0,0,.06);
+}
+.jd-card.is-active {
+  border-color: #ffb27a;
+  box-shadow: 0 0 0 3px rgba(255,106,0,.16) inset;
+}
+
+.jd-card__overlay {
+  position: absolute;
+  inset: 0;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  height: 210px;
-  background: #ffffff; /* updated */
-  color: #333; /* updated */
-  text-align: center;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* added */
+  padding: 16px;
+  background: linear-gradient(to top, rgba(0,0,0,.58), rgba(0,0,0,0) 55%);
+  color: #fff;
 }
-
-.job-item::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-color: #ffffff; /* updated */
-  opacity: 1;
-  transition: opacity 0.4s ease-in-out;
+.jd-card__meta {
+  font-size: 12px;
+  opacity: .9;
+  margin-bottom: 2px;
 }
-
-.job-item:hover::before,
-.job-item.selected::before {
-  opacity: 0;
-}
-
-/* 🔄 Overlay inside each job card */
-.job-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 75%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.6); /* updated */
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-  padding: 25px;
-  gap: 6px;
-  z-index: 2;
-  text-shadow: none; /* removed to match light theme */
-  box-sizing: border-box;
-}
-
-.job-overlay h4 {
+.jd-card__title {
   font-size: 20px;
+  font-weight: 800;
+  margin: 2px 0 4px;
+  color: #ffb27a;
+}
+.jd-card__salary {
   font-weight: 700;
-  color: #ff6b00; /* updated */
-  margin: 0;
 }
 
-.job-overlay p {
-  font-size: 14px; /* auto-scaling between 12px and 24px */
-  white-space: nowrap;               /* prevent wrapping */
-  overflow: hidden;                  /* hide overflow */
-  text-overflow: ellipsis;          /* show '...' if it's too long */
-  max-width: 100%;                   /* ensure it stays within parent */
-  margin: 0;
+/* ========= Main detail panel (uniform width, no stretch) ========= */
+.jd-detail {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 10px 28px rgba(0,0,0,.06);
+  padding: 28px 30px;
+
+  /* height behavior you already want */
+  height: 560px;
+  min-height: 560px;
+  overflow-y: auto;
+
+  /* 👇 NEW: lock width and prevent grid stretching */
+  box-sizing: border-box;
+  width: var(--jd-detail-width);       /* fixed, editable width */
+  max-width: var(--jd-detail-width);
+  min-width: var(--jd-detail-width);
+  justify-self: start;                 /* don't stretch to the column width */
+  margin-left: 0;                      /* keep aligned with column start */
+  margin-right: 0;
 }
 
-.job-item:hover .job-overlay {
-  background: rgba(255, 255, 255, 0.85); /* updated */
+
+.jd-detail__head { margin-bottom: 12px; }
+
+.jd-title {
+  margin: 0 0 8px;
+  color: #ff6a00;
+  font-size: 34px;
+  font-weight: 900;
+  letter-spacing: .1px;
 }
 
-.job-item.selected .job-overlay {
-  background: rgba(255, 106, 0, 0.258); /* updated */
+/* more comfortable spacing between lines here */
+.jd-sub {
+  margin: 8px 0;
+  color: #333;
+  font-size: 15px;
+}
+.jd-label {
+  color: #777;
+  font-weight: 700;
 }
 
-/* 🔄 Job Titles */
-.job-item h4 {
-  font-size: 30px;
-  font-weight: bold;
-  color: #ff6b00; /* updated */
-  position: relative;
-  z-index: 2;
-  text-shadow: none;
+/* ghost button used for "View Profile" */
+.jd-btn {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid #e8e8e8;
+  background: #fff;
+  color: #222;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform .15s ease, background .2s ease, border-color .2s ease;
+}
+.jd-btn:hover {
+  background: #fff7f0;
+  transform: translateY(-1px);
+  border-color: #ffd7bf;
+}
+.jd-btn--ghost {}
+.jd-btn--disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
-/* 🔄 Company & Location */
-.job-item p {
-  font-size: 16px;
-  color: #333; /* updated */
-  position: relative;
-  z-index: 2;
-  text-shadow: none;
+/* sections */
+.jd-section { margin-top: 24px; }
+.jd-section__title {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #222;
+}
+.jd-text { color: #333; line-height: 1.75; }
+.jd-pay  {
+  /* Emphasize pay: green, padded, rounded pill */
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(34,197,94,.10);
+  border: 1px solid rgba(34,197,94,.25);
+  color: #16a34a;
+  font-weight: 900;
+  font-size: 1.15rem;
 }
 
-.job-item.selected p {
-  color: #e6e6e6; /* or any highlight color */
+/* independent actions */
+.jd-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
 }
 
-.company-location {
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 5px;
+/* like button – independent (no global bleed) */
+.jd-like-btn {
+  border: 1px solid #ffdac4;
+  background: #fff7f0;
+  color: #e65a00;
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 10px;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform .15s ease, box-shadow .2s ease, background .2s ease;
+}
+.jd-like-btn:hover {
+  background: #ffe9da;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(255,106,0,.12);
+}
+.jd-like-btn__icon { line-height: 0; }
+
+/* report button – independent */
+.jd-report-btn {
+  border: none;
+  background: #ff4d4d;
+  color: #fff;
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 10px;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform .15s ease, box-shadow .2s ease, background .2s ease;
+}
+.jd-report-btn:hover {
+  background: #e64545;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(230,69,69,.25);
+}
+.jd-report-btn__icon { line-height: 0; }
+
+.jd-empty {
+  padding: 16px;
+  border-radius: 12px;
+  background: #fafafa;
+  border: 1px dashed #e5e5e5;
+  color: #777;
+}
+.jd-empty--detail {
+  min-height: 260px;
+  display: grid;
+  place-items: center;
+}
+/* ===== Report Modal (scoped) ===== */
+.jd-modal__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.38);
+  display: grid;
+  place-items: center;
+  z-index: 2000;
 }
 
-.salary {
-  font-weight: bold;
-  color: #ff6b00; /* updated */
-  font-size: 16px;
-  margin-top: 5px;
-}
-
-/* 🔄 Detail Container (Right Panel) */
-.detail-container {
-  position: relative;
+.jd-modal {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  flex-grow: 1;
-  width: 60%;
-  padding: 50px;
-  background-color: #ffffff; /* updated */
-  color: #333;
-  box-sizing: border-box;
-  min-height: 500px;
-  border-radius: 10px;
-  border: 1px solid #e0e0e0; /* added */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); /* added */
+  width: min(640px, calc(100vw - 32px));
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 22px 70px rgba(0,0,0,.28);
+  overflow: hidden;
+  animation: jdPop .16s ease-out;
 }
 
-.sidebar,
-.detail-container {
-  flex-shrink: 0;
+@keyframes jdPop {
+  from { transform: translateY(8px) scale(.98); opacity: .55; }
+  to   { transform: translateY(0)    scale(1);   opacity: 1;   }
 }
 
-/* 🔄 Detail Header */
-.detail-header {
+.jd-modal__head {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f1f1f1;
 }
-
-.detail-container h2 {
-  font-size: 30px;
-  font-weight: bold;
-  margin-bottom: 10px;
-  color: #ff6b00; /* updated */
+.jd-modal__head h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: #222;
 }
-
-.detail-container {
-  font-size: 18px;
-  margin-bottom: 10px;
-  color: #555; /* updated */
-}
-
-.detail-container h3 {
-  font-size: 18px;
-  margin-top: 20px;
-  margin-bottom: 10px;
-  color: #ff6b00; /* updated */
-}
-
-/* 🔄 Salary Box */
-.salary-box {
-  background-color: #fff;
-  padding: 15px;
-  border-radius: 5px;
-  border: 1px solid #e0e0e0;
-  margin-bottom: 20px;
-  color: #333;
-  width: auto;
-  max-width: 400px;
-}
-
-/* 🔄 Button Group */
-.button-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-}
-
-.like-report-group {
-  display: flex;
-  gap: 10px;
-}
-
-/* 🔄 Like and Report Buttons */
-.like-button,
-.report-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 20px;
-  font-size: 16px;
+.jd-modal__close {
   border: none;
-  border-radius: 6px;
+  background: transparent;
+  font-size: 22px;
+  line-height: 1;
   cursor: pointer;
-  min-width: 100px;
+  color: #777;
 }
+.jd-modal__close:hover { color: #444; }
 
-.like-button {
-  background-color: white;
-  color: #ff6b00;
-  border: 1px solid #ff6b00;
+.jd-modal__body {
+  padding: 18px 20px 8px;
 }
-
-.like-button.liked {
-  background-color: #ff6b00;
-  color: white;
-}
-
-.report-button {
-  background-color: #ff4d4d;
-  color: white;
-}
-
-/* 🔄 CV Submission Button */
-.apply-button {
-  background-color: #ff6b00; /* updated */
-  color: white;
-  padding: 12px 20px;
-  font-size: 16px;
-  font-weight: bold;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: transform 0.2s ease-in-out;
-  width: 150px;
-  text-align: center;
-}
-
-.apply-button:hover {
-  transform: scale(1.05);
-  background-color: #e65a00; /* hover */
-}
-
-/* 🔄 Report Modal Overlay */
-.report-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* 🔄 Modal Box */
-.report-content {
-  background: #ffffff; /* updated */
-  padding: 25px;
-  border-radius: 10px;
-  width: 500px;
-  text-align: center;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  color: #333;
-}
-
-/* 🔄 Report Reasons List */
-.report-option {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border: 1px solid #e0e0e0;
-  padding: 10px;
-  border-radius: 6px;
-  margin: 8px 0;
-  font-size: 16px;
-  background: #f9f9f9;
-  color: #333;
-}
-
-/* 🔄 Custom Checkbox */
-.report-option input[type="checkbox"] {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-  accent-color: #ff6b00;
-}
-
-/* 🔄 Modal Action Buttons */
-.report-buttons {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 15px;
-}
-
-.submit-report,
-.cancel-report {
-  padding: 10px 15px;
-  font-size: 16px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.submit-report {
-  background-color: #ff6b00; /* updated */
-  color: white;
-}
-
-.cancel-report {
-  background-color: gray;
-  color: white;
-}
-
-.submit-report:hover {
-  background-color: #e65a00;
-}
-
-.cancel-report:hover {
-  background-color: #555;
-}
-
-.view-profile-btn {
-  background-color: #ffffff;
-  border: 1.5px solid #ff6b00;
-  color: #ff6b00;
-  font-weight: 500;
+.jd-modal__sub {
+  margin: 2px 0 14px;
+  color: #666;
   font-size: 14px;
-  padding: 6px 16px;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: 0.2s ease-in-out;
 }
 
-.view-profile-btn:hover {
-  background-color: #ff6b00;
-  color: white; /* 🔥 this makes the text white on hover */ /* subtle orange background on hover */
+/* reasons as tidy cards */
+.jd-modal__reasons {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  margin-bottom: 16px;
+}
+.jd-checkbox {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid #ececec;
+  border-radius: 12px;
+  background: #fafafa;
+  font-weight: 600;
+  color: #222;
+  transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
+}
+.jd-checkbox input {
+  width: 18px;
+  height: 18px;
+}
+.jd-checkbox:hover {
+  border-color: #ffcfb1;
+  background: #fff7f0;
+  box-shadow: 0 2px 8px rgba(255,106,0,.12);
 }
 
-.view-profile-btn:focus {
-  outline: 2px solid #3399ff; /* blue focus ring like your screenshot */
-  outline-offset: 2px;
+/* note area */
+.jd-modal__note {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.jd-modal__note > span {
+  font-size: 14px;
+  color: #555;
+}
+.jd-modal__note textarea {
+  width: 100%;
+  max-width: 100%;
+  min-height: 110px;
+  resize: vertical;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #e6e6e6;
+  outline: none;
+  box-sizing: border-box;        /* ✅ keeps it inside the modal */
+  background: #fff;
+  font-size: 14px;
+  color: #222;
+}
+.jd-modal__note textarea:focus {
+  border-color: #ff6a00;
+  box-shadow: 0 0 0 3px rgba(255,106,0,.14);
 }
 
+/* footer buttons */
+.jd-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 20px 18px;
+  border-top: 1px solid #f1f1f1;
+  background: #fff;
+}
 
-.job-overlay h4 {
-  font-size: clamp(12px, 5vw, 24px); /* auto-scaling between 12px and 24px */
-  white-space: nowrap;               /* prevent wrapping */
-  overflow: hidden;                  /* hide overflow */
-  text-overflow: ellipsis;          /* show '...' if it's too long */
-  max-width: 100%;                   /* ensure it stays within parent */
+/* make the ghost button look crisp in footer */
+.jd-btn.jd-btn--ghost {
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 12px;
+}
+
+/* responsive */
+@media (max-width: 520px) {
+  .jd-modal__reasons { grid-template-columns: 1fr; }
 }

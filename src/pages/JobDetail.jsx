@@ -1,323 +1,589 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { db, auth } from "../firebase";
+import React, { useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
+  getFirestore,
   collection,
-  getDocs,
+  query,
+  orderBy,
+  onSnapshot,
   doc,
   getDoc,
-  addDoc,
   updateDoc,
-  setDoc,
+  addDoc,
+  arrayUnion,
+  arrayRemove,
+  increment,
+  serverTimestamp,
+  getDocs,
+  where,
+  runTransaction,
 } from "firebase/firestore";
-import { onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import Navbar from "../components/Navbar";
 import "../Styles/jobdetail.css";
-import { useLocation } from "react-router-dom";
-import AlertModal from "../components/AlertModal"; // ✅ Import AlertModal
+
+const REPORT_REASONS = [
+  { key: "scam",         label: "Scam" },
+  { key: "unresponsive", label: "Unresponsive" },
+  { key: "fakeListing",  label: "Fake Listing" },
+  { key: "spam",         label: "Spam" },
+  { key: "other",        label: "Others" },
+];
 
 const JobDetail = () => {
+  const { id: urlJobId } = useParams();
   const navigate = useNavigate();
-  const { id } = useParams();
-  const [jobs, setJobs] = useState([]);
-  const [selectedJob, setSelectedJob] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [userId, setUserId] = useState(null);
-  const [cvLink, setCvLink] = useState("");
-  const [cvSubmitted, setCvSubmitted] = useState(false);
-  const [reportOpenJobs, setReportOpenJobs] = useState(null);
-  const [reportReasons, setReportReasons] = useState({});
-  const [userRole, setUserRole] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [likedJobs, setLikedJobs] = useState({});
-  const [alertMessage, setAlertMessage] = useState(""); // ✅ Alert state
   const location = useLocation();
-  const reportOptions = ["Scam", "Unresponsive", "Fake Listing", "Spam", "Others"];
+  const db = getFirestore();
+  const auth = getAuth();
 
-  const showAlert = (msg) => setAlertMessage(msg); // ✅ Show modal function
-  const closeAlert = () => setAlertMessage(""); // ✅ Close modal function
+  const [jobs, setJobs] = useState([]);
+  const [activeJobId, setActiveJobId] = useState(urlJobId || null);
+  const [hirer, setHirer] = useState(null);
+  const [search, setSearch] = useState(
+    new URLSearchParams(location.search).get("search") || ""
+  );
 
+  // like/report UI state
+  const [liked, setLiked] = useState(false);
+  const [reported, setReported] = useState(false);
+  const [busyLike, setBusyLike] = useState(false);
+  const [busyReport, setBusyReport] = useState(false);
+
+  // modal for structured report
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportSelections, setReportSelections] = useState({});
+  const [reportNote, setReportNote] = useState("");
+
+  // current user state (for Submit CV)
+  const [currentUser, setCurrentUser] = useState(null);
+  const [userRole, setUserRole] = useState("");
+  const [userCvUrl, setUserCvUrl] = useState("");
+  const [cvSubmitting, setCvSubmitting] = useState(false);
+  const [cvAlreadySubmitted, setCvAlreadySubmitted] = useState(false);
+  const [cvSubmissionId, setCvSubmissionId] = useState(null); // <-- track existing submission doc id
+
+  // Auth → get user role + cvUrl
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const query = params.get("search");
-    if (query) setSearchTerm(query);
-  }, [location.search]);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const unsub = onAuthStateChanged(auth, async (user) => {
+      setCurrentUser(user || null);
+      setUserRole("");
+      setUserCvUrl("");
       if (user) {
-        setUserId(user.uid);
-        fetchUserCv(user.uid);
-        checkIfCvSubmitted(user.uid, id);
-        const userDoc = await getDoc(doc(db, "Users", user.uid));
-        if (userDoc.exists()) setUserRole(userDoc.data().role || "");
-        fetchUserLikes(user.uid);
-      }
-      setLoading(false);
-    });
-    return () => unsubscribe();
-  }, [id]);
-
-  const fetchUserCv = async (userId) => {
-    try {
-      const snapshot = await getDocs(collection(db, "submissions"));
-      let latestCv = null;
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        if (data.userId === userId && data.pdfUrl) latestCv = data.pdfUrl;
-      });
-      if (latestCv) setCvLink(latestCv);
-    } catch (error) {
-      console.error("Error fetching CV:", error);
-    }
-  };
-
-  const fetchUserLikes = async (userId) => {
-    try {
-      const snapshot = await getDocs(collection(db, "likes"));
-      const userLikes = {};
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        if (data.userId === userId) {
-          userLikes[data.jobId] = true;
+        try {
+          const uRef = doc(db, "Users", user.uid);
+          const uSnap = await getDoc(uRef);
+          if (uSnap.exists()) {
+            const data = uSnap.data() || {};
+            setUserRole(data.role || "");
+            setUserCvUrl(data.cvUrl || data.resumeUrl || data.pdfUrl || "");
+          }
+        } catch {
+          /* noop */
         }
-      });
-      setLikedJobs(userLikes);
-    } catch (error) {
-      console.error("Error fetching likes:", error);
-    }
-  };
-
-  useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        const snapshot = await getDocs(collection(db, "jobs"));
-        const jobList = snapshot.docs
-          .map((doc) => ({ id: doc.id, ...doc.data() }))
-          .filter((job) => job.frozen !== true);
-        setJobs(jobList);
-        const foundJob = jobList.find((job) => job.id === id) || jobList[0];
-        setSelectedJob(foundJob);
-      } catch (error) {
-        console.error("❌ Error fetching jobs:", error);
-      } finally {
-        setLoading(false);
       }
-    };
-    fetchJobs();
-  }, [id]);
+    });
+    return () => unsub();
+  }, [auth, db]);
 
-  const checkIfCvSubmitted = async (userId, jobId) => {
-    try {
-      const snapshot = await getDocs(collection(db, "submissions"));
-      const hasSubmitted = snapshot.docs.some(
-        (docSnap) => docSnap.data().userId === userId && docSnap.data().jobId === jobId
-      );
-      setCvSubmitted(hasSubmitted);
-    } catch (error) {
-      console.error("Error checking CV submission:", error);
-    }
-  };
-
+  // Fetch jobs (newest first)
   useEffect(() => {
-    if (userId && selectedJob?.id) checkIfCvSubmitted(userId, selectedJob.id);
-  }, [userId, selectedJob?.id]);
+    const qJobs = query(collection(db, "jobs"), orderBy("createdAt", "desc"));
+    const unsub = onSnapshot(qJobs, (snap) => {
+      const list = snap.docs
+        .map((d) => ({ id: d.id, ...d.data() } ))
+        .filter((j) => !j.frozen);
+      setJobs(list);
+      if (!activeJobId && list.length) setActiveJobId(list[0].id);
+    });
+    return () => unsub();
+  }, [db, activeJobId]);
 
-  const handleCvSubmit = async () => {
-    if (!cvLink) return showAlert("Please upload a CV first.");
-    if (!userId) return showAlert("You must be logged in.");
-    if (cvSubmitted) return showAlert("CV already submitted.");
+  // Active job
+  const activeJob = useMemo(
+    () => jobs.find((j) => j.id === activeJobId) || null,
+    [jobs, activeJobId]
+  );
+
+  // Hirer (optional)
+  useEffect(() => {
+    (async () => {
+      if (!activeJob?.hirerId) {
+        setHirer(null);
+        return;
+      }
+      try {
+        const snap = await getDoc(doc(db, "Users", activeJob.hirerId));
+        setHirer(snap.exists() ? snap.data() : null);
+      } catch (e) {
+        console.error("Failed to load hirer:", e);
+        setHirer(null);
+      }
+    })();
+  }, [db, activeJob?.hirerId]);
+
+  // Has this user already submitted for this job?
+  useEffect(() => {
+    let cancel = false;
+    (async () => {
+      if (!currentUser || !activeJob) {
+        setCvAlreadySubmitted(false);
+        setCvSubmissionId(null);
+        return;
+      }
+      try {
+        const qSub = query(
+          collection(db, "submissions"),
+          where("userId", "==", currentUser.uid),
+          where("jobId", "==", activeJob.id)
+        );
+        const s = await getDocs(qSub);
+        if (!cancel) {
+          setCvAlreadySubmitted(!s.empty);
+          setCvSubmissionId(!s.empty ? s.docs[0].id : null);
+        }
+      } catch {
+        if (!cancel) {
+          setCvAlreadySubmitted(false);
+          setCvSubmissionId(null);
+        }
+      }
+    })();
+    return () => { cancel = true; };
+  }, [db, currentUser, activeJob?.id]);
+
+  // Filter (kept)
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return jobs;
+    return jobs.filter((j) =>
+      [j.position, j.companyName, j.location]
+        .filter(Boolean)
+        .some((v) => String(v).toLowerCase().includes(q))
+    );
+  }, [jobs, search]);
+
+  const selectJob = (jobId) => {
+    setActiveJobId(jobId);
+    navigate(`/job/${jobId}`, { replace: true });
+  };
+
+  /** Sync liked/reported flags from Firestore **/
+  useEffect(() => {
+    let cancel = false;
+
+    (async () => {
+      if (!activeJob || !currentUser) {
+        setLiked(false);
+        setReported(false);
+        return;
+      }
+
+      const likedBy = Array.isArray(activeJob.likedBy) ? activeJob.likedBy : [];
+      const isLiked = likedBy.includes(currentUser.uid);
+
+      let isReported = false;
+      const reportedBy = Array.isArray(activeJob.reportedBy) ? activeJob.reportedBy : [];
+      if (reportedBy.includes(currentUser.uid)) {
+        isReported = true;
+      } else {
+        try {
+          const qRep = query(
+            collection(doc(db, "jobs", activeJob.id), "reports"),
+            where("reporterId", "==", currentUser.uid)
+          );
+          const r = await getDocs(qRep);
+          isReported = !r.empty;
+        } catch {
+          // ignore
+        }
+      }
+
+      if (!cancel) {
+        setLiked(isLiked);
+        setReported(isReported);
+      }
+    })();
+
+    return () => { cancel = true; };
+  }, [db, activeJob, currentUser]);
+
+  /** LIKE — strictly account-based **/
+  const handleLike = async () => {
+    if (!activeJob) return;
+    if (!currentUser) {
+      alert("Please log in to like this job.");
+      navigate("/login");
+      return;
+    }
+    if (busyLike) return;
+    setBusyLike(true);
+
+    const jobRef = doc(db, "jobs", activeJob.id);
+    try {
+      await runTransaction(db, async (tx) => {
+        const snap = await tx.get(jobRef);
+        if (!snap.exists()) throw new Error("Job not found.");
+
+        const data = snap.data() || {};
+        const likedBy = Array.isArray(data.likedBy) ? data.likedBy : [];
+        const likesCount = typeof data.likesCount === "number" ? data.likesCount : 0;
+
+        const alreadyLiked = likedBy.includes(currentUser.uid);
+        const newLikedBy = alreadyLiked
+          ? likedBy.filter((u) => u !== currentUser.uid)
+          : [...likedBy, currentUser.uid];
+
+        const newLikesCount = alreadyLiked ? Math.max(0, likesCount - 1) : likesCount + 1;
+
+        tx.update(jobRef, {
+          likedBy: newLikedBy,
+          likesCount: newLikesCount,
+        });
+
+        setLiked(!alreadyLiked);
+      });
+    } catch (e) {
+      console.error("Like failed:", e);
+      alert("Sorry, we couldn’t update your like. Please try again.");
+    } finally {
+      setBusyLike(false);
+    }
+  };
+
+  /** REPORT — strictly account-based, no duplicates **/
+  const openReportModal = () => {
+    if (!currentUser) {
+      alert("Please log in to report this job.");
+      navigate("/login");
+      return;
+    }
+    setReportSelections({});
+    setReportNote("");
+    setShowReportModal(true);
+  };
+
+  const toggleReason = (key) => {
+    setReportSelections((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const submitReport = async () => {
+    if (!activeJob || busyReport) return;
+
+    if (!currentUser) {
+      alert("Please log in to report this job.");
+      navigate("/login");
+      return;
+    }
+
+    const reasons = REPORT_REASONS.filter(r => reportSelections[r.key]).map(r => r.key);
+    if (reasons.length === 0) {
+      alert("Please choose at least one reason.");
+      return;
+    }
+
+    setBusyReport(true);
+    const jobRef = doc(db, "jobs", activeJob.id);
+    const reportsCol = collection(jobRef, "reports");
 
     try {
-      await addDoc(collection(db, "submissions"), {
-        userId,
-        jobId: selectedJob.id,
-        pdfUrl: cvLink,
-        submittedAt: new Date(),
+      const dupQ = query(reportsCol, where("reporterId", "==", currentUser.uid));
+      const dupRes = await getDocs(dupQ);
+      if (!dupRes.empty) {
+        setReported(true);
+        alert("You’ve already reported this job.");
+        setShowReportModal(false);
+        setBusyReport(false);
+        return;
+      }
+
+      await runTransaction(db, async (tx) => {
+        const snap = await tx.get(jobRef);
+        if (!snap.exists()) throw new Error("Job not found.");
+
+        await addDoc(reportsCol, {
+          jobId: activeJob.id,
+          reasons,
+          note: reportNote || "",
+          reporterId: currentUser.uid,
+          createdAt: serverTimestamp(),
+        });
+
+        const updates = {
+          reportedBy: arrayUnion(currentUser.uid),
+          reportsCount: increment(1),
+        };
+        reasons.forEach((r) => {
+          updates[`reasonCounts.${r}`] = increment(1);
+        });
+
+        tx.update(jobRef, updates);
+
+        setReported(true);
+        setShowReportModal(false);
       });
-      showAlert("CV submitted successfully!");
-      setCvSubmitted(true);
-    } catch (error) {
-      console.error("Error submitting CV:", error);
-      showAlert("Submission failed.");
+
+      alert("Thanks for the report. We'll review it.");
+    } catch (e) {
+      console.error("Report failed:", e);
+      alert("Sorry, something went wrong while reporting.");
+    } finally {
+      setBusyReport(false);
     }
   };
 
-  const handleLike = async (jobId) => {
-    if (!userId) return showAlert("You must be logged in to like.");
-    if (likedJobs[jobId]) return showAlert("You've already liked this job.");
+  // SUBMIT / EDIT CV (Applicant)
+  const handleSubmitCv = async () => {
+    if (!activeJob) return;
 
-    const jobRef = doc(db, "jobs", jobId);
-    const jobSnap = await getDoc(jobRef);
-    if (!jobSnap.exists()) return;
-
-    const jobData = jobSnap.data();
-
-    await updateDoc(jobRef, {
-      likes: (jobData.likes || 0) + 1,
-    });
-
-    const hirerRef = doc(db, "users", jobData.hirerId);
-    const hirerSnap = await getDoc(hirerRef);
-    if (hirerSnap.exists()) {
-      await updateDoc(hirerRef, {
-        totalLikes: (hirerSnap.data().totalLikes || 0) + 1,
-      });
+    if (!currentUser) {
+      alert("Please log in to submit your CV.");
+      navigate("/login");
+      return;
+    }
+    if (userRole !== "applicant") {
+      alert("Only applicants can submit a CV.");
+      return;
+    }
+    if (!userCvUrl) {
+      const go = confirm("You don't have a CV on file. Go to Upload CV?");
+      if (go) navigate("/upload-cv");
+      return;
     }
 
-    const likeId = `${userId}_${jobId}`;
-    await setDoc(doc(db, "likes", likeId), {
-      userId,
-      jobId,
-      likedAt: new Date(),
-    });
+    try {
+      setCvSubmitting(true);
 
-    setLikedJobs((prev) => ({ ...prev, [jobId]: true }));
-    showAlert("Job liked successfully!");
+      if (cvAlreadySubmitted && cvSubmissionId) {
+        // EDIT existing submission
+        await updateDoc(doc(db, "submissions", cvSubmissionId), {
+          pdfUrl: userCvUrl,
+          updatedAt: serverTimestamp(),
+        });
+        alert("Your CV link for this job has been updated.");
+      } else {
+        // CREATE new submission
+        await addDoc(collection(db, "submissions"), {
+          userId: currentUser.uid,
+          jobId: activeJob.id,
+          pdfUrl: userCvUrl,
+          submittedAt: serverTimestamp(),
+        });
+        setCvAlreadySubmitted(true);
+        alert("Your CV was submitted successfully!");
+      }
+    } catch (e) {
+      console.error("Submit/Edit CV failed:", e);
+      alert("Sorry, we couldn't process your CV. Please try again.");
+    } finally {
+      setCvSubmitting(false);
+    }
   };
 
-  const handleReportSubmit = async (jobId) => {
-    if (!reportReasons[jobId]?.length) return showAlert("Select at least one reason.");
-
-    const jobDoc = await getDoc(doc(db, "jobs", jobId));
-    if (!jobDoc.exists()) return;
-
-    await addDoc(collection(db, "reports"), {
-      jobId,
-      hirerId: jobDoc.data().hirerId,
-      reportedBy: userId,
-      reasons: reportReasons[jobId],
-      submittedAt: new Date(),
-    });
-
-    showAlert("Report submitted!");
-    setReportOpenJobs(null);
-  };
-
-  const toggleReportPopup = (jobId) => {
-    setReportOpenJobs((prev) => (prev === jobId ? null : jobId));
-  };
-
-  const filteredJobs = jobs.filter((job) => {
-    const term = searchTerm.toLowerCase();
-    return (
-      job.position.toLowerCase().includes(term) ||
-      job.companyName.toLowerCase().includes(term) ||
-      job.location.toLowerCase().includes(term)
-    );
-  });
+  const hasHirer =
+    !!activeJob?.hirerId &&
+    activeJob.hirerId !== "undefined" &&
+    activeJob.hirerId !== "null";
 
   return (
-    <div className="job-detail-container">
-      {/* Alert Modal Renderer */}
-      <AlertModal message={alertMessage} onClose={closeAlert} />
+    <>
+      <Navbar />
+      <div className="jd-shell">
+        {/* Sidebar */}
+        <aside className="jd-sidebar">
+          <div className="jd-sidebar__top">
+            <h3 className="jd-sidebar__title">All Jobs</h3>
+            <input
+              className="jd-search"
+              placeholder="Search jobs..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
 
-      <div className="sidebar">
-        <div className="sidebar-header">
-          <h3>All Jobs</h3>
-          <input
-            type="text"
-            className="search-bar"
-            placeholder="Search jobs..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-        <div className="sidebar-job-list">
-          {filteredJobs.map((job) => (
-            <div
-              key={job.id}
-              onClick={() => setSelectedJob(job)}
-              className={`job-item ${selectedJob?.id === job.id ? "selected" : ""}`}
-              style={{
-                backgroundImage: job.jobImage ? `url(${job.jobImage})` : "none",
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-              }}
-            >
-              <div className="job-overlay">
-                <p>{job.companyName} | {job.location}</p>
-                <h4>{job.position}</h4>
-                <p className="salary">Php {job.salary.toLocaleString()}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-      {selectedJob && (
-        <div className="detail-container">
-          <h2>{selectedJob.position}</h2>
-          <p><strong>Company:</strong> {selectedJob.companyName}</p>
-          <p><strong>Location:</strong> {selectedJob.location}</p>
-          <p>
-            <strong>Hirer Account:</strong>{" "}
-            <button
-              className="view-profile-btn"
-              onClick={() => navigate(`/hirer/${selectedJob.hirerId}/from/${selectedJob.id}`)}
-            >
-              View Profile
-            </button>
-          </p>
-          <h3>Job Summary</h3>
-          <p>{selectedJob.description}</p>
+          <div className="jd-list">
+            {filtered.map((job) => (
+              <button
+                key={job.id}
+                className={`jd-card ${activeJobId === job.id ? "is-active" : ""}`}
+                onClick={() => selectJob(job.id)}
+                style={{
+                  backgroundImage: job.jobImage ? `url(${job.jobImage})` : undefined,
+                }}
+              >
+                <div className="jd-card__overlay">
+                  <div className="jd-card__meta">
+                    {job.companyName} | {job.location}
+                  </div>
+                  <h4 className="jd-card__title">{job.position}</h4>
+                  <div className="jd-card__salary">
+                    Php {Number(job.salary || 0).toLocaleString()}
+                  </div>
+                </div>
+              </button>
+            ))}
+            {!filtered.length && <div className="jd-empty">No jobs match your search.</div>}
+          </div>
+        </aside>
 
-          <h3>Base Pay Range</h3>
-          <p className="salary">Php {selectedJob.salary.toLocaleString()}</p>
-
-          {userRole === "applicant" && (
+        {/* Detail pane */}
+        <main className="jd-detail">
+          {activeJob ? (
             <>
-              <h3>Submit Your CV</h3>
-              {cvSubmitted ? (
-                <p>✅ CV already submitted.</p>
-              ) : (
-                <>
-                  <p>Your pre-uploaded CV link:</p>
-                  <a href={cvLink} target="_blank" rel="noopener noreferrer">{cvLink}</a>
-                  <button className="apply-button" onClick={handleCvSubmit}>Submit CV</button>
-                </>
+              <header className="jd-detail__head">
+                <h1 className="jd-title">{activeJob.position}</h1>
+
+                <p className="jd-sub">
+                  <span className="jd-label">Company:</span> {activeJob.companyName}
+                </p>
+
+                <p className="jd-sub">
+                  <span className="jd-label">Location:</span> {activeJob.location}
+                </p>
+
+                <p className="jd-sub">
+                  <span className="jd-label">Hirer Account:</span>{" "}
+                  <button
+                    className={`jd-btn ${hasHirer ? "jd-btn--ghost" : "jd-btn--disabled"}`}
+                    onClick={() => {
+                      if (!hasHirer) {
+                        alert("This listing has no linked hirer profile.");
+                        console.warn("Missing hirerId on job:", activeJob.id);
+                        return;
+                      }
+                      navigate(`/hirer/${activeJob.hirerId}/from/${activeJob.id}`);
+                    }}
+                    disabled={!hasHirer}
+                    title={hasHirer ? "View profile" : "No hirer profile linked"}
+                  >
+                    View Profile
+                  </button>
+                  {hirer && (
+                    <span style={{ marginLeft: 8, opacity: 0.8 }}>
+                      ({hirer.firstName} {hirer.lastName})
+                    </span>
+                  )}
+                </p>
+              </header>
+
+              <section className="jd-section">
+                <h3 className="jd-section__title">Job Summary</h3>
+                <p className="jd-text">
+                  {activeJob.description || "No description provided for this listing."}
+                </p>
+              </section>
+
+              <section className="jd-section">
+                <h3 className="jd-section__title">Base Pay Range</h3>
+                <p className="jd-pay">
+                  Php {Number(activeJob.salary || 0).toLocaleString()}
+                </p>
+              </section>
+
+              <div className="jd-actions">
+                {userRole === "applicant" && (
+                  <button
+                    className="jd-apply-btn"
+                    onClick={handleSubmitCv}
+                    disabled={cvSubmitting}
+                    title={
+                      cvSubmitting
+                        ? "Submitting..."
+                        : cvAlreadySubmitted
+                        ? "Update the CV you submitted to this job"
+                        : "Submit your CV to this job"
+                    }
+                  >
+                    {cvAlreadySubmitted ? "Edit CV" : "Submit CV"}
+                  </button>
+                )}
+
+                <button
+                  className="jd-like-btn"
+                  onClick={handleLike}
+                  disabled={busyLike}
+                  title={busyLike ? "Please wait..." : liked ? "Unlike this job" : "Like this job"}
+                >
+                  <span className="jd-like-btn__icon">❤️</span>
+                  {liked ? " Unlike" : " Like"}
+                </button>
+
+                <button
+                  className="jd-report-btn"
+                  onClick={openReportModal}
+                  title={reported ? "Already reported" : "Report this job"}
+                  disabled={reported}
+                >
+                  <span className="jd-report-btn__icon">⚑</span> {reported ? "Reported" : "Report"}
+                </button>
+              </div>
+
+              {/* Optional helper text to show which CV will be used */}
+              {userRole === "applicant" && userCvUrl && (
+                <p style={{ marginTop: 8, opacity: 0.75 }}>
+                  Using CV:{" "}
+                  <a href={userCvUrl} target="_blank" rel="noreferrer">
+                    {userCvUrl}
+                  </a>
+                </p>
               )}
             </>
+          ) : (
+            <div className="jd-empty jd-empty--detail">Select a job from the list to view details.</div>
           )}
+        </main>
+      </div>
 
-          {userRole !== "admin" && (
-            <div className="button-container">
-              <button className={`like-button ${likedJobs[selectedJob.id] ? "liked" : ""}`} onClick={() => handleLike(selectedJob.id)}>
-                ❤️ Like
+      {/* Report Modal */}
+      {showReportModal && (
+        <div className="jd-modal__backdrop" onClick={() => setShowReportModal(false)}>
+          <div className="jd-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="jd-modal__head">
+              <h3>Report this job</h3>
+              <button className="jd-modal__close" onClick={() => setShowReportModal(false)}>
+                ×
               </button>
-              <button className="report-button" onClick={() => toggleReportPopup(selectedJob.id)}>🚩 Report</button>
             </div>
-          )}
-        </div>
-      )}
-      {reportOpenJobs && (
-        <div className="report-modal">
-          <div className="report-content">
-            <h3>Report Job Listing</h3>
-            <p>Select reasons:</p>
-            {reportOptions.map((reason) => (
-              <label key={reason} className="report-option">
-                <input
-                  type="checkbox"
-                  checked={reportReasons[reportOpenJobs]?.includes(reason) || false}
-                  onChange={() =>
-                    setReportReasons((prev) => ({
-                      ...prev,
-                      [reportOpenJobs]: prev[reportOpenJobs]?.includes(reason)
-                        ? prev[reportOpenJobs].filter((r) => r !== reason)
-                        : [...(prev[reportOpenJobs] || []), reason],
-                    }))
-                  }
+
+            <div className="jd-modal__body">
+              <p className="jd-modal__hint">Select one or more reasons:</p>
+
+              <div className="jd-modal__reasons">
+                {REPORT_REASONS.map((r) => (
+                  <label key={r.key} className="jd-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={!!reportSelections[r.key]}
+                      onChange={() => toggleReason(r.key)}
+                    />
+                    <span>{r.label}</span>
+                  </label>
+                ))}
+              </div>
+
+              <label className="jd-modal__note">
+                <span>Additional details (optional)</span>
+                <textarea
+                  rows={3}
+                  value={reportNote}
+                  onChange={(e) => setReportNote(e.target.value)}
+                  placeholder="Add any clarification that may help admins review."
                 />
-                {reason}
               </label>
-            ))}
-            <div className="report-buttons">
-              <button onClick={() => handleReportSubmit(reportOpenJobs)}>Submit Report</button>
-              <button onClick={() => setReportOpenJobs(null)}>Cancel</button>
+            </div>
+
+            <div className="jd-modal__actions">
+              <button className="jd-btn jd-btn--ghost" onClick={() => setShowReportModal(false)}>
+                Cancel
+              </button>
+              <button className="jd-report-btn" onClick={submitReport} disabled={busyReport}>
+                Submit Report
+              </button>
             </div>
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

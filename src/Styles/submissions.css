@@ -30,11 +30,11 @@
   background-color: #f8f8f8;
   border: 2px solid #FF7038;
   border-radius: 1rem;
-  padding: 1.8rem 2rem;
+  padding: 1.6rem 1.8rem;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  gap: 2rem;
+  align-items: stretch;
+  gap: 1.6rem;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -44,14 +44,48 @@
   box-shadow: 0 10px 18px rgba(0, 0, 0, 0.12);
 }
 
-/* === Info Section === */
-.submission-info {
-  text-align: left;
+/* === Left: Avatar + Info (grid) === */
+.submission-main {
+  display: grid;
+  grid-template-columns: 64px 1fr;  /* avatar | info */
+  gap: 1rem;
+  align-items: start;
   flex: 1;
+  text-align: left;
+}
+
+/* === Avatar === */
+.avatar {
+  width: 64px;
+  height: 64px;
+}
+
+.profile-pic,
+.profile-placeholder {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ccc;
+  display: block;
+}
+
+.profile-placeholder {
+  background-color: #ddd;
+  color: #666;
+  font-size: 1.6rem;
+  display: grid;
+  place-items: center;
+}
+
+/* === Info Text === */
+.submission-info {
+  display: grid;
+  gap: 0.35rem;
 }
 
 .submission-info p {
-  margin: 0.4rem 0;
+  margin: 0;
   font-size: 0.95rem;
   color: #3b2f5e;
 }
@@ -60,49 +94,26 @@
   color: #4c3d69;
 }
 
-/* === Profile Picture / Placeholder === */
-.profile-container {
-  float: left;
-  margin-right: 1.2rem;
-}
-
-.profile-pic {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #ccc;
-}
-
-.profile-placeholder {
-  width: 60px;
-  height: 60px;
-  background-color: #ddd;
-  color: #666;
-  font-size: 1.8rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  border: 2px solid #ccc;
-}
-
-/* === View CV Button === */
+/* === View CV Button (right column) === */
 .view-btn {
-  padding: 0.6rem 1.4rem;
+  align-self: center;
+  padding: 0.65rem 1.4rem;
   background-color: #FF7038;
   color: white;
-  font-weight: bold;
+  font-weight: 700;
   border: none;
   border-radius: 999px;
   text-decoration: none;
-  font-size: 0.9rem;
-  transition: background-color 0.2s ease, transform 0.2s ease;
+  font-size: 0.92rem;
+  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(255, 112, 56, 0.25);
 }
 
 .view-btn:hover {
   background-color: #ff7700;
-  transform: scale(1.05);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 112, 56, 0.35);
 }
 
 /* === Error Message === */
@@ -114,24 +125,6 @@
 
 /* === Responsive === */
 @media (max-width: 768px) {
-  .submission-card {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 1.5rem;
-  }
-
-  .submission-info {
-    width: 100%;
-  }
-
-  .view-btn {
-    margin-top: 1rem;
-    align-self: flex-end;
-  }
-}
-
-/* === Responsive for <= 650px === */
-@media (max-width: 650px) {
   .submissions-container {
     width: 100%;
     margin: 150px auto;
@@ -140,35 +133,43 @@
 
   .submission-card {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+    padding: 1.2rem 1.2rem 1.1rem;
     gap: 1rem;
-    padding-top: 1.5 rem;
-    padding-left: 1.5rem;
-    padding-right: 2rem;
   }
 
-  .submission-info {
-    text-align: left;
-    width: 100%;
-    margin-right: 80px;
+  .submission-main {
+    grid-template-columns: 56px 1fr;
+    gap: 0.9rem;
   }
 
   .profile-pic,
   .profile-placeholder {
-    width: 50px;
-    height: 50px;
+    width: 56px;
+    height: 56px;
   }
 
   .view-btn {
     align-self: flex-end;
-    padding: 0.6rem 1.2rem;
+    margin-top: 0.25rem;
+    padding: 0.58rem 1.15rem;
     font-size: 0.9rem;
-    width: auto; /* Keep it narrow */
-    text-align: center;
-    margin-top: 0.5rem;
   }
 
   .submissions-container h1 {
     font-size: 1.5rem;
   }
 }
+
+/* narrow phones */
+@media (max-width: 420px) {
+  .submission-main {
+    grid-template-columns: 48px 1fr;
+  }
+  .profile-pic,
+  .profile-placeholder {
+    width: 48px;
+    height: 48px;
+  }
+}
+

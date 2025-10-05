@@ -1,161 +1,121 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth, db } from "../firebase"; // ✅ Import Firebase
+import { auth, db } from "../firebase";
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import "../Styles/login.css"; // Import CSS file
+
+import "../Styles/auth-bg.css";
+import "../Styles/login.css";
+
 import googleLogo from "../assets/google.png";
-import AlertModal from "../components/AlertModal"; // ✅ Import AlertModal
+import bg from "../assets/auth-bg.jpg";          // ✅ background image
+import AlertModal from "../components/AlertModal";
 
 const googleProvider = new GoogleAuthProvider();
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [alertMessage, setAlertMessage] = useState(""); // ✅ Modal state
-  const [nextAction, setNextAction] = useState(null); // ✅ Optional callback after alert
+  const [alertMessage, setAlertMessage] = useState("");
+  const [nextAction, setNextAction] = useState(null);
   const navigate = useNavigate();
 
-  const showAlert = (msg, callback = null) => {
-    setAlertMessage(msg);
-    setNextAction(() => callback);
-  };
+  const showAlert = (msg, cb = null) => { setAlertMessage(msg); setNextAction(() => cb); };
+  const closeAlert = () => { setAlertMessage(""); if (nextAction) nextAction(); };
 
-  const closeAlert = () => {
-    setAlertMessage("");
-    if (nextAction) nextAction();
-  };
-
-  // 🔹 Email/Password Login
   const handleLogin = async () => {
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
+      const { user } = await signInWithEmailAndPassword(auth, email, password);
+      const snap = await getDoc(doc(db, "Users", user.uid));
+      if (!snap.exists()) return showAlert("User data not found in database.");
 
-      const userDoc = await getDoc(doc(db, "Users", user.uid));
-      if (!userDoc.exists()) {
-        showAlert("User data not found in database.");
-        return;
-      }
-
-      const userData = userDoc.data();
-      if (userData.banned) {
+      const data = snap.data();
+      if (data.banned) {
         await auth.signOut();
-        showAlert("🚫 Your account has been banned. You cannot log in.");
-        return;
+        return showAlert("🚫 Your account has been banned. You cannot log in.");
       }
 
-      await handleUserRedirect(user);
-    } catch (error) {
-      console.error("❌ Login Error:", error);
-      showAlert(error.message || "Invalid credentials! Please try again.");
+      localStorage.setItem("userRole", data.role);
+      localStorage.setItem("userId", user.uid);
+      window.dispatchEvent(new Event("storage"));
+      showAlert("Login successful!", () => navigate("/home"));
+    } catch (e) {
+      console.error("❌ Login Error:", e);
+      showAlert(e.message || "Invalid credentials! Please try again.");
     }
   };
 
-  // 🔹 Google Login
   const handleGoogleLogin = async () => {
     try {
-      const userCredential = await signInWithPopup(auth, googleProvider);
-      const user = userCredential.user;
-
-      const userRef = doc(db, "Users", user.uid);
-      const userDoc = await getDoc(userRef);
-
-      if (!userDoc.exists()) {
-        showAlert("No account found. Please create an account first.", () => navigate("/register"));
-        return;
+      const { user } = await signInWithPopup(auth, googleProvider);
+      const snap = await getDoc(doc(db, "Users", user.uid));
+      if (!snap.exists()) {
+        return showAlert("No account found. Please create an account first.", () => navigate("/register"));
       }
 
-      const userData = userDoc.data();
-      if (userData.banned) {
+      const data = snap.data();
+      if (data.banned) {
         await auth.signOut();
-        showAlert("🚫 Your account has been banned. You cannot log in.");
-        return;
+        return showAlert("🚫 Your account has been banned. You cannot log in.");
       }
 
-      localStorage.setItem("userRole", userData.role);
+      localStorage.setItem("userRole", data.role);
       localStorage.setItem("userId", user.uid);
       window.dispatchEvent(new Event("storage"));
-
-      showAlert("Login successful!", () => redirectUser(userData.role));
-    } catch (error) {
-      console.error("❌ Google Login Error:", error);
+      showAlert("Login successful!", () => navigate("/home"));
+    } catch {
       showAlert("Google Login Failed. Try again.");
     }
   };
 
-  // 🔹 Redirect Handler
-  const handleUserRedirect = async (user) => {
-    const userDoc = await getDoc(doc(db, "Users", user.uid));
-    if (userDoc.exists()) {
-      const userData = userDoc.data();
-      const userRole = userData.role;
-
-      localStorage.setItem("userRole", userRole);
-      localStorage.setItem("userId", user.uid);
-      window.dispatchEvent(new Event("storage"));
-
-      showAlert("Login successful!", () => redirectUser(userRole));
-    } else {
-      showAlert("User data not found in database.");
-    }
-  };
-
-  const redirectUser = (role) => {
-    navigate("/home");
-  };
-
   useEffect(() => {
     window.history.pushState(null, "", window.location.href);
-    const handlePopState = () => {
-      window.history.pushState(null, "", window.location.href);
-    };
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
+    const onPop = () => window.history.pushState(null, "", window.location.href);
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
   }, []);
 
   return (
-    <div className="login-page">
-      <div className="container">
-        <h1 className="title">InternItUp</h1>
-        <p className="subtitle">Get Jobs, <i>Touch Grass</i></p>
+    // ✅ set CSS variable so auth-bg.css can read it
+    <div className="auth-bg" style={{ "--auth-bg": `url(${bg})` }}>
+      <div className="login-page">
+        <div className="container">
+          <h1 className="title">InternItUp</h1>
+          <p className="subtitle">Get Jobs, <i>Touch Grass</i></p>
 
-        {/* 🔹 Inputs Section */}
-        <div className="input-container">
-          <label>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="login_input"
-          />
+          <div className="login-inputs">
+            <label>Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="login_input"
+            />
 
-          <label>Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="login_input"
-          />
+            <label>Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="login_input"
+            />
+          </div>
+
+          <div className="login-buttons">
+            <button className="login-btn" onClick={handleLogin}>Login</button>
+            <button className="google-btn" onClick={handleGoogleLogin}>
+              <img src={googleLogo} alt="Google" className="google-icon" />
+              Sign in with Google
+            </button>
+          </div>
+
+          <p>Don't have an account? <a href="/register">Create one</a></p>
         </div>
 
-        {/* 🔹 Buttons Section */}
-        <div className="button-container">
-          <button className="login-btn" onClick={handleLogin}>Login</button>
-          <button className="google-btn" onClick={handleGoogleLogin}>
-            <img src={googleLogo} alt="Google Logo" style={{ width: "20px", marginRight: "10px" }} />
-            Sign in with Google
-          </button>
-        </div>
-
-        {/* 🔹 Redirect to Register */}
-        <p>Don't have an account? <a href="/register">Create one</a></p>
+        <AlertModal message={alertMessage} onClose={closeAlert} />
       </div>
-
-      {/* ✅ Alert Modal Renderer */}
-      <AlertModal message={alertMessage} onClose={closeAlert} />
     </div>
   );
 }

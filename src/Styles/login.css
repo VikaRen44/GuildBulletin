@@ -6,152 +6,133 @@
   min-height: 100vh;
   font-family: 'Segoe UI', sans-serif;
   animation: fadeIn 1s ease-in;
+  padding: 24px;
 }
 
-/* === Fade-in Animation === */
+/* Fade-in */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* === Container Box === */
-.container {
-  background-color: #1f182e;
+/* Card */
+.login-page .container {
+  background-color: rgba(31, 24, 46, 0.95);  /* slight translucency over photo */
+  backdrop-filter: saturate(120%) blur(1px);
   padding: 2.5rem 3rem;
   border-radius: 20px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  width: 450px;
+  width: 350px;              /* set your desired card width */
+  max-width: 100%;
   text-align: center;
+  margin: 0 auto;
   animation: popUp 0.6s ease-in-out;
 }
 
-/* === Pop-up Animation for container === */
+/* PopUp */
 @keyframes popUp {
-  from {
-    scale: 0.95;
-    opacity: 0;
-  }
-  to {
-    scale: 1;
-    opacity: 1;
-  }
+  from { scale: 0.95; opacity: 0; }
+  to   { scale: 1;    opacity: 1; }
 }
 
-/* === Title / Subtitle === */
-.title {
+/* Title / subtitle */
+.login-page .title {
   color: #ff6a00;
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 0.3rem;
+  font-size: 1.75rem;   /* match register */
+  font-weight: 800;     /* match register */
+  line-height: 1.2;
+  letter-spacing: 0.2px;
+  margin-bottom: 1.5rem; 
 }
-
-.subtitle {
+.login-page .subtitle {
   color: #f1f1f1;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
+  margin-top: -0.6rem;
   margin-bottom: 2rem;
 }
 
-/* === Input Section === */
-.input-container {
+/* Inputs (centered & limited width) */
+.login-page .login-inputs {
+  max-width: 420px;
+  margin: 0 auto 1.5rem;
   text-align: left;
-  margin-bottom: 1.5rem;
 }
-
-.input-container label {
+.login-page .login-inputs label {
   display: block;
   font-size: 0.75rem;
   color: #fff;
   margin-bottom: 0.25rem;
 }
-
-.login_input {
+.login-page .login_input {
   width: 100%;
   padding: 0.75rem;
   border-radius: 8px;
   border: none;
   background-color: #2a233b;
-  color: white;
+  color: #fff;
   font-size: 0.85rem;
   margin-bottom: 1rem;
   transition: box-shadow 0.3s ease;
+  box-sizing: border-box;
 }
-
-/* === Input Focus Animation === */
-.login_input:focus {
+.login-page .login_input:focus {
   outline: none;
   box-shadow: 0 0 5px 2px #ff6a00;
 }
 
-/* === Buttons Container === */
-.button-container {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: center;
-  margin-bottom: 1.5rem;
+/* Buttons row (two equal columns) */
+.login-page .login-buttons {
+  max-width: 420px;
+  margin: 0 auto 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  justify-items: stretch;
+  align-items: stretch;
 }
 
-/* === Orange Login Button === */
-.login-btn {
-  background-color: #ff6a00;
-  color: white;
-  border: none;
-  padding: 0.6rem 1.5rem;
+/* Shared button sizing */
+.login-page .login-btn,
+.login-page .google-btn {
+  width: 100%;
+  height: 48px;
   border-radius: 10px;
-  font-weight: bold;
   font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.login-btn:hover {
-  background-color: #e65a00;
-  transform: translateY(-2px);
-}
-
-/* === Google Button === */
-.google-btn {
-  background-color: #e6e6fa;
-  color: black;
-  padding: 0.6rem 1rem;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.85rem;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 10px;
+  padding: 0 16px;
+  border: none;
+  cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
-  height: 100%;            /* Prevent height override */
 }
 
-.google-btn:hover {
-  background-color: #d8d8f0;
-  transform: translateY(-2px);
+/* Theme */
+.login-page .login-btn {
+  background-color: #ff6a00;
+  color: #fff;
 }
+.login-page .login-btn:hover { background-color: #e65a00; transform: translateY(-2px); }
 
-/* === Register Prompt === */
-.container p {
-  font-size: 0.75rem;
-  color: #ccc;
+.login-page .google-btn {
+  background-color: #e6e6fa;
+  color: #000;
 }
+.login-page .google-btn:hover { background-color: #d8d8f0; transform: translateY(-2px); }
 
-.container a {
-  color: #ff6a00;
-  text-decoration: none;
-  font-weight: bold;
-  margin-left: 0.25rem;
-  transition: color 0.2s ease;
+/* Logo */
+.login-page .google-icon { width: 20px; height: 20px; }
+
+/* Links */
+.login-page .container p { font-size: 0.75rem; color: #ccc; }
+.login-page .container a {
+  color: #ff6a00; text-decoration: none; font-weight: bold; margin-left: 0.25rem;
 }
+.login-page .container a:hover { color: #ffa64d; }
 
-.container a:hover {
-  color: #ffa64d;
+/* Mobile: stack buttons */
+@media (max-width: 480px) {
+  .login-page .login-buttons { grid-template-columns: 1fr; }
 }
-
-
-

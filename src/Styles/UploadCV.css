@@ -1,62 +1,190 @@
-.uploadcv-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 80vh;
+/* === Container === */
+.submissions-container {
+  width: 1000px;
+  margin: 60px auto;
+  padding: 0 1rem;
   font-family: 'Segoe UI', sans-serif;
-}
-
-.uploadcv-card {
-  background-color: white;
-  border-radius: 20px;
-  padding: 2rem 2.5rem;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.07);
   text-align: center;
-  width: 90%;
-  max-width: 500px;
 }
 
-.uploadcv-card h2 {
-  color: #ff6a00;
-  margin-bottom: 0.5rem;
+.submissions-container h1 {
+  font-size: 1.9rem;
+  color: #4c3d69;
+  margin-bottom: 2rem;
+  margin-top: 150px;
 }
 
-.uploadcv-card p {
-  font-size: 0.9rem;
-  color: #555;
-  margin-bottom: 1.5rem;
-}
-
-.uploadcv-form {
+/* === Submission List === */
+.submission-list {
   display: flex;
-  gap: 10px;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
-.uploadcv-input {
-  padding: 0.7rem 1rem;
-  border: 1px solid #ccc;
-  border-radius: 20px;
-  width: 70%;
-  font-size: 0.9rem;
-  background-color: #f3f3f3;
+.loading {
+  color: #4c3d69;
 }
 
-.uploadcv-btn {
-  background-color: #ff6a00;
-  border: none;
+/* === Submission Card === */
+.submission-card {
+  background-color: #f8f8f8;
+  border: 2px solid #FF7038;
+  border-radius: 1rem;
+  padding: 1.6rem 1.8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 1.6rem;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.submission-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.12);
+}
+
+/* === Left: Avatar + Info (grid) === */
+.submission-main {
+  display: grid;
+  grid-template-columns: 80px 1fr;  /* avatar | info  (↑ was 64px) */
+  gap: 1rem;
+  align-items: start;
+  flex: 1;
+  text-align: left;
+}
+
+/* === Avatar === */
+.avatar {
+  width: 80px;   /* ↑ bigger */
+  height: 80px;  /* ↑ bigger */
+}
+
+.profile-pic,
+.profile-placeholder {
+  width: 80px;   /* ↑ bigger */
+  height: 80px;  /* ↑ bigger */
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ccc;
+  display: block;
+}
+
+.profile-placeholder {
+  background-color: #ddd;
+  color: #666;
+  font-size: 1.7rem;
+  display: grid;
+  place-items: center;
+}
+
+/* === Info Text === */
+.submission-info {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.submission-info p {
+  margin: 0;
+  font-size: 1rem;
+  color: #3b2f5e;
+}
+
+/* Applicant name bigger/bolder */
+.submission-info p:first-child strong {
+  font-size: 1.15rem;   /* ↑ name size */
+  font-weight: 800;
+  color: #3a2a5e;
+}
+
+.submission-info strong {
+  color: #4c3d69;
+}
+
+/* === View CV Button (right column) === */
+.view-btn {
+  align-self: center;
+  padding: 0.85rem 1.6rem;   /* ↑ bigger click target */
+  background-color: #FF7038;
   color: white;
-  padding: 0.7rem 1.2rem;
-  font-weight: bold;
-  font-size: 0.9rem;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  font-weight: 800;
+  border: none;
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: 1rem;          /* ↑ bigger text */
+  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(255, 112, 56, 0.25);
 }
 
-.uploadcv-btn:hover {
-  background-color: #e25a00;
-  transform: scale(1.05);
+.view-btn:hover {
+  background-color: #ff7700;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 112, 56, 0.35);
+}
+
+/* === Error Message === */
+.error-message {
+  color: #f44336;
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+  .submissions-container {
+    width: 100%;
+    margin: 150px auto;
+    padding: 0 1rem;
+  }
+
+  .submission-card {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 1.2rem 1.2rem 1.1rem;
+    gap: 1rem;
+  }
+
+  .submission-main {
+    grid-template-columns: 68px 1fr;  /* slightly smaller avatar on tablet */
+    gap: 0.9rem;
+  }
+
+  .profile-pic,
+  .profile-placeholder,
+  .avatar {
+    width: 68px;
+    height: 68px;
+  }
+
+  .submission-info p:first-child strong {
+    font-size: 1.1rem;
+  }
+
+  .view-btn {
+    align-self: flex-end;
+    margin-top: 0.25rem;
+    padding: 0.75rem 1.35rem;
+    font-size: 0.98rem;
+  }
+
+  .submissions-container h1 {
+    font-size: 1.6rem;
+  }
+}
+
+/* narrow phones */
+@media (max-width: 420px) {
+  .submission-main {
+    grid-template-columns: 56px 1fr;
+  }
+  .profile-pic,
+  .profile-placeholder,
+  .avatar {
+    width: 56px;
+    height: 56px;
+  }
+  .submission-info p:first-child strong {
+    font-size: 1.05rem;
+  }
 }
