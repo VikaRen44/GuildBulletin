@@ -104,50 +104,66 @@
 .logout-button-group {
   display: flex;
   justify-content: center;
-  gap: 24px;
+  gap: 14px;
+  margin-top: 4px;
 }
 
-/* Shared icon style so they’re centered & consistent */
-.logout-ic { width: 22px; height: 22px; }
+/* Rectangular buttons with rounded sides (NO icons) */
+.logout-cancel-btn,
+.logout-confirm-btn {
+  min-width: 110px;
+  padding: 0.62rem 1.1rem;
+  border-radius: 10px;                 /* rounded corners, not circles */
+  font-weight: 800;
+  font-size: 0.95rem;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform .15s ease,
+              box-shadow .15s ease,
+              background-color .15s ease,
+              border-color .15s ease,
+              color .15s ease;
+}
 
-/* Cancel (outlined) */
+/* "No" button (outlined) */
 .logout-cancel-btn {
-  width: 60px; height: 60px;
-  display: grid; place-items: center;
-  border-radius: 50%;
-  background: #fff;
-  color: #332046;
-  border: 2px solid #332046;              /* outline ring */
-  box-shadow: 0 8px 18px rgba(0,0,0,.08);  /* soft elevation */
-  transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+  background: #ffffff;
+  color: #2a2142;
+  border-color: #2a2142;
+  box-shadow: 0 2px 8px rgba(42,33,66,.10);
 }
 .logout-cancel-btn:hover {
   transform: translateY(-1px);
-  background: #f7f4fb;                    /* subtle hover bg */
-  box-shadow: 0 12px 22px rgba(0,0,0,.12);
+  background: #f7f4fb;
+  box-shadow: 0 6px 14px rgba(42,33,66,.16);
+}
+.logout-cancel-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(42,33,66,.18);
 }
 
-/* Confirm (solid) */
+/* "Yes" button (solid) */
 .logout-confirm-btn {
-  width: 60px; height: 60px;
-  display: grid; place-items: center;
-  border-radius: 50%;
-  border: 2px solid #FF7038;
-  background: #FF7038;
-  color: #fff;
-  box-shadow: 0 8px 18px rgba(255,112,56,.28);
-  transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+  background: #ff6a00;
+  color: #ffffff;
+  border-color: #ff6a00;
+  box-shadow: 0 3px 10px rgba(255,106,0,.22);
 }
 .logout-confirm-btn:hover {
   transform: translateY(-1px);
-  background: #ff5f1f;            /* slightly darker */
-  box-shadow: 0 14px 26px rgba(255,112,56,.34);
+  background: #e85f00;
+  border-color: #e85f00;
+  box-shadow: 0 8px 18px rgba(255,106,0,.30);
+}
+.logout-confirm-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255,106,0,.25);
 }
 
-/* make sure the icon strokes look crisp */
-.logout-cancel-btn .logout-ic { stroke-width: 2.4; }
-.logout-confirm-btn .logout-ic { stroke: #fff; stroke-width: 2.6; }
+/* keep for compatibility; not used by the new buttons */
+.logout-ic { width: 22px; height: 22px; }
 
+/* modal entrance */
 @keyframes modalIn {
   from { opacity: 0; transform: translateY(6px) scale(.98); }
   to   { opacity: 1; transform: translateY(0) scale(1); }

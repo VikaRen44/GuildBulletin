@@ -322,6 +322,7 @@ const Home = () => {
         {/* 👤 Profile Card */}
         {profileData && (
           <section className="home-profile">
+            {/* left: image only */}
             <div className="home-profile__left">
               <div className="home-pfp">
                 <img
@@ -335,22 +336,24 @@ const Home = () => {
                   </span>
                 )}
               </div>
-
-              <div className="home-left-sep" />
-
-              <span className="home-role">
-                {profileData.role === "admin"
-                  ? "Admin"
-                  : profileData.role === "hirer"
-                  ? "Hirer"
-                  : "Applicant"}
-              </span>
             </div>
 
+            {/* right: header w/ name + role, then content */}
             <div className="home-profile__right">
-              <h2 className="home-name">
-                {profileData.firstName} {profileData.lastName}
-              </h2>
+              <div className="home-header">
+                <h2 className="home-name">
+                  {profileData.firstName} {profileData.lastName}
+                </h2>
+
+                <span className="home-header__role">
+                  {profileData.role === "admin"
+                    ? "Admin"
+                    : profileData.role === "hirer"
+                    ? "Hirer"
+                    : "Applicant"}
+                </span>
+              </div>
+
               <div className="home-name__underline" />
 
               <div className="home-about">
@@ -472,3 +475,4 @@ const Home = () => {
 };
 
 export default Home;
+

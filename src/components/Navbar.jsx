@@ -133,35 +133,43 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* Logout Confirmation Modal */}
+     {/* Logout Confirmation Modal */}
       {showLogoutModal && (
         <div
           className="logout-modal-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="logout-modal-title"
           onClick={() => setShowLogoutModal(false)}
         >
           <div
             className="logout-modal-content"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2>
+            <h2 id="logout-modal-title">
               <span>Confirmation</span> Are you sure you want to log out?
             </h2>
 
             <div className="logout-button-group">
-              <button
-                onClick={() => setShowLogoutModal(false)}
-                className="logout-cancel-btn"
-                aria-label="Cancel logout"
-              >
-                ✖
-              </button>
-              <button
+               <button
+                type="button"
                 onClick={handleLogout}
                 className="logout-confirm-btn"
                 aria-label="Confirm logout"
+                title="Yes"
               >
-                ✔
+                Yes
               </button>
+              <button
+                type="button"
+                onClick={() => setShowLogoutModal(false)}
+                className="logout-cancel-btn"
+                aria-label="Cancel logout"
+                title="No"
+              >
+                No
+              </button>
+
             </div>
           </div>
         </div>
