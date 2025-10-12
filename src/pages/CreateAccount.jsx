@@ -14,7 +14,7 @@ import "../Styles/register.css";
 
 import AlertModal from "../components/AlertModal";
 import googleLogo from "../assets/google.png";
-import bg from "../assets/auth-bg.jpg";          // ✅ background image
+import bg from "../assets/auth_bg1.jpg";          // ✅ background image
 
 const provider = new GoogleAuthProvider();
 

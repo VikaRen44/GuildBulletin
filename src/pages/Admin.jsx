@@ -117,31 +117,39 @@ const Admin = () => {
           return jobLikesMap[jobId];
         };
 
-        // Resolve user email/name for display
+       // Resolve user "Name (email)" for display (cached)
         const userDisplayCache = new Map();
         const getUserDisplay = async (uid) => {
-          if (!uid) return "No email found";
+          if (!uid) return "Unknown user";
           if (userDisplayCache.has(uid)) return userDisplayCache.get(uid);
+
           try {
             const userRef = doc(db, "Users", uid);
             const userSnap = await getDoc(userRef);
+
             if (userSnap.exists()) {
-              const u = userSnap.data();
-              const name = `${u.firstName || ""} ${u.lastName || ""}`.trim();
-              const display =
-                (u.email && u.email.trim()) ||
-                (u.gmail && u.gmail.trim()) ||
-                name ||
-                "No email found";
-              userDisplayCache.set(uid, display);
-              return display;
+              const u = userSnap.data() || {};
+              const first = (u.firstName || "").trim();
+              const last  = (u.lastName  || "").trim();
+              const name  = [first, last].filter(Boolean).join(" ");
+              const email = (u.email || u.gmail || "").trim();
+
+              const combined =
+                name && email ? `${name} (${email})` :
+                name || email || "Unknown user";
+
+              userDisplayCache.set(uid, combined);
+              return combined;
             }
           } catch {
-            /* ignore */
+            // ignore
           }
-          userDisplayCache.set(uid, "No email found");
-          return "No email found";
+
+          const fallback = "Unknown user";
+          userDisplayCache.set(uid, fallback);
+          return fallback;
         };
+
 
         // Helper to add a single report to agg
         const addReportToAgg = async (jobId, reasonsArr, reporterUid) => {

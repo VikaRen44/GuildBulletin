@@ -494,7 +494,7 @@ const JobDetail = () => {
                         : "Submit your CV to this job"
                     }
                   >
-                    {cvAlreadySubmitted ? "Edit CV" : "Submit CV"}
+                    {cvAlreadySubmitted ? "Update CV" : "Submit CV"}
                   </button>
                 )}
 

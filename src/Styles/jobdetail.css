@@ -130,20 +130,20 @@
   background: #fff;
   border-radius: 14px;
   box-shadow: 0 10px 28px rgba(0,0,0,.06);
-  padding: 28px 30px;
-
-  /* height behavior you already want */
-  height: 560px;
-  min-height: 560px;
-  overflow-y: auto;
-
-  /* 👇 NEW: lock width and prevent grid stretching */
+  padding: 32px 36px;
   box-sizing: border-box;
-  width: var(--jd-detail-width);       /* fixed, editable width */
+
+  /* 🔹 Allow content to define height naturally */
+  width: var(--jd-detail-width);
   max-width: var(--jd-detail-width);
   min-width: var(--jd-detail-width);
-  justify-self: start;                 /* don't stretch to the column width */
-  margin-left: 0;                      /* keep aligned with column start */
+  justify-self: start;
+
+  /* 🔹 Let it grow naturally but stay visually balanced */
+  min-height: 600px;          /* optional baseline */
+  height: auto;
+  overflow: visible;          /* no inner scrolling */
+  margin-left: 0;
   margin-right: 0;
 }
 
@@ -418,3 +418,4 @@
 @media (max-width: 520px) {
   .jd-modal__reasons { grid-template-columns: 1fr; }
 }
+

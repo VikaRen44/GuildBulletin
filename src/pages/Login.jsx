@@ -8,7 +8,7 @@ import "../Styles/auth-bg.css";
 import "../Styles/login.css";
 
 import googleLogo from "../assets/google.png";
-import bg from "../assets/auth-bg.jpg";          // ✅ background image
+import bg from "../assets/auth_bg1.jpg";          // ✅ background image
 import AlertModal from "../components/AlertModal";
 
 const googleProvider = new GoogleAuthProvider();

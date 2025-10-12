@@ -35,3 +35,21 @@
 .alert-close-btn:hover {
   background-color: #e65a00;
 }
+
+/* Fixed modal size and better text styling */
+.fixed-alert {
+  width: 320px;            /* consistent width */
+  min-height: 150px;       /* ensures even short messages don’t shrink */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.alert-message {
+  font-size: 1rem;
+  line-height: 1.4;
+  margin-bottom: 1.2rem;
+  word-wrap: break-word;
+  max-width: 260px;
+}

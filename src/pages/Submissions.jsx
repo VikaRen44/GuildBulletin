@@ -8,6 +8,9 @@ import {
   getDocs,
   doc,
   getDoc,
+  onSnapshot,
+  updateDoc,
+  serverTimestamp,
 } from "firebase/firestore";
 import "../Styles/submissions.css";
 
@@ -29,7 +32,18 @@ export default function Submissions() {
   const [hirerId, setHirerId] = useState(null);
   const [rows, setRows] = useState([]);
 
-  // Resolve current user; allow through even if user doc read fails (we use auth uid)
+  // ---- pager state ----
+  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage = 5;
+
+  // Clamp current page when rows change
+  useEffect(() => {
+    const totalPages = Math.max(1, Math.ceil(rows.length / itemsPerPage));
+    if (currentPage > totalPages - 1) setCurrentPage(totalPages - 1);
+    if (currentPage < 0) setCurrentPage(0);
+  }, [rows.length, currentPage]);
+
+  // Resolve current user
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
       setError("");
@@ -40,7 +54,6 @@ export default function Submissions() {
         return;
       }
       try {
-        // Optional role check; don't block if it fails
         const uRef = doc(db, "Users", u.uid);
         const uSnap = await getDoc(uRef);
         const role = uSnap.exists() ? uSnap.data()?.role : undefined;
@@ -51,7 +64,6 @@ export default function Submissions() {
           setHirerId(u.uid);
         }
       } catch {
-        // proceed with auth uid anyway
         setHirerId(u.uid);
       } finally {
         setLoading(false);
@@ -61,15 +73,94 @@ export default function Submissions() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Live submissions
   useEffect(() => {
-    const load = async () => {
-      if (!hirerId) return;
+    if (!hirerId) return;
+
+    let unsubs = [];
+    let subsMap = new Map();
+
+    const teardown = () => {
+      unsubs.forEach((u) => {
+        try {
+          u();
+        } catch {}
+      });
+      unsubs = [];
+    };
+
+    const safeToDate = (ts) => {
+      try {
+        return ts?.toDate?.() || null;
+      } catch {
+        return null;
+      }
+    };
+
+    const rebuildRows = async () => {
+      const subs = Array.from(subsMap.values());
+      if (!subs.length) {
+        setRows([]);
+        setLoading(false);
+        return;
+      }
+
+      const userIds = [...new Set(subs.map((s) => s.userId).filter(Boolean))];
+      const userMap = new Map();
+      await Promise.all(
+        userIds.map(async (uid) => {
+          try {
+            const uRef = doc(db, "Users", uid);
+            const uSnap = await getDoc(uRef);
+            userMap.set(uid, uSnap.exists() ? uSnap.data() : {});
+          } catch {
+            userMap.set(uid, {});
+          }
+        })
+      );
+
+      const built = subs.map((s) => {
+        const u = userMap.get(s.userId) || {};
+        const fullName =
+          `${u.firstName || ""} ${u.lastName || ""}`.trim() || "Unknown Applicant";
+        const email = (u.email || u.gmail || "").trim();
+        const photo = u.profileImage || u.profilePicURL || "";
+        const initials = fullName
+          .split(" ")
+          .filter(Boolean)
+          .map((p) => p[0])
+          .slice(0, 2)
+          .join("")
+          .toUpperCase();
+
+        return {
+          id: s.id,
+          applicantName: fullName,
+          email,
+          photo,
+          initials,
+          jobTitle: s._jobTitle || "(Untitled Job)",
+          pdfUrl: s.pdfUrl || "",
+          submittedAt: safeToDate(s.submittedAt) || safeToDate(s.updatedAt),
+          status: s.status || "pending",
+        };
+      });
+
+      built.sort(
+        (a, b) => (b.submittedAt?.getTime?.() || 0) - (a.submittedAt?.getTime?.() || 0)
+      );
+
+      setRows(built);
+      setLoading(false);
+    };
+
+    const loadLive = async () => {
       setLoading(true);
       setError("");
       setRows([]);
+      subsMap = new Map();
 
       try {
-        // 1) Jobs by this hirer
         const jobsQ = query(collection(db, "jobs"), where("hirerId", "==", hirerId));
         const jobsSnap = await getDocs(jobsQ);
         const jobs = jobsSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
@@ -84,112 +175,88 @@ export default function Submissions() {
           return;
         }
 
-        // 2) Read submissions
-        const subs = [];
         const subsRef = collection(db, "submissions");
 
-        const tryInQuery = async () => {
-          for (const group of chunk(jobIds, 10)) {
-            const qIn = query(subsRef, where("jobId", "in", group));
-            const snap = await getDocs(qIn);
-            snap.forEach((d) => {
-              const data = d.data();
-              if (data?.jobId !== PROFILE_JOB_ID) subs.push({ id: d.id, ...data });
-            });
-          }
-        };
+        const applySnap = (snap) => {
+          snap.docChanges().forEach((chg) => {
+            const d = chg.doc;
+            const data = d.data();
+            if (data?.jobId === PROFILE_JOB_ID) return;
 
-        const tryPerJobQueries = async () => {
-          for (const id of jobIds) {
-            const qOne = query(subsRef, where("jobId", "==", id));
-            const snap = await getDocs(qOne);
-            snap.forEach((d) => {
-              const data = d.data();
-              if (data?.jobId !== PROFILE_JOB_ID) subs.push({ id: d.id, ...data });
-            });
-          }
-        };
+            const record = {
+              id: d.id,
+              ...data,
+              _jobTitle: jobIdToTitle.get(data.jobId) || "(Untitled Job)",
+            };
 
-        // Try IN first, then fall back
-        try {
-          await tryInQuery();
-        } catch (e) {
-          console.warn("[Submissions] 'in' query failed, falling back to per-job:", e);
-          await tryPerJobQueries();
-        }
-
-        if (subs.length === 0) {
-          setRows([]);
-          setLoading(false);
-          return;
-        }
-
-        // 3) Join applicant info (best-effort)
-        const userIds = [...new Set(subs.map((s) => s.userId).filter(Boolean))];
-        const userMap = new Map();
-        await Promise.all(
-          userIds.map(async (uid) => {
-            try {
-              const uRef = doc(db, "Users", uid);
-              const uSnap = await getDoc(uRef);
-              userMap.set(uid, uSnap.exists() ? uSnap.data() : {});
-            } catch {
-              userMap.set(uid, {});
+            if (chg.type === "removed") {
+              subsMap.delete(d.id);
+            } else {
+              subsMap.set(d.id, record);
             }
-          })
-        );
+          });
 
-        const safeToDate = (ts) => {
-          try {
-            return ts?.toDate?.() || null;
-          } catch {
-            return null;
-          }
+          rebuildRows();
         };
 
-        const built = subs.map((s) => {
-          const u = userMap.get(s.userId) || {};
-          const fullName =
-            `${u.firstName || ""} ${u.lastName || ""}`.trim() || "Unknown Applicant";
-          const email = (u.email || u.gmail || "").trim();
-          const photo = u.profileImage || u.profilePicURL || "";
-          const initials = fullName
-            .split(" ")
-            .filter(Boolean)
-            .map((p) => p[0])
-            .slice(0, 2)
-            .join("")
-            .toUpperCase();
+        const groups = chunk(jobIds, 10);
+        let usedIn = false;
+        try {
+          groups.forEach((g) => {
+            const qIn = query(subsRef, where("jobId", "in", g));
+            const u = onSnapshot(qIn, applySnap);
+            unsubs.push(u);
+          });
+          usedIn = true;
+        } catch {
+          usedIn = false;
+        }
 
-          return {
-            id: s.id,
-            applicantName: fullName,
-            email,
-            photo,
-            initials,
-            jobTitle: jobIdToTitle.get(s.jobId) || "(Untitled Job)",
-            pdfUrl: s.pdfUrl || "",
-            submittedAt: safeToDate(s.submittedAt) || safeToDate(s.updatedAt),
-          };
-        });
-
-        built.sort(
-          (a, b) => (b.submittedAt?.getTime?.() || 0) - (a.submittedAt?.getTime?.() || 0)
-        );
-
-        setRows(built);
+        if (!usedIn) {
+          teardown();
+          jobIds.forEach((id) => {
+            const qOne = query(subsRef, where("jobId", "==", id));
+            const u = onSnapshot(qOne, applySnap);
+            unsubs.push(u);
+          });
+        }
       } catch (e) {
-        console.error("Load submissions failed:", e);
-        setError("Failed to load submissions. Check Firestore rules and indexes, then refresh.");
-      } finally {
+        console.error("Load submissions (live) failed:", e);
+        setError(
+          "Failed to load submissions. Check Firestore rules and indexes, then refresh."
+        );
         setLoading(false);
       }
     };
 
-    load();
+    loadLive();
+    return () => teardown();
   }, [db, hirerId]);
 
   const when = (d) => (d ? new Date(d).toLocaleString() : "");
+
+  // Accept / Reject
+  const decide = async (submissionId, nextStatus) => {
+    try {
+      const ref = doc(db, "submissions", submissionId);
+      await updateDoc(ref, {
+        status: nextStatus,
+        decidedAt: serverTimestamp(),
+      });
+    } catch (e) {
+      console.error("Failed to update submission status:", e);
+      alert("Could not update status. Please try again.");
+    }
+  };
+
+  // Pager helpers
+  const totalItems = rows.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
+  const startIndex = currentPage * itemsPerPage;
+  const pageRows = rows.slice(startIndex, startIndex + itemsPerPage);
+
+  const prevPage = () => setCurrentPage((p) => Math.max(0, p - 1));
+  const nextPage = () => setCurrentPage((p) => Math.min(totalPages - 1, p + 1));
 
   const content = useMemo(() => {
     if (loading) return <p className="loading">Loading submissions…</p>;
@@ -197,48 +264,125 @@ export default function Submissions() {
     if (rows.length === 0) return <p className="loading">No submissions yet for your jobs.</p>;
 
     return (
-      <div className="submission-list">
-        {rows.map((c) => (
-          <div key={c.id} className="submission-card">
-            <div className="submission-main">
-              <div className="avatar">
-                {c.photo ? (
-                  <img src={c.photo} alt={c.applicantName} className="profile-pic" />
-                ) : (
-                  <div className="profile-placeholder">{c.initials || "?"}</div>
-                )}
-              </div>
+      <div className="submissions-table-wrap">
+        <table className="submissions-table">
+          <thead>
+            <tr>
+              <th style={{ width: 64 }} />
+              <th className="th-center">Name / Email</th>
+              <th className="th-center">Applied To</th>
+              <th className="th-center">Submitted</th>
+              <th className="th-center" style={{ width: 340 }}>
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {pageRows.map((c) => {
+              const decided = c.status !== "pending";
+              const rowClass =
+                c.status === "accepted"
+                  ? "row-accepted"
+                  : c.status === "rejected"
+                  ? "row-rejected"
+                  : "";
 
-              <div className="submission-info">
-                <p>
-                  <strong>{c.applicantName}</strong>
-                  {c.email ? ` • ${c.email}` : ""}
-                </p>
-                <p>
-                  Applied to: <strong>{c.jobTitle}</strong>
-                </p>
-                {c.submittedAt && (
-                  <p>
-                    Submitted: <strong>{when(c.submittedAt)}</strong>
-                  </p>
-                )}
-              </div>
-            </div>
+              return (
+                <tr key={c.id} className={rowClass}>
+                  <td>
+                    <div className={`avatar-sm ${decided ? "is-decided" : ""}`}>
+                      {c.photo ? (
+                        <img src={c.photo} alt={c.applicantName} />
+                      ) : (
+                        <span>{c.initials || "?"}</span>
+                      )}
+                    </div>
+                  </td>
+                  <td>
+                    <div className="name-email">
+                      <strong>{c.applicantName}</strong>
+                      {c.email ? <span className="email"> • {c.email}</span> : null}
+                    </div>
+                  </td>
+                  <td className="td-center">{c.jobTitle}</td>
+                  <td className="td-center">{c.submittedAt ? when(c.submittedAt) : ""}</td>
+                  <td className="act-cell">
+                    {c.pdfUrl ? (
+                      <a
+                        className={`view-btn ${decided ? "is-muted" : ""}`}
+                        href={c.pdfUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        View CV
+                      </a>
+                    ) : (
+                      <span
+                        className="view-btn"
+                        style={{ opacity: 0.6, pointerEvents: "none" }}
+                      >
+                        No CV
+                      </span>
+                    )}
 
-            {c.pdfUrl ? (
-              <a className="view-btn" href={c.pdfUrl} target="_blank" rel="noreferrer">
-                View CV
-              </a>
-            ) : (
-              <span className="view-btn" style={{ opacity: 0.6, pointerEvents: "none" }}>
-                No CV Link
-              </span>
-            )}
+                    <button
+                      className="accept-btn"
+                      onClick={() => decide(c.id, "accepted")}
+                      disabled={decided}
+                      title={decided ? "Decision already made" : "Accept applicant"}
+                    >
+                      Accept
+                    </button>
+                    <button
+                      className="reject-btn"
+                      onClick={() => decide(c.id, "rejected")}
+                      disabled={decided}
+                      title={decided ? "Decision already made" : "Reject applicant"}
+                    >
+                      Reject
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+
+        {/* Bottom pager with DOTS */}
+        <div className="submissions-pager">
+          <button
+            className="pager-btn"
+            onClick={prevPage}
+            disabled={currentPage === 0}
+            aria-label="Previous"
+          >
+            ‹
+          </button>
+
+          <div className="pager-dots" role="tablist" aria-label="Pagination">
+            {Array.from({ length: totalPages }).map((_, i) => (
+              <button
+                key={i}
+                className={`dot ${i === currentPage ? "active" : ""}`}
+                aria-label={`Go to page ${i + 1}`}
+                aria-current={i === currentPage ? "page" : undefined}
+                onClick={() => setCurrentPage(i)}
+              />
+            ))}
           </div>
-        ))}
+
+          <button
+            className="pager-btn"
+            onClick={nextPage}
+            disabled={currentPage >= totalPages - 1}
+            aria-label="Next"
+          >
+            ›
+          </button>
+        </div>
       </div>
     );
-  }, [loading, error, rows]);
+  }, [loading, error, rows, currentPage, totalPages]);
 
   return (
     <div className="submissions-container">

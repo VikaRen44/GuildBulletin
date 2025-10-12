@@ -290,34 +290,53 @@ const Home = () => {
       )}
 
       <div className="page-wrapper">
-        {/* 🔍 Search */}
-        <div className="home-search-shell">
-          <div className="home-search">
-            <button
-              className="home-search__btn"
-              onClick={() =>
-                navigate(`/jobdetails?search=${encodeURIComponent(searchInput)}`)
-              }
-            >
-              Search
-            </button>
+      {/* 🔍 Search */}
+      <div className="home-search-shell">
+        <div className="home-search" style={{ position: "relative" }}>
+          <button
+            className="home-search__btn"
+            onClick={() =>
+              navigate(`/jobdetails?search=${encodeURIComponent(searchInput)}`)
+            }
+          >
+            Search
+          </button>
 
-            <input
-              className="home-search__input"
-              type="text"
-              placeholder="Enter job title, company, or keyword"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  navigate(
-                    `/jobdetails?search=${encodeURIComponent(searchInput)}`
-                  );
-                }
-              }}
-            />
-          </div>
+          <input
+            className="home-search__input"
+            type="text"
+            placeholder="Enter job title, company, or keyword"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                navigate(`/jobdetails?search=${encodeURIComponent(searchInput)}`);
+              }
+            }}
+          />
+
+          {/* 🔽 Dropdown Suggestions */}
+          {searchInput.trim() && recommendedJobs.length > 0 && (
+            <ul className="search-dropdown">
+              {recommendedJobs
+                .filter((job) =>
+                  job.position.toLowerCase().includes(searchInput.toLowerCase())
+                )
+                .slice(0, 5)
+                .map((job) => (
+                  <li
+                    key={job.id}
+                    className="search-suggestion"
+                    onClick={() => navigate(`/job/${job.id}`)}
+                  >
+                    {job.position}
+                  </li>
+                ))}
+            </ul>
+          )}
         </div>
+      </div>
+
 
         {/* 👤 Profile Card */}
         {profileData && (
