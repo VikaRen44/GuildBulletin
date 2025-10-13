@@ -9,6 +9,7 @@ import {
   updateDoc,
   getDoc,
   deleteDoc,
+  setDoc,
 } from "firebase/firestore";
 import "../Styles/admin.css";
 import emailjs from "@emailjs/browser";
@@ -117,7 +118,7 @@ const Admin = () => {
           return jobLikesMap[jobId];
         };
 
-       // Resolve user "Name (email)" for display (cached)
+        // Resolve user "Name (email)" for display (cached)
         const userDisplayCache = new Map();
         const getUserDisplay = async (uid) => {
           if (!uid) return "Unknown user";
@@ -149,7 +150,6 @@ const Admin = () => {
           userDisplayCache.set(uid, fallback);
           return fallback;
         };
-
 
         // Helper to add a single report to agg
         const addReportToAgg = async (jobId, reasonsArr, reporterUid) => {
@@ -425,13 +425,69 @@ const Admin = () => {
     }
   };
 
+  // 🚨 Ban: also write a real-time "force logout" signal + email the user
   const handleBanAccount = async (hirerId) => {
     try {
       const userRef = doc(db, "Users", hirerId);
+
+      // fetch hirer info for email + display
+      let hirer = hirers.find((h) => h.id === hirerId);
+      if (!hirer) {
+        const snap = await getDoc(userRef);
+        if (snap.exists()) {
+          const d = snap.data();
+          hirer = {
+            id: hirerId,
+            firstName: d.firstName || "",
+            lastName: d.lastName || "",
+            email: d.email || d.gmail || "",
+          };
+        }
+      }
+
+      // Random token change ensures onSnapshot fires on client
+      const forceLogoutToken = Math.random().toString(36).slice(2);
+
       await updateDoc(userRef, {
         banned: true,
         statusStep: "banned",
+        bannedAt: new Date(),
+        banReason: "admin_action",
+        forceLogoutToken, // 👈 client should listen for this to force sign out
       });
+
+      // Optional: write a targeted notification doc the client can also listen to
+      try {
+        await setDoc(
+          doc(collection(db, "notifications"), `${hirerId}_ban_${Date.now()}`),
+          {
+            type: "ban",
+            userId: hirerId,
+            createdAt: new Date(),
+            message:
+              "Your account has been banned for violating our policies. You will be signed out.",
+          }
+        );
+      } catch {
+        /* non-blocking */
+      }
+
+      // Best-effort: email the user about the ban (won't throw if template missing)
+      if (hirer?.email) {
+        try {
+          await emailjs.send(
+            "service_4y9z6j9",
+            "template_ban_notice", // <-- set this template in EmailJS or change to yours
+            {
+              to_email: hirer.email,
+              to_name: `${hirer.firstName || ""} ${hirer.lastName || ""}`.trim() || "User",
+            },
+            "ptcOjfNiUXksV1-v4"
+          );
+        } catch (e) {
+          console.warn("EmailJS ban notice failed (non-blocking).", e);
+        }
+      }
 
       showAlert(`🚫 Account banned: ${hirerId}`);
 
@@ -490,7 +546,7 @@ const Admin = () => {
     );
   };
 
-  // ✅ New: Likes dropdown, mirrors reports dropdown
+  // ✅ Likes dropdown
   const JobLikeDropdown = ({ job }) => {
     const [isOpen, setIsOpen] = useState(false);
 

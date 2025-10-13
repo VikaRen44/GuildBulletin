@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { auth } from "./firebase";
 import Navbar from "./components/Navbar";
@@ -14,6 +14,12 @@ import Admin from "./pages/Admin";
 import Submissions from "./pages/Submissions";
 import 'react-toastify/dist/ReactToastify.css';
 
+/* 🔽 NEW: real-time ban watcher imports */
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { onSnapshot, doc } from "firebase/firestore";
+import { db } from "./firebase";
+import AlertModal from "./components/AlertModal";
+/* 🔼 END new imports */
 
 const ProtectedRoute = ({ element, allowedRoles, userId }) => {
   const [userRole, setUserRole] = useState(null);
@@ -40,12 +46,56 @@ const ProtectedRoute = ({ element, allowedRoles, userId }) => {
   return React.cloneElement(element, { userId });
 };
 
+/* 🔽 NEW: Always-on watcher that force-logs-out banned users and shows a modal */
+const BanWatcher = () => {
+  const [banMsg, setBanMsg] = useState("");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    let unsubUserDoc = null;
+
+    const unsubAuth = onAuthStateChanged(auth, (user) => {
+      // cleanup any prior user doc subscription
+      if (unsubUserDoc) {
+        unsubUserDoc();
+        unsubUserDoc = null;
+      }
+
+      if (!user) return;
+
+      const ref = doc(db, "Users", user.uid);
+      unsubUserDoc = onSnapshot(ref, async (snap) => {
+        if (snap.exists() && snap.data()?.banned) {
+          setBanMsg("🚫 Your account has been banned. You will be signed out.");
+          try { await signOut(auth); } catch {}
+          navigate("/login", { replace: true });
+          // Clear any local role/id so ProtectedRoute blocks further access
+          try { localStorage.removeItem("userRole"); } catch {}
+          try { localStorage.removeItem("userId"); } catch {}
+          window.dispatchEvent(new Event("storage"));
+        }
+      });
+    });
+
+    return () => {
+      if (unsubUserDoc) unsubUserDoc();
+      unsubAuth();
+    };
+  }, [navigate]);
+
+  return <AlertModal message={banMsg} onClose={() => setBanMsg("")} />;
+};
+/* 🔼 END BanWatcher */
+
 const Layout = ({ children }) => {
   const location = useLocation();
   const hideNavbarRoutes = ["/login", "/register", "/complete-profile"];
 
   return (
     <>
+      {/* 🔽 keep the watcher mounted for the whole app */}
+      <BanWatcher />
+      {/* 🔼 */}
       {!hideNavbarRoutes.includes(location.pathname) && <Navbar />}
       {children}
     </>

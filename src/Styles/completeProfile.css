@@ -242,3 +242,62 @@
     margin: 10px 0;
   }
 }
+
+/* Keep the icon fixed in place */
+.password-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-field input {
+  width: 100%;
+  padding-right: 44px !important;   /* room for the icon */
+}
+
+/* Eye button pinned to the right edge */
+.password-field .eye-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%) !important;   /* lock vertical position */
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 28px;
+  height: 28px;
+  display: inline-flex !important;          /* defeat any global block button rules */
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  cursor: pointer;
+
+  /* Only fade opacity; do NOT animate transform/box-shadow/etc. */
+  transition: opacity 120ms ease !important;
+}
+
+/* Prevent hover/active/focus from moving/scaling the button */
+.password-field .eye-toggle:hover,
+.password-field .eye-toggle:active,
+.password-field .eye-toggle:focus {
+  opacity: 0.8;                              /* subtle visual feedback */
+  transform: translateY(-50%) !important;    /* re-assert no movement */
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Size/color the SVG; clicks still hit the button */
+.password-field .eye-toggle svg {
+  width: 20px;
+  height: 20px;
+  color: #2e2e2e;                            /* tweak to match your theme */
+  pointer-events: none;
+}
+
+/* If any global button :hover adds translate/scale via a generic selector, nuke it: */
+.password-field .eye-toggle,
+.password-field .eye-toggle:hover {
+  transform-origin: center center !important;
+}
+
